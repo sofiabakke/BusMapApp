@@ -1,10 +1,42 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="no.application.sofia.busmapapp.StopsFragment">
+    tools:context="no.application.sofia.busmapapp.StopsFragment"
+    android:orientation="vertical">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-</FrameLayout>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Favorite"
+            android:drawableLeft="@drawable/ic_action_favorite"
+            android:id="@+id/button"
+            style="?android:attr/borderlessButtonStyle"
+            android:background="@color/button_material_dark"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Button"
+            android:id="@+id/button2"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle"
+            android:background="@color/button_material_dark"/>
+
+    </LinearLayout>
+
+    <!--This frame is going to contain fragments of favorite stops and stops near by-->
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".StopsFragment" />
+
+
+</LinearLayout>
