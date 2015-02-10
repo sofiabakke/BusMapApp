@@ -2,11 +2,28 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="no.application.sofia.busmapapp" >
 
+    <!--Required to use the Google Maps API-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <!--Needed to find the users current location-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/><!--WiFi and/or mobile data location-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/><!--GPS location-->
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
+        <!--These two meta-data tags are needed for the map to run-->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="@string/google_maps_key" />
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
