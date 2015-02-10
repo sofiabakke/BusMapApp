@@ -8,9 +8,11 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import java.util.Locale;
 
@@ -53,7 +55,26 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
 
         viewPager = (ViewPager)view.findViewById(R.id.pager);
         viewPager.setAdapter(sectionsPagerAdapter);
+
+        Button favoriteButton = (Button)view.findViewById(R.id.button_favorite);
+        Button nearbyButton = (Button)view.findViewById(R.id.button_nearby);
+
+        setupButton(favoriteButton);
+        setupButton(nearbyButton);
         return view;
+    }
+
+    public void setupButton(final Button button){
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Click", button.getText() + "");
+                if (button.getTag().equals("favorite"))
+                    viewPager.setCurrentItem(0);
+                else if (button.getTag().equals("nearby"))
+                    viewPager.setCurrentItem(1);
+            }
+        });
     }
 
     @Override
@@ -98,11 +119,11 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
 //                    Fragment placeholder = new PlaceholderFragment();
 //                    return placeholder;
                 case 0:
-                    Fragment fragment1 = new PlaceholderFragment2();
-                    return fragment1;
+                    Fragment favoriteFragment = FavoriteFragment.newInstance(position+1);
+                    return favoriteFragment;
                 case 1:
-                    Fragment fragment2 = new PlaceholderFragment2();
-                    return fragment2;
+                    Fragment nearByFragment = NearByFragment.newInstance(position+1);
+                    return nearByFragment;
             }
             return null;
         }
@@ -121,8 +142,6 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
                     return getString(R.string.title_section1).toUpperCase(l);
                 case 1:
                     return getString(R.string.title_section2).toUpperCase(l);
-//                case 2:
-//                    return getString(R.string.title_section3).toUpperCase(l);
             }
             return null;
         }
