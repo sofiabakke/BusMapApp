@@ -23,6 +23,9 @@ import no.application.sofia.busmapapp.dummy.DummyContent;
  * <p/>
  * Activities containing this fragment MUST implement the {@link //OnFragmentInteractionListener}
  * interface.
+ *
+ * Needed to comment out the OnFragmentInteractionListener in order to run the application for now.
+ * Think this listener should be used when actual content are implemented
  */
 public class FavoriteFragment extends Fragment implements AbsListView.OnItemClickListener {
     public static final String ARG_TAB_NUMBER = "tab_number";
