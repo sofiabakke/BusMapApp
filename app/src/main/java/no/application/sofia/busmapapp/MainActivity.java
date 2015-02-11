@@ -6,6 +6,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +17,8 @@ import android.support.v4.widget.DrawerLayout;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+    private MapFragment mapFragment;
+    private StopsFragment stopsFragment;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -48,13 +51,17 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         switch(position){
             case 0:
+                if(mapFragment == null)
+                    mapFragment = MapFragment.newInstance(position+1);
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, MapFragment.newInstance(position + 1))
+                        .replace(R.id.container, mapFragment)
                         .commit();
                 break;
             case 1:
+                if(stopsFragment == null)
+                    stopsFragment = StopsFragment.newInstance(position+1);
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, StopsFragment.newInstance(position+1))
+                        .replace(R.id.container, stopsFragment)
                         .commit();
         }
     }
