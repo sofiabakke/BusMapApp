@@ -57,6 +57,7 @@ public class MapFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER)); //Setting the Action Bar text
+//        setUpMapIfNeeded();
     }
 
     private void setUpMapIfNeeded(){
@@ -87,4 +88,11 @@ public class MapFragment extends Fragment {
         busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        //When the some other fragment in the navigation drawer is selected, the busMap is set to
+        // null again to be able to setup the map when the fragment is reattached.
+        busMap = null;
+    }
 }
