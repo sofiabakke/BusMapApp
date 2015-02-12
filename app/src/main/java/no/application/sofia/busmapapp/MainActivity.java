@@ -17,8 +17,11 @@ import android.support.v4.widget.DrawerLayout;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+
+    //used to save the fragments when they are created
     private MapFragment mapFragment;
     private StopsFragment stopsFragment;
+    private OracleFragment oracleFragment;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -62,6 +65,13 @@ public class MainActivity extends ActionBarActivity
                     stopsFragment = StopsFragment.newInstance(position+1);
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, stopsFragment)
+                        .commit();
+                break;
+            case 2:
+                if(oracleFragment == null)
+                    oracleFragment = OracleFragment.newInstance(position+1);
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, oracleFragment)
                         .commit();
         }
     }
