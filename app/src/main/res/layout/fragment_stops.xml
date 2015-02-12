@@ -4,7 +4,6 @@
     tools:context="no.application.sofia.busmapapp.StopsFragment"
     android:orientation="vertical">
 
-    <!-- TODO: Update blank fragment layout -->
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -14,7 +13,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Favorites"
+            android:text="@string/stops_button_favorites"
             android:drawableLeft="@drawable/ic_action_favorite"
             android:id="@+id/button_favorite"
             style="?android:attr/borderlessButtonStyle"
@@ -24,7 +23,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Near By"
+            android:text="@string/stops_button_nearby"
             android:id="@+id/button_nearby"
             android:layout_weight="1"
             style="?android:attr/borderlessButtonStyle"

@@ -80,7 +80,6 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        super.onAttach(activity);
         ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER)); //Setting the Action Bar text
     }
 
