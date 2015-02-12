@@ -1,6 +1,7 @@
 package no.application.sofia.busmapapp;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -16,7 +17,7 @@ import android.support.v4.widget.DrawerLayout;
 
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, OracleFragment.OnFragmentInteractionListener{
 
     //used to save the fragments when they are created
     private MapFragment mapFragment;
@@ -124,6 +125,11 @@ public class MainActivity extends ActionBarActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 
     /**
