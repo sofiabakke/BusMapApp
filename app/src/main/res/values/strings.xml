@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">BusMapApp</string>
 
+    <!--Navigation Drawer Strings-->
     <string name="title_map">Map</string>
     <string name="title_stops">Stops</string>
     <string name="title_oracle">Oracle</string>
@@ -8,13 +9,16 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <!--Action Bar Strings-->
     <string name="action_example">Example action</string>
 
     <string name="action_settings">Settings</string>
 
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!--Stops Strings-->
+    <string name="stops_button_favorites">Favorites</string>
+    <string name="stops_button_nearby">Near By</string>
 
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
+    <!--Oracle Strings-->
+    <string name="oracle_submit_button">Submit</string>
+    <string name="oracle_ask_question">Ask a Question</string>
 </resources>

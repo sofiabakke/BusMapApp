@@ -17,7 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Ask a Question"
+        android:text="@string/oracle_ask_question"
         android:id="@+id/textView_oracle_question"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
@@ -26,7 +26,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Submit"
+        android:text="@string/oracle_submit_button"
         android:id="@+id/button_submit"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
