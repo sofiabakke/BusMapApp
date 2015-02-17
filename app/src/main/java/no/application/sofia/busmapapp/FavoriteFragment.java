@@ -28,7 +28,7 @@ import no.application.sofia.busmapapp.dummy.DummyContent;
  * Think this listener should be used when actual content are implemented
  */
 public class FavoriteFragment extends Fragment implements AbsListView.OnItemClickListener {
-    public static final String ARG_TAB_NUMBER = "tab_number";
+    private static final String ARG_TAB_NUMBER = "tab_number";
     private int tabNumber;
 
 //    private OnFragmentInteractionListener mListener;
