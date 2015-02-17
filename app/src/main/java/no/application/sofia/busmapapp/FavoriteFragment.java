@@ -44,7 +44,7 @@ public class FavoriteFragment extends Fragment implements AbsListView.OnItemClic
      */
     private ListAdapter mAdapter;
 
-    // TODO: Rename and change types of parameters
+
     public static FavoriteFragment newInstance(int tabNumber) {
         FavoriteFragment fragment = new FavoriteFragment();
         Bundle args = new Bundle();
