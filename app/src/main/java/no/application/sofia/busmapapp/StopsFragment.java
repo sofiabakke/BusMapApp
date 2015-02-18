@@ -138,9 +138,9 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
             Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
-                    return getString(R.string.title_section1).toUpperCase(l);
+                    return getString(R.string.title_section_favorites).toUpperCase(l);
                 case 1:
-                    return getString(R.string.title_section2).toUpperCase(l);
+                    return getString(R.string.title_section_nearby).toUpperCase(l);
             }
             return null;
         }

@@ -15,8 +15,12 @@
     <string name="action_settings">Settings</string>
 
     <!--Stops Strings-->
+    <string name="title_section_favorites">Favorites</string>
     <string name="stops_button_favorites">Favorites</string>
+
+    <string name="title_section_nearby">Near By</string>
     <string name="stops_button_nearby">Near By</string>
+
 
     <!--Oracle Strings-->
     <string name="oracle_submit_button">Submit</string>
