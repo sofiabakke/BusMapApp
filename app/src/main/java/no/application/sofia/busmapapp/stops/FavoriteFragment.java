@@ -13,6 +13,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 
+import no.application.sofia.busmapapp.MainActivity;
 import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.dummy.DummyContent;
 
@@ -31,8 +32,9 @@ import no.application.sofia.busmapapp.dummy.DummyContent;
 public class FavoriteFragment extends Fragment implements AbsListView.OnItemClickListener {
     private static final String ARG_TAB_NUMBER = "tab_number";
     private int tabNumber;
+    private MainActivity mainActivity;
 
-//    private OnFragmentInteractionListener mListener;
+    private OnItemClickedListener mListener;
 
     /**
      * The fragment's ListView/GridView.
@@ -92,12 +94,13 @@ public class FavoriteFragment extends Fragment implements AbsListView.OnItemClic
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-//        try {
-//            mListener = (OnFragmentInteractionListener) activity;
-//        } catch (ClassCastException e) {
-//            throw new ClassCastException(activity.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
+        mainActivity = (MainActivity)activity;
+        try {
+            mListener = (OnItemClickedListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
     }
 
     @Override
@@ -109,11 +112,17 @@ public class FavoriteFragment extends Fragment implements AbsListView.OnItemClic
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        if (null != mListener) {
-//            // Notify the active callbacks interface (the activity, if the
-//            // fragment is attached to one) that an item has been selected.
-//            mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
-//        }
+//        Log.d("onItemClicked", "I");
+//        Log.d("itemID", DummyContent.ITEMS.get(position).id + "");
+//        Log.d("parameter ID", id + "");
+//        mainActivity.onItemAttached(DummyContent.ITEMS.get(position).id);
+//        mainActivity.restoreActionBar();
+//
+        if (null != mListener) {
+            // Notify the active callbacks interface (the activity, if the
+            // fragment is attached to one) that an item has been selected.
+            mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
+        }
     }
 
     /**
@@ -139,9 +148,9 @@ public class FavoriteFragment extends Fragment implements AbsListView.OnItemClic
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-//    public interface OnFragmentInteractionListener {
-//        // TODO: Update argument type and name
-//        public void onFragmentInteraction(String id);
-//    }
+    public interface OnItemClickedListener {
+        // TODO: Update argument type and name
+        public void onFragmentInteraction(int id);
+    }
 
 }

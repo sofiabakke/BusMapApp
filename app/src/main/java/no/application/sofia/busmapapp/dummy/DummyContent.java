@@ -21,13 +21,13 @@ public class DummyContent {
     /**
      * A map of sample (dummy) items, by ID.
      */
-    public static Map<String, DummyItem> ITEM_MAP = new HashMap<String, DummyItem>();
+    public static Map<Integer, DummyItem> ITEM_MAP = new HashMap<Integer, DummyItem>();
 
     static {
         // Add 3 sample items.
-        addItem(new DummyItem("1", "Item 1"));
-        addItem(new DummyItem("2", "Item 2"));
-        addItem(new DummyItem("3", "Item 3"));
+        addItem(new DummyItem(1, "Item 1"));
+        addItem(new DummyItem(2, "Item 2"));
+        addItem(new DummyItem(3, "Item 3"));
     }
 
     private static void addItem(DummyItem item) {
@@ -39,10 +39,10 @@ public class DummyContent {
      * A dummy item representing a piece of content.
      */
     public static class DummyItem {
-        public String id;
+        public int id;
         public String content;
 
-        public DummyItem(String id, String content) {
+        public DummyItem(int id, String content) {
             this.id = id;
             this.content = content;
         }

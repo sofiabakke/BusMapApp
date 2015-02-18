@@ -5,6 +5,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
@@ -85,6 +86,19 @@ public class MainActivity extends ActionBarActivity
                 mTitle = getString(R.string.title_oracle);
                 break;
         }
+    }
+
+    public void onItemAttached(int number){
+        Log.d("onItemAttatched", number + "");
+        switch (number) {
+            case 1:
+                mTitle = "Item1";
+                break;
+            case 2:
+                mTitle = "Item2";
+                break;
+        }
+        Log.d("mTitle", mTitle+"");
     }
 
     public void restoreActionBar() {
