@@ -1,4 +1,4 @@
-package no.application.sofia.busmapapp;
+package no.application.sofia.busmapapp.stops;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -13,6 +13,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 
+import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.dummy.DummyContent;
 
 /**

@@ -1,4 +1,4 @@
-package no.application.sofia.busmapapp;
+package no.application.sofia.busmapapp.stops;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -15,6 +15,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import java.util.Locale;
+
+import no.application.sofia.busmapapp.R;
+import no.application.sofia.busmapapp.MainActivity;
 
 
 /**
