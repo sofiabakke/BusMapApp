@@ -35,6 +35,7 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
     private ViewPager viewPager;
     private FavoritesFragment favFrag;
     private NearByFragment nbFrag;
+    private int i = 1;
 
     /**
      * Use this factory method to create a new instance of
@@ -62,7 +63,7 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
         if (getArguments() != null) {
             sectionNumber = getArguments().getInt(ARG_SECTION_NUMBER);
         }
-        sectionsPagerAdapter = new SectionsPagerAdapter(getActivity().getSupportFragmentManager());
+        Log.d("onCreate", "In StopsFragment");
     }
 
 
@@ -71,6 +72,11 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_stops, container, false);
         Log.d("onCreateView", "In StopsFragment");
+
+        sectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
+
+        Log.d("sectionsPagerAdapter", sectionsPagerAdapter + " The " + i + " time around");
+        i++;
 
         viewPager = (ViewPager)view.findViewById(R.id.pager);
         viewPager.setAdapter(sectionsPagerAdapter);
@@ -123,13 +129,6 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
     public void onDetach() {
         super.onDetach();
         Log.d("onDetach", "In StopFragment");
-        if (favFrag != null)
-            favFrag.onDetach();
-        if(nbFrag != null){
-            nbFrag.onDetach();
-        }
-
-
     }
 
     public void setFavFrag(FavoritesFragment favFrag){
@@ -169,7 +168,7 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
+            // Show 2 total pages.
             return 2;
         }
 

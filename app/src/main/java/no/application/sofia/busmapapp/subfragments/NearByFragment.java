@@ -108,6 +108,11 @@ public class NearByFragment extends Fragment implements AbsListView.OnItemClickL
         mListener = null;
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d("onStop", "In NearByFragment");
+    }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

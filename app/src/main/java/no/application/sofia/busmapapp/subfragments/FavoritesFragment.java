@@ -98,6 +98,12 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        Log.d("onStop", "In FavoritesFragment");
+    }
+
+    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
