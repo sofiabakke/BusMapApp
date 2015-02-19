@@ -1,6 +1,5 @@
 package no.application.sofia.busmapapp.activities;
 
-import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -15,13 +14,13 @@ import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.fragments.MapFragment;
 import no.application.sofia.busmapapp.fragments.NavigationDrawerFragment;
 import no.application.sofia.busmapapp.fragments.OracleFragment;
-import no.application.sofia.busmapapp.subfragments.FavoritesFragment;
+import no.application.sofia.busmapapp.interfaces.OnStopItemClickedListener;
 import no.application.sofia.busmapapp.subfragments.StopFragment;
 import no.application.sofia.busmapapp.fragments.StopsFragment;
 
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, FavoritesFragment.OnItemClickedListener{
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnStopItemClickedListener{
 
     //used to save the fragments when they are created
     private MapFragment mapFragment;
@@ -146,7 +145,7 @@ public class MainActivity extends ActionBarActivity
     }
 
     /*
-        Used for Lists in Favorite Fragment for stops
+        Used for Lists in FavoritesFragment and NearByFragment for stops
          */
     @Override
     public void onStopItemClicked(int id) {
@@ -156,8 +155,6 @@ public class MainActivity extends ActionBarActivity
 
 
     }
-
-
 
     //Used when an element is selected in a list.
     public void onStopItemAttached(int number){

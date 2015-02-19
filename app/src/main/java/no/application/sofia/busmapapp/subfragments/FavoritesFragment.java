@@ -105,7 +105,7 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
     @Override
     public void onDetach() {
         super.onDetach();
-//        mListener = null;
+        mListener = null;
     }
 
 
