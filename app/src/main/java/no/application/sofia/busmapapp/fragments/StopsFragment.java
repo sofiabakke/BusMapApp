@@ -1,4 +1,4 @@
-package no.application.sofia.busmapapp.stops;
+package no.application.sofia.busmapapp.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -18,8 +18,9 @@ import android.widget.Button;
 import java.util.Locale;
 
 import no.application.sofia.busmapapp.R;
-import no.application.sofia.busmapapp.MainActivity;
-import no.application.sofia.busmapapp.dummy.DummyContent;
+import no.application.sofia.busmapapp.activities.MainActivity;
+import no.application.sofia.busmapapp.subfragments.FavoritesFragment;
+import no.application.sofia.busmapapp.subfragments.NearByFragment;
 
 
 /**
@@ -134,7 +135,7 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
                     Fragment favoriteFragment = FavoritesFragment.newInstance(position + 1);
                     return favoriteFragment;
                 case 1:
-                    Fragment nearByFragment = NearByFragment.newInstance(position+1);
+                    Fragment nearByFragment = NearByFragment.newInstance(position + 1);
                     return nearByFragment;
             }
             return null;

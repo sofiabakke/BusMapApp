@@ -1,4 +1,4 @@
-package no.application.sofia.busmapapp;
+package no.application.sofia.busmapapp.activities;
 
 import android.net.Uri;
 import android.support.v4.app.Fragment;
@@ -10,11 +10,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
-import android.view.View;
 
-import no.application.sofia.busmapapp.stops.FavoritesFragment;
-import no.application.sofia.busmapapp.stops.StopFragment;
-import no.application.sofia.busmapapp.stops.StopsFragment;
+import no.application.sofia.busmapapp.R;
+import no.application.sofia.busmapapp.fragments.MapFragment;
+import no.application.sofia.busmapapp.fragments.NavigationDrawerFragment;
+import no.application.sofia.busmapapp.fragments.OracleFragment;
+import no.application.sofia.busmapapp.subfragments.FavoritesFragment;
+import no.application.sofia.busmapapp.subfragments.StopFragment;
+import no.application.sofia.busmapapp.fragments.StopsFragment;
 
 
 public class MainActivity extends ActionBarActivity

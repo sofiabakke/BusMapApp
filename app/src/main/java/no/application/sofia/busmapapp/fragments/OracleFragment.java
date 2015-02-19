@@ -1,4 +1,4 @@
-package no.application.sofia.busmapapp;
+package no.application.sofia.busmapapp.fragments;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import no.application.sofia.busmapapp.R;
+import no.application.sofia.busmapapp.activities.MainActivity;
 
 
 /**

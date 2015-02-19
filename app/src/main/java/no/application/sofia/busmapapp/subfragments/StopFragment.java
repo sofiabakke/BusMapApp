@@ -1,4 +1,4 @@
-package no.application.sofia.busmapapp.stops;
+package no.application.sofia.busmapapp.subfragments;
 
 import android.app.Activity;
 import android.net.Uri;

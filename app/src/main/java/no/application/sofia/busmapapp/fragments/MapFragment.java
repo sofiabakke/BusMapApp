@@ -1,4 +1,4 @@
-package no.application.sofia.busmapapp;
+package no.application.sofia.busmapapp.fragments;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,6 +16,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 import no.application.sofia.busmapapp.R;
+import no.application.sofia.busmapapp.activities.MainActivity;
 
 
 public class MapFragment extends Fragment {

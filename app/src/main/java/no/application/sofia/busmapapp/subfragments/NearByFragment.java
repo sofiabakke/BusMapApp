@@ -1,4 +1,4 @@
-package no.application.sofia.busmapapp.stops;
+package no.application.sofia.busmapapp.subfragments;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -13,7 +13,6 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 
-import no.application.sofia.busmapapp.MainActivity;
 import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.dummy.DummyContent;
 
@@ -25,16 +24,12 @@ import no.application.sofia.busmapapp.dummy.DummyContent;
  * <p/>
  * Activities containing this fragment MUST implement the {@link //OnFragmentInteractionListener}
  * interface.
- *
- * Needed to comment out the OnFragmentInteractionListener in order to run the application for now.
- * Think this listener should be used when actual content are implemented
  */
-public class FavoritesFragment extends Fragment implements AbsListView.OnItemClickListener {
-    private static final String ARG_TAB_NUMBER = "tab_number";
+public class NearByFragment extends Fragment implements AbsListView.OnItemClickListener {
+    public static final String ARG_TAB_NUMBER = "tab_number";
     private int tabNumber;
-    private MainActivity mainActivity;
 
-    private OnItemClickedListener mListener;
+//    private OnFragmentInteractionListener mListener;
 
     /**
      * The fragment's ListView/GridView.
@@ -47,9 +42,9 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
      */
     private ListAdapter mAdapter;
 
-
-    public static FavoritesFragment newInstance(int tabNumber) {
-        FavoritesFragment fragment = new FavoritesFragment();
+    // TODO: Rename and change types of parameters
+    public static NearByFragment newInstance(int tabNumber) {
+        NearByFragment fragment = new NearByFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_TAB_NUMBER, tabNumber);
         fragment.setArguments(args);
@@ -60,7 +55,7 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public FavoritesFragment() {
+    public NearByFragment() {
     }
 
     @Override
@@ -79,12 +74,11 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_item, container, false);
-        view.setTag("favoritesFragment");
+        View view = inflater.inflate(R.layout.fragment_nearby_item, container, false);
 
         // Set the adapter
         mListView = (AbsListView) view.findViewById(android.R.id.list);
-        mListView.setAdapter(mAdapter);
+        ((AdapterView<ListAdapter>) mListView).setAdapter(mAdapter);
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
@@ -95,13 +89,12 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        mainActivity = (MainActivity)activity;
-        try {
-            mListener = (OnItemClickedListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+//        try {
+//            mListener = (OnFragmentInteractionListener) activity;
+//        } catch (ClassCastException e) {
+//            throw new ClassCastException(activity.toString()
+//                    + " must implement OnFragmentInteractionListener");
+//        }
     }
 
     @Override
@@ -113,17 +106,11 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        Log.d("onItemClicked", "I");
-//        Log.d("itemID", DummyContent.ITEMS.get(position).id + "");
-//        Log.d("parameter ID", id + "");
-//        mainActivity.onItemAttached(DummyContent.ITEMS.get(position).id);
-//        mainActivity.restoreActionBar();
-//
-        if (null != mListener) {
-            // Notify the active callbacks interface (the activity, if the
-            // fragment is attached to one) that an item has been selected.
-            mListener.onStopItemClicked(DummyContent.ITEMS.get(position).id);
-        }
+//        if (null != mListener) {
+//            // Notify the active callbacks interface (the activity, if the
+//            // fragment is attached to one) that an item has been selected.
+//            mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
+//        }
     }
 
     /**
@@ -149,9 +136,9 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnItemClickedListener {
-        // TODO: Update argument type and name
-        public void onStopItemClicked(int id);
-    }
+//    public interface OnFragmentInteractionListener {
+//        // TODO: Update argument type and name
+//        public void onFragmentInteraction(String id);
+//    }
 
 }
