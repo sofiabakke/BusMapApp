@@ -21,7 +21,7 @@ import no.application.sofia.busmapapp.fragments.StopsFragment;
 
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, OracleFragment.OnFragmentInteractionListener, FavoritesFragment.OnItemClickedListener{
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, FavoritesFragment.OnItemClickedListener{
 
     //used to save the fragments when they are created
     private MapFragment mapFragment;
@@ -53,6 +53,9 @@ public class MainActivity extends ActionBarActivity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
+    /*
+    Code for the navigation drawer
+     */
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
@@ -131,10 +134,6 @@ public class MainActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
 
     @Override
     public void onBackPressed() {
@@ -160,6 +159,7 @@ public class MainActivity extends ActionBarActivity
 
 
 
+    //Used when an element is selected in a list.
     public void onStopItemAttached(int number){
         FragmentManager fragmentManager = getSupportFragmentManager();
         switch (number) {
