@@ -33,6 +33,8 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
     private int sectionNumber;
     private SectionsPagerAdapter sectionsPagerAdapter;
     private ViewPager viewPager;
+    private FavoritesFragment favFrag;
+    private NearByFragment nbFrag;
 
     /**
      * Use this factory method to create a new instance of
@@ -60,6 +62,7 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
         if (getArguments() != null) {
             sectionNumber = getArguments().getInt(ARG_SECTION_NUMBER);
         }
+        sectionsPagerAdapter = new SectionsPagerAdapter(getActivity().getSupportFragmentManager());
     }
 
 
@@ -67,8 +70,7 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_stops, container, false);
-        view.setTag("stopsFragment");
-        sectionsPagerAdapter = new SectionsPagerAdapter(getActivity().getSupportFragmentManager());
+        Log.d("onCreateView", "In StopsFragment");
 
         viewPager = (ViewPager)view.findViewById(R.id.pager);
         viewPager.setAdapter(sectionsPagerAdapter);
@@ -84,7 +86,7 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
     public void setupButton(final Button button){
         button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 Log.d("Click", button.getText() + "");
                 if (button.getTag().equals("favorite"))
                     viewPager.setCurrentItem(0);
@@ -98,6 +100,7 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER)); //Setting the Action Bar text
+        Log.d("onAttach", "In StopsFragment");
     }
 
 
@@ -116,6 +119,27 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
 
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d("onDetach", "In StopFragment");
+        if (favFrag != null)
+            favFrag.onDetach();
+        if(nbFrag != null){
+            nbFrag.onDetach();
+        }
+
+
+    }
+
+    public void setFavFrag(FavoritesFragment favFrag){
+        this.favFrag = favFrag;
+    }
+
+    public void setNbFrag(NearByFragment nbFrag){
+        this.nbFrag = nbFrag;
+    }
+
     /**
      * A {@link android.support.v4.app.FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -132,10 +156,12 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position){
                 case 0:
-                    Fragment favoriteFragment = FavoritesFragment.newInstance(position + 1);
+                    FavoritesFragment favoriteFragment = FavoritesFragment.newInstance(position + 1);
+                    setFavFrag(favoriteFragment);
                     return favoriteFragment;
                 case 1:
-                    Fragment nearByFragment = NearByFragment.newInstance(position + 1);
+                    NearByFragment nearByFragment = NearByFragment.newInstance(position + 1);
+                    setNbFrag(nearByFragment);
                     return nearByFragment;
             }
             return null;

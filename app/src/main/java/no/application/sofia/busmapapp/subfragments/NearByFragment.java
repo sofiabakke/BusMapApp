@@ -3,6 +3,7 @@ package no.application.sofia.busmapapp.subfragments;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,6 +84,9 @@ public class NearByFragment extends Fragment implements AbsListView.OnItemClickL
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
 
+        Log.d("onCreateView", "In NearByFragment");
+        Log.d("mAdapter in NearBy", mAdapter + "");
+
         return view;
     }
 
@@ -100,6 +104,7 @@ public class NearByFragment extends Fragment implements AbsListView.OnItemClickL
     @Override
     public void onDetach() {
         super.onDetach();
+        Log.d("onDetach", "In NearByFragment");
         mListener = null;
     }
 

@@ -1,5 +1,6 @@
 package no.application.sofia.busmapapp.activities;
 
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -15,12 +16,13 @@ import no.application.sofia.busmapapp.fragments.MapFragment;
 import no.application.sofia.busmapapp.fragments.NavigationDrawerFragment;
 import no.application.sofia.busmapapp.fragments.OracleFragment;
 import no.application.sofia.busmapapp.interfaces.OnStopItemClickedListener;
+import no.application.sofia.busmapapp.interfaces.OnTabButtonPressed;
 import no.application.sofia.busmapapp.subfragments.StopFragment;
 import no.application.sofia.busmapapp.fragments.StopsFragment;
 
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnStopItemClickedListener{
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnStopItemClickedListener, OnTabButtonPressed{
 
     //used to save the fragments when they are created
     private MapFragment mapFragment;
@@ -182,5 +184,10 @@ public class MainActivity extends ActionBarActivity
                         .commit();
                 break;
         }
+    }
+
+    @Override
+    public void onButtonPressed(Uri uri) {
+
     }
 }

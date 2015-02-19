@@ -3,6 +3,7 @@ package no.application.sofia.busmapapp.subfragments;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,6 +74,8 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
         // TODO: Change Adapter to display your content
         mAdapter = new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
                 android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS);
+
+        Log.d("onCreate", "In FavoritesFragment");
     }
 
     @Override
@@ -85,8 +88,11 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
         mListView = (AbsListView) view.findViewById(android.R.id.list);
         mListView.setAdapter(mAdapter);
 
-        // Set OnStopItemClickedListener so we can be notified on item clicks
+        // Set OnItemClickedListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
+
+        Log.d("onCreateView", "In FavoritesFragment");
+        Log.d("mAdapter", mAdapter + "");
 
         return view;
     }
@@ -103,8 +109,15 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d("OnDestroyView", "FavoritesFragment");
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
+        Log.d("onDetach", "In FavoritesFragment");
         mListener = null;
     }
 

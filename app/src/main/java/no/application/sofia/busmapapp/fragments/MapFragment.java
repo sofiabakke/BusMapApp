@@ -6,6 +6,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,5 +95,6 @@ public class MapFragment extends Fragment {
         //When the some other fragment in the navigation drawer is selected, the busMap is set to
         // null again to be able to setup the map when the fragment is reattached.
         busMap = null;
+        Log.d("onDetach", "In MapFragment");
     }
 }

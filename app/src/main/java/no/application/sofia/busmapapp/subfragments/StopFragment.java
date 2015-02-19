@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,6 +85,7 @@ public class StopFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
 //        mListener = null;
+        Log.d("onDetach", "In StopFragment");
     }
 
     /**
