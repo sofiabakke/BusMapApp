@@ -29,7 +29,7 @@ import no.application.sofia.busmapapp.dummy.DummyContent;
  * Needed to comment out the OnFragmentInteractionListener in order to run the application for now.
  * Think this listener should be used when actual content are implemented
  */
-public class FavoriteFragment extends Fragment implements AbsListView.OnItemClickListener {
+public class FavoritesFragment extends Fragment implements AbsListView.OnItemClickListener {
     private static final String ARG_TAB_NUMBER = "tab_number";
     private int tabNumber;
     private MainActivity mainActivity;
@@ -48,8 +48,8 @@ public class FavoriteFragment extends Fragment implements AbsListView.OnItemClic
     private ListAdapter mAdapter;
 
 
-    public static FavoriteFragment newInstance(int tabNumber) {
-        FavoriteFragment fragment = new FavoriteFragment();
+    public static FavoritesFragment newInstance(int tabNumber) {
+        FavoritesFragment fragment = new FavoritesFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_TAB_NUMBER, tabNumber);
         fragment.setArguments(args);
@@ -60,7 +60,7 @@ public class FavoriteFragment extends Fragment implements AbsListView.OnItemClic
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public FavoriteFragment() {
+    public FavoritesFragment() {
     }
 
     @Override
@@ -80,10 +80,11 @@ public class FavoriteFragment extends Fragment implements AbsListView.OnItemClic
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item, container, false);
+        view.setTag("favoritesFragment");
 
         // Set the adapter
         mListView = (AbsListView) view.findViewById(android.R.id.list);
-        ((AdapterView<ListAdapter>) mListView).setAdapter(mAdapter);
+        mListView.setAdapter(mAdapter);
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
@@ -121,7 +122,7 @@ public class FavoriteFragment extends Fragment implements AbsListView.OnItemClic
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
+            mListener.onStopItemClicked(DummyContent.ITEMS.get(position).id);
         }
     }
 
@@ -150,7 +151,7 @@ public class FavoriteFragment extends Fragment implements AbsListView.OnItemClic
      */
     public interface OnItemClickedListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(int id);
+        public void onStopItemClicked(int id);
     }
 
 }

@@ -1,6 +1,7 @@
 package no.application.sofia.busmapapp;
 
 import android.net.Uri;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentManager;
@@ -9,12 +10,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
+import android.view.View;
 
+import no.application.sofia.busmapapp.stops.FavoritesFragment;
+import no.application.sofia.busmapapp.stops.StopFragment;
 import no.application.sofia.busmapapp.stops.StopsFragment;
 
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, OracleFragment.OnFragmentInteractionListener{
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, OracleFragment.OnFragmentInteractionListener, FavoritesFragment.OnItemClickedListener{
 
     //used to save the fragments when they are created
     private MapFragment mapFragment;
@@ -88,19 +92,6 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
-    public void onItemAttached(int number){
-        Log.d("onItemAttatched", number + "");
-        switch (number) {
-            case 1:
-                mTitle = "Item1";
-                break;
-            case 2:
-                mTitle = "Item2";
-                break;
-        }
-        Log.d("mTitle", mTitle+"");
-    }
-
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
@@ -142,4 +133,54 @@ public class MainActivity extends ActionBarActivity
 
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.container);
+        CharSequence tempMTitle = mTitle;
+        onSectionAttached(currentFragment.getArguments().getInt("section_number"));
+        if (!tempMTitle.equals(mTitle))
+            restoreActionBar(); //Need to change action bar when mTitle is changed
+    }
+
+    /*
+        Used for Lists in Favorite Fragment for stops
+         */
+    @Override
+    public void onStopItemClicked(int id) {
+        Log.d("Item Clicked", "Stop item clicked with ID: " + id);
+        onStopItemAttached(id);
+        restoreActionBar(); //Changeing the title in the action bar
+
+
+    }
+
+
+
+    public void onStopItemAttached(int number){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        switch (number) {
+            case 1:
+                mTitle = "Item 1"; //These should be the name of the stop attached in the future
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, StopFragment.newInstance(number))
+                        .addToBackStack(null)
+                        .commit();
+                break;
+            case 2:
+                mTitle = "Item 2";
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, StopFragment.newInstance(number))
+                        .addToBackStack(null)
+                        .commit();
+                break;
+            case 3:
+                mTitle = "Item 3";
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, StopFragment.newInstance(number))
+                        .addToBackStack(null)
+                        .commit();
+                break;
+        }
+    }
 }

@@ -12,12 +12,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import java.util.Locale;
 
 import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.MainActivity;
+import no.application.sofia.busmapapp.dummy.DummyContent;
 
 
 /**
@@ -27,6 +29,7 @@ import no.application.sofia.busmapapp.MainActivity;
  */
 public class StopsFragment extends Fragment implements ActionBar.TabListener{
     private static final String ARG_SECTION_NUMBER = "section_number";
+    private int sectionNumber;
     private SectionsPagerAdapter sectionsPagerAdapter;
     private ViewPager viewPager;
 
@@ -49,11 +52,21 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() != null) {
+            sectionNumber = getArguments().getInt(ARG_SECTION_NUMBER);
+        }
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_stops, container, false);
+        view.setTag("stopsFragment");
         sectionsPagerAdapter = new SectionsPagerAdapter(getActivity().getSupportFragmentManager());
 
         viewPager = (ViewPager)view.findViewById(R.id.pager);
@@ -117,11 +130,8 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position){
-//                case 0:
-//                    Fragment placeholder = new PlaceholderFragment();
-//                    return placeholder;
                 case 0:
-                    Fragment favoriteFragment = FavoriteFragment.newInstance(position+1);
+                    Fragment favoriteFragment = FavoritesFragment.newInstance(position + 1);
                     return favoriteFragment;
                 case 1:
                     Fragment nearByFragment = NearByFragment.newInstance(position+1);
