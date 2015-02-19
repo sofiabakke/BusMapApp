@@ -22,7 +22,7 @@ import no.application.sofia.busmapapp.fragments.StopsFragment;
 
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnStopItemClickedListener, OnTabButtonPressed{
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnStopItemClickedListener{
 
     //used to save the fragments when they are created
     private MapFragment mapFragment;
@@ -183,8 +183,4 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
-    @Override
-    public void onButtonPressed(Uri uri) {
-
-    }
 }
