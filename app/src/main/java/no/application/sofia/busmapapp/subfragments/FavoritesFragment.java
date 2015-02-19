@@ -12,8 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
-
-import no.application.sofia.busmapapp.activities.MainActivity;
 import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.dummy.DummyContent;
 import no.application.sofia.busmapapp.interfaces.OnStopItemClickedListener;
@@ -34,7 +32,6 @@ import no.application.sofia.busmapapp.interfaces.OnStopItemClickedListener;
 public class FavoritesFragment extends Fragment implements AbsListView.OnItemClickListener {
     private static final String ARG_TAB_NUMBER = "tab_number";
     private int tabNumber;
-    private MainActivity mainActivity;
 
     private OnStopItemClickedListener mListener;
 
@@ -88,7 +85,7 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
         mListView = (AbsListView) view.findViewById(android.R.id.list);
         mListView.setAdapter(mAdapter);
 
-        // Set OnItemClickListener so we can be notified on item clicks
+        // Set OnStopItemClickedListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
 
         return view;
@@ -97,12 +94,11 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        mainActivity = (MainActivity)activity;
         try {
             mListener = (OnStopItemClickedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnStopItemClickedListener");
         }
     }
 
@@ -115,15 +111,7 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        Log.d("onItemClicked", "I");
-//        Log.d("itemID", DummyContent.ITEMS.get(position).id + "");
-//        Log.d("parameter ID", id + "");
-//        mainActivity.onItemAttached(DummyContent.ITEMS.get(position).id);
-//        mainActivity.restoreActionBar();
-//
         if (null != mListener) {
-            // Notify the active callbacks interface (the activity, if the
-            // fragment is attached to one) that an item has been selected.
             mListener.onStopItemClicked(DummyContent.ITEMS.get(position).id);
         }
     }
@@ -139,5 +127,9 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
         if (emptyView instanceof TextView) {
             ((TextView) emptyView).setText(emptyText);
         }
+    }
+
+    public int getTabNumber(){
+        return tabNumber;
     }
 }
