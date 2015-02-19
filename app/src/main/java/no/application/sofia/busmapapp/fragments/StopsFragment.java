@@ -1,4 +1,4 @@
-package no.application.sofia.busmapapp.stops;
+package no.application.sofia.busmapapp.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -18,8 +18,9 @@ import android.widget.Button;
 import java.util.Locale;
 
 import no.application.sofia.busmapapp.R;
-import no.application.sofia.busmapapp.MainActivity;
-import no.application.sofia.busmapapp.dummy.DummyContent;
+import no.application.sofia.busmapapp.activities.MainActivity;
+import no.application.sofia.busmapapp.subfragments.FavoritesFragment;
+import no.application.sofia.busmapapp.subfragments.NearByFragment;
 
 
 /**
@@ -66,8 +67,8 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_stops, container, false);
-        view.setTag("stopsFragment");
-        sectionsPagerAdapter = new SectionsPagerAdapter(getActivity().getSupportFragmentManager());
+
+        sectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
 
         viewPager = (ViewPager)view.findViewById(R.id.pager);
         viewPager.setAdapter(sectionsPagerAdapter);
@@ -83,8 +84,7 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
     public void setupButton(final Button button){
         button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Log.d("Click", button.getText() + "");
+            public void onClick(View view) {
                 if (button.getTag().equals("favorite"))
                     viewPager.setCurrentItem(0);
                 else if (button.getTag().equals("nearby"))
@@ -131,10 +131,10 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position){
                 case 0:
-                    Fragment favoriteFragment = FavoritesFragment.newInstance(position + 1);
+                    FavoritesFragment favoriteFragment = FavoritesFragment.newInstance(position + 1);
                     return favoriteFragment;
                 case 1:
-                    Fragment nearByFragment = NearByFragment.newInstance(position+1);
+                    NearByFragment nearByFragment = NearByFragment.newInstance(position + 1);
                     return nearByFragment;
             }
             return null;
@@ -142,7 +142,7 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
+            // Show 2 total pages.
             return 2;
         }
 

@@ -1,4 +1,4 @@
-package no.application.sofia.busmapapp;
+package no.application.sofia.busmapapp.activities;
 
 import android.net.Uri;
 import android.support.v4.app.Fragment;
@@ -10,15 +10,19 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
-import android.view.View;
 
-import no.application.sofia.busmapapp.stops.FavoritesFragment;
-import no.application.sofia.busmapapp.stops.StopFragment;
-import no.application.sofia.busmapapp.stops.StopsFragment;
+import no.application.sofia.busmapapp.R;
+import no.application.sofia.busmapapp.fragments.MapFragment;
+import no.application.sofia.busmapapp.fragments.NavigationDrawerFragment;
+import no.application.sofia.busmapapp.fragments.OracleFragment;
+import no.application.sofia.busmapapp.interfaces.OnStopItemClickedListener;
+import no.application.sofia.busmapapp.interfaces.OnTabButtonPressed;
+import no.application.sofia.busmapapp.subfragments.StopFragment;
+import no.application.sofia.busmapapp.fragments.StopsFragment;
 
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, OracleFragment.OnFragmentInteractionListener, FavoritesFragment.OnItemClickedListener{
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnStopItemClickedListener, OnTabButtonPressed{
 
     //used to save the fragments when they are created
     private MapFragment mapFragment;
@@ -50,6 +54,9 @@ public class MainActivity extends ActionBarActivity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
+    /*
+    Code for the navigation drawer
+     */
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
@@ -128,10 +135,6 @@ public class MainActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
 
     @Override
     public void onBackPressed() {
@@ -144,19 +147,15 @@ public class MainActivity extends ActionBarActivity
     }
 
     /*
-        Used for Lists in Favorite Fragment for stops
+        Used for Lists in FavoritesFragment and NearByFragment for stops
          */
     @Override
     public void onStopItemClicked(int id) {
-        Log.d("Item Clicked", "Stop item clicked with ID: " + id);
         onStopItemAttached(id);
-        restoreActionBar(); //Changeing the title in the action bar
-
-
+        restoreActionBar(); //Changing the title in the action bar
     }
 
-
-
+    //Used when an element is selected in a list.
     public void onStopItemAttached(int number){
         FragmentManager fragmentManager = getSupportFragmentManager();
         switch (number) {
@@ -182,5 +181,10 @@ public class MainActivity extends ActionBarActivity
                         .commit();
                 break;
         }
+    }
+
+    @Override
+    public void onButtonPressed(Uri uri) {
+
     }
 }

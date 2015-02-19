@@ -1,8 +1,9 @@
-package no.application.sofia.busmapapp.stops;
+package no.application.sofia.busmapapp.subfragments;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +13,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
-
-import no.application.sofia.busmapapp.MainActivity;
 import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.dummy.DummyContent;
+import no.application.sofia.busmapapp.interfaces.OnStopItemClickedListener;
+
 
 /**
  * A fragment representing a list of Items.
@@ -32,9 +33,8 @@ import no.application.sofia.busmapapp.dummy.DummyContent;
 public class FavoritesFragment extends Fragment implements AbsListView.OnItemClickListener {
     private static final String ARG_TAB_NUMBER = "tab_number";
     private int tabNumber;
-    private MainActivity mainActivity;
 
-    private OnItemClickedListener mListener;
+    private OnStopItemClickedListener mListener;
 
     /**
      * The fragment's ListView/GridView.
@@ -86,42 +86,34 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
         mListView = (AbsListView) view.findViewById(android.R.id.list);
         mListView.setAdapter(mAdapter);
 
-        // Set OnItemClickListener so we can be notified on item clicks
+        // Set OnItemClickedListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
 
         return view;
     }
 
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        mainActivity = (MainActivity)activity;
         try {
-            mListener = (OnItemClickedListener) activity;
+            mListener = (OnStopItemClickedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnStopItemClickedListener");
         }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-//        mListener = null;
+        mListener = null;
     }
 
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        Log.d("onItemClicked", "I");
-//        Log.d("itemID", DummyContent.ITEMS.get(position).id + "");
-//        Log.d("parameter ID", id + "");
-//        mainActivity.onItemAttached(DummyContent.ITEMS.get(position).id);
-//        mainActivity.restoreActionBar();
-//
         if (null != mListener) {
-            // Notify the active callbacks interface (the activity, if the
-            // fragment is attached to one) that an item has been selected.
             mListener.onStopItemClicked(DummyContent.ITEMS.get(position).id);
         }
     }
@@ -139,19 +131,7 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
         }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnItemClickedListener {
-        // TODO: Update argument type and name
-        public void onStopItemClicked(int id);
+    public int getTabNumber(){
+        return tabNumber;
     }
-
 }
