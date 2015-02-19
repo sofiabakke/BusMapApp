@@ -16,7 +16,6 @@ import no.application.sofia.busmapapp.fragments.MapFragment;
 import no.application.sofia.busmapapp.fragments.NavigationDrawerFragment;
 import no.application.sofia.busmapapp.fragments.OracleFragment;
 import no.application.sofia.busmapapp.interfaces.OnStopItemClickedListener;
-import no.application.sofia.busmapapp.interfaces.OnTabButtonPressed;
 import no.application.sofia.busmapapp.subfragments.StopFragment;
 import no.application.sofia.busmapapp.fragments.StopsFragment;
 
