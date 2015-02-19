@@ -74,8 +74,6 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
         // TODO: Change Adapter to display your content
         mAdapter = new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
                 android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS);
-
-        Log.d("onCreate", "In FavoritesFragment");
     }
 
     @Override
@@ -91,17 +89,9 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
         // Set OnItemClickedListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
 
-        Log.d("onCreateView", "In FavoritesFragment");
-        Log.d("mAdapter", mAdapter + "");
-
         return view;
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.d("onStop", "In FavoritesFragment");
-    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -115,15 +105,8 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.d("OnDestroyView", "FavoritesFragment");
-    }
-
-    @Override
     public void onDetach() {
         super.onDetach();
-        Log.d("onDetach", "In FavoritesFragment");
         mListener = null;
     }
 

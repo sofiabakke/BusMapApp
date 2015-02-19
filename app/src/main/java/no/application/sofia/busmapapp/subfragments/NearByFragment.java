@@ -84,9 +84,6 @@ public class NearByFragment extends Fragment implements AbsListView.OnItemClickL
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
 
-        Log.d("onCreateView", "In NearByFragment");
-        Log.d("mAdapter in NearBy", mAdapter + "");
-
         return view;
     }
 
@@ -104,14 +101,7 @@ public class NearByFragment extends Fragment implements AbsListView.OnItemClickL
     @Override
     public void onDetach() {
         super.onDetach();
-        Log.d("onDetach", "In NearByFragment");
         mListener = null;
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.d("onStop", "In NearByFragment");
     }
 
     @Override

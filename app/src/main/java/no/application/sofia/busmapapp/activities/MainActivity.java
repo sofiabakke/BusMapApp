@@ -151,11 +151,8 @@ public class MainActivity extends ActionBarActivity
          */
     @Override
     public void onStopItemClicked(int id) {
-        Log.d("Item Clicked", "Stop item clicked with ID: " + id);
         onStopItemAttached(id);
-        restoreActionBar(); //Changeing the title in the action bar
-
-
+        restoreActionBar(); //Changing the title in the action bar
     }
 
     //Used when an element is selected in a list.
