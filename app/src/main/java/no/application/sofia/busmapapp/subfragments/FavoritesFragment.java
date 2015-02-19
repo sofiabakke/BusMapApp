@@ -16,6 +16,8 @@ import android.widget.TextView;
 import no.application.sofia.busmapapp.activities.MainActivity;
 import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.dummy.DummyContent;
+import no.application.sofia.busmapapp.interfaces.OnStopItemClickedListener;
+
 
 /**
  * A fragment representing a list of Items.
@@ -34,7 +36,7 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
     private int tabNumber;
     private MainActivity mainActivity;
 
-    private OnItemClickedListener mListener;
+    private OnStopItemClickedListener mListener;
 
     /**
      * The fragment's ListView/GridView.
@@ -97,7 +99,7 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
         super.onAttach(activity);
         mainActivity = (MainActivity)activity;
         try {
-            mListener = (OnItemClickedListener) activity;
+            mListener = (OnStopItemClickedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -138,20 +140,4 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
             ((TextView) emptyView).setText(emptyText);
         }
     }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnItemClickedListener {
-        // TODO: Update argument type and name
-        public void onStopItemClicked(int id);
-    }
-
 }
