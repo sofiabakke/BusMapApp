@@ -11,19 +11,22 @@ public class Stop {
     private String name; //The name of the stop
     private double lat; //latitude of the stops location
     private double lng; //the longitude of the stops location
+    private int favorite; //Saves if this stop is a favorite
 
     public Stop(){
         entryId = 0;
         name = null;
         lat = 0;
         lng = 0;
+        favorite = 0;
     }
 
-    public Stop(int entryId, String name, int lat, int lng){
+    public Stop(int entryId, String name, double lat, double lng){
         this.entryId = entryId;
         this.name = name;
         this.lat = lat;
         this.lng = lng;
+        favorite = 0;
     }
 
     public int getId() {
@@ -64,5 +67,13 @@ public class Stop {
 
     public void setLng(double lng) {
         this.lng = lng;
+    }
+
+    public int getFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(int favorite) {
+        this.favorite = favorite;
     }
 }

@@ -48,7 +48,7 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
      * Views.
      */
     public static StopAdapter adapter;
-    private StopsDbHelper db;
+    public static StopsDbHelper db;
     private List<Stop> list;
 
 
@@ -138,7 +138,7 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
 
 
     //The adapter class making it possible to display stops from the database
-    private class StopAdapter extends ArrayAdapter<Stop>{
+    public class StopAdapter extends ArrayAdapter<Stop>{
 
         Context context;
         List<Stop> stopList = new ArrayList<>();

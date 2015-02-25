@@ -30,4 +30,6 @@
     <string name="title_dialog">Add Stop</string>
     <string name="button_confirm_dialog">Add</string>
     <string name="button_cancel_dialog">Cancel</string>
+
+    <string name="hello_blank_fragment">Blank Fragment</string>
 </resources>

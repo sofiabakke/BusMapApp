@@ -4,15 +4,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
+
 
 import no.application.sofia.busmapapp.R;
 
@@ -35,15 +34,26 @@ public class AddStopDialogFragment extends DialogFragment {
         // Pass null as the parent view because its going in the dialog layout
         builder.setView(view);
 
+        final Activity activity = getActivity();
+
         // Add action buttons
         builder.setPositiveButton(R.string.button_confirm_dialog, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                int entryID = Integer.parseInt(((EditText)view.findViewById(R.id.editText_entryId)).getText().toString());
-                String name = ((EditText)view.findViewById(R.id.editText_name)).getText().toString();
-                double lat = Double.parseDouble(((EditText)view.findViewById(R.id.editText_lat)).getText().toString());
-                double lng = Double.parseDouble(((EditText)view.findViewById(R.id.editText_lng)).getText().toString());
-                dialogListener.onDialogPositiveClick(entryID, name, lat, lng);
+                String sEntryId = ((EditText)view.findViewById(R.id.editText_entryId)).getText().toString();
+                String sName = ((EditText)view.findViewById(R.id.editText_name)).getText().toString();
+                String sLat = ((EditText)view.findViewById(R.id.editText_lat)).getText().toString();
+                String sLng = ((EditText)view.findViewById(R.id.editText_lng)).getText().toString();
+
+                if (sEntryId.equalsIgnoreCase("") || sName.equalsIgnoreCase("") || sLat.equalsIgnoreCase("") || sLng.equalsIgnoreCase(""))
+                    Toast.makeText(activity, "Some of the fields are empty", Toast.LENGTH_LONG).show();
+                else{
+                    int entryId = Integer.parseInt(sEntryId);
+                    double lat = Double.parseDouble(sLat);
+                    double lng = Double.parseDouble(sLng);
+                    dialogListener.onDialogPositiveClick(entryId, sName, lat, lng);
+
+                }
             }
         });
         builder.setNegativeButton(R.string.button_cancel_dialog, new DialogInterface.OnClickListener() {
