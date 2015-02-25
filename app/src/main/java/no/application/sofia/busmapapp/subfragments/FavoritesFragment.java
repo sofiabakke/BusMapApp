@@ -47,7 +47,7 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
      * The Adapter which will be used to populate the ListView/GridView with
      * Views.
      */
-    private StopAdapter adapter;
+    public static StopAdapter adapter;
     private StopsDbHelper db;
     private List<Stop> list;
 
@@ -126,18 +126,14 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
      * The default content for this Fragment has a TextView that is shown when
      * the list is empty. If you would like to change the text, call this method
      * to supply the text it should use.
-//     */
-//    public void setEmptyText(CharSequence emptyText) {
-////        View emptyView = mListView.getEmptyView();
-//
-//        if (emptyView instanceof TextView) {
-//            ((TextView) emptyView).setText(emptyText);
-//        }
-//    }
-//
-//    public int getTabNumber(){
-//        return tabNumber;
-//    }
+     */
+    public void setEmptyText(CharSequence emptyText) {
+        View emptyView = stopListView.getEmptyView();
+
+        if (emptyView instanceof TextView) {
+            ((TextView) emptyView).setText(emptyText);
+        }
+    }
 
 
 
