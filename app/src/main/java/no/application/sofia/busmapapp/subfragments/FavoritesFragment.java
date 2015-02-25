@@ -1,6 +1,7 @@
 package no.application.sofia.busmapapp.subfragments;
 
 import android.app.Activity;
+import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,14 +11,19 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import no.application.sofia.busmapapp.R;
+import no.application.sofia.busmapapp.activities.MainActivity;
 import no.application.sofia.busmapapp.databasehelpers.Stop;
 import no.application.sofia.busmapapp.databasehelpers.StopsDbHelper;
+import no.application.sofia.busmapapp.fragments.MapFragment;
+import no.application.sofia.busmapapp.interfaces.OnLatLngClickedListener;
 import no.application.sofia.busmapapp.interfaces.OnStopItemClickedListener;
 
 
@@ -49,7 +55,8 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
      */
     public static StopAdapter adapter;
     public static StopsDbHelper db;
-    private List<Stop> list;
+    public static List<Stop> list;
+    private OnLatLngClickedListener latLngListener;
 
 
     public static FavoritesFragment newInstance(int tabNumber) {
@@ -106,19 +113,25 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
             throw new ClassCastException(activity.toString()
                     + " must implement OnStopItemClickedListener");
         }
+        try {
+            latLngListener = (OnLatLngClickedListener) activity;
+        } catch (ClassCastException e){
+            throw new ClassCastException(activity.toString() + " must implement OnLatLngClickedListener");
+        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        latLngListener = null;
     }
 
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (null != mListener) {
-            mListener.onStopItemClicked(list.get(position).getId());
+            mListener.onStopItemClicked(list.get(position));
         }
     }
 
@@ -143,33 +156,72 @@ public class FavoritesFragment extends Fragment implements AbsListView.OnItemCli
         Context context;
         List<Stop> stopList = new ArrayList<>();
         int layoutResourceId;
+        View[] viewElements;
 
         public StopAdapter(Context context, int layoutResourceId, List<Stop> objects){
             super(context, layoutResourceId, objects);
             this.context = context;
             this.layoutResourceId = layoutResourceId;
             this.stopList = objects;
+            viewElements = new View[3];
         }
 
         //Used to create a custom view in the list
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            TextView textView;
+            CheckBox checkBox;
+            TextView stopName;
+            final TextView latLng;
             if (convertView == null){
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inflater.inflate(R.layout.favorite_inner_view, parent, false);
-                textView = (TextView) convertView.findViewById(R.id.text_stop_name);
-                convertView.setTag(textView);
+
+                stopName = (TextView) convertView.findViewById(R.id.text_stop_name);
+                viewElements[0] = stopName;
+
+                final Activity onClickActivity = getActivity();
+                checkBox = (CheckBox)convertView.findViewById(R.id.checkbox_favorite);
+                checkBox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        CheckBox cb = (CheckBox) v;
+                        Stop changeStop = (Stop) cb.getTag();
+                        changeStop.setFavorite(cb.isChecked()?1:0);
+                        FavoritesFragment.db.updateStop(changeStop);
+
+                        if(cb.isChecked())
+                            Toast.makeText(onClickActivity, "Made " + changeStop.getName() + " a favorite", Toast.LENGTH_LONG).show();
+                        else
+                            Toast.makeText(onClickActivity, "Removed " + changeStop.getName() + " from favorite", Toast.LENGTH_LONG).show();
+                    }
+                });
+                viewElements[1] = checkBox;
+
+                latLng = (TextView)convertView.findViewById(R.id.textview_latlng);
+                latLng.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        TextView tv = (TextView) v;
+                        latLngListener.onLatLngClicked((Stop)(tv.getTag()));
+                    }
+                });
+                viewElements[2] = latLng;
             }
             else {
-                textView = (TextView)convertView.getTag();
+                stopName = (TextView)viewElements[0];
+                checkBox = (CheckBox)viewElements[1];
+                latLng = (TextView)viewElements[2];
             }
 
             Stop current = stopList.get(position);
-            textView.setText(current.getName());
-            textView.setTag(current);
+            stopName.setText(current.getName());
+            latLng.setText("Lat: " + current.getLat() + "\nLng: " + current.getLng());
+            checkBox.setChecked(current.getFavorite() == 1);
+            checkBox.setTag(current);
+            latLng.setTag(current);
             return convertView;
         }
+
 
         public List<Stop> getStopList(){
             return stopList;

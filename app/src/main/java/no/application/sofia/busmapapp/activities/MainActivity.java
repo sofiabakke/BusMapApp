@@ -17,6 +17,7 @@ import no.application.sofia.busmapapp.databasehelpers.Stop;
 import no.application.sofia.busmapapp.fragments.MapFragment;
 import no.application.sofia.busmapapp.fragments.NavigationDrawerFragment;
 import no.application.sofia.busmapapp.fragments.OracleFragment;
+import no.application.sofia.busmapapp.interfaces.OnLatLngClickedListener;
 import no.application.sofia.busmapapp.interfaces.OnStopItemClickedListener;
 import no.application.sofia.busmapapp.subfragments.FavoritesFragment;
 import no.application.sofia.busmapapp.subfragments.StopFragment;
@@ -25,7 +26,7 @@ import no.application.sofia.busmapapp.temporaryClasses.AddStopDialogFragment;
 
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnStopItemClickedListener, AddStopDialogFragment.NoticeDialogListener{
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnStopItemClickedListener, AddStopDialogFragment.NoticeDialogListener, OnLatLngClickedListener{
 
     //used to save the fragments when they are created
     private MapFragment mapFragment;
@@ -68,6 +69,7 @@ public class MainActivity extends ActionBarActivity
             case 0:
                 if(mapFragment == null)
                     mapFragment = MapFragment.newInstance(position+1);
+                mapFragment.setFromNavDrawer(true);
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, mapFragment)
                         .commit();
@@ -157,37 +159,19 @@ public class MainActivity extends ActionBarActivity
         Used for Lists in FavoritesFragment and NearByFragment for stops
          */
     @Override
-    public void onStopItemClicked(int id) {
-        onStopItemAttached(id);
+    public void onStopItemClicked(Stop stop) {
+        onStopItemAttached(stop);
         restoreActionBar(); //Changing the title in the action bar
     }
 
     //Used when an element is selected in a list.
-    public void onStopItemAttached(int number){
+    public void onStopItemAttached(Stop stop){
         FragmentManager fragmentManager = getSupportFragmentManager();
-        switch (number) {
-            case 1:
-                mTitle = "Item 1"; //These should be the name of the stop attached in the future
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, StopFragment.newInstance(number))
-                        .addToBackStack(null)
-                        .commit();
-                break;
-            case 2:
-                mTitle = "Item 2";
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, StopFragment.newInstance(number))
-                        .addToBackStack(null)
-                        .commit();
-                break;
-            case 3:
-                mTitle = "Item 3";
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, StopFragment.newInstance(number))
-                        .addToBackStack(null)
-                        .commit();
-                break;
-        }
+        mTitle = stop.getName();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, StopFragment.newInstance(stop.getId()))
+                .addToBackStack(null)
+                .commit();
     }
 
     public void showDialog(){
@@ -207,5 +191,17 @@ public class MainActivity extends ActionBarActivity
         else{
             Toast.makeText(this, "Need To open Stops view first", Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public void onLatLngClicked(Stop stop) {
+        FragmentManager fm = getSupportFragmentManager();
+
+        if (mapFragment == null)
+            mapFragment = MapFragment.newInstance(stop.getId());
+        mapFragment.setFromNavDrawer(false);
+        mapFragment.setMyLocation(stop.getLat(), stop.getLng());
+        fm.beginTransaction().replace(R.id.container, mapFragment).addToBackStack(null).commit();
+
     }
 }
