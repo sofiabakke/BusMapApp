@@ -5,6 +5,7 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,7 +15,25 @@ import android.view.ViewGroup;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.activities.MainActivity;
@@ -87,6 +106,7 @@ public class MapFragment extends Fragment {
             myLocation = new LatLng(59.9138688, 10.7522454);
         }
         busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
+	    addRouteMarkersToMap("Ruter", 21);
     }
 
     @Override
@@ -97,4 +117,74 @@ public class MapFragment extends Fragment {
         busMap = null;
         Log.d("onDetach", "In MapFragment");
     }
+
+
+	private void addRouteMarkersToMap(String operator, int lineID){
+		JSONArray buses = getBusPositionsOnLine(operator, lineID);
+		for(int i = 0; i < buses.length(); i++){
+			try {
+				JSONObject json = buses.getJSONObject(i);
+				JSONObject positionJSON = json.getJSONObject("Position");
+				LatLng pos = new LatLng(positionJSON.getDouble("Latitude"), positionJSON.getDouble("Longitude"));
+				busMap.addMarker(new MarkerOptions()
+					.title("Line: " + json.getString("LineID") + " VehicleID: " + json.getString("VehicleID"))
+					.position(pos)
+					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+					.snippet("HELLO THERE!"));
+			}catch(JSONException e){
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private JSONArray getBusPositionsOnLine(String operator, int lineID){
+		StrictMode.ThreadPolicy policy = new StrictMode.
+		ThreadPolicy.Builder().permitAll().build();
+		StrictMode.setThreadPolicy(policy);
+
+		String URL = "http://api.bausk.no/Bus/getBusPositionsOnLine/" + operator + "/" + lineID;
+		Log.d("HELLO", URL);
+
+		String input = sendJSONRequest(URL);
+		JSONArray json = new JSONArray();
+		try {
+			json = new JSONArray(input);
+			Log.i(MapFragment.class.getName(), json.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return json;
+	}
+
+	private String sendJSONRequest(String URL){
+		StringBuilder builder = new StringBuilder();
+		HttpClient client = new DefaultHttpClient();
+		HttpGet httpGet = new HttpGet(URL);
+		try {
+			HttpResponse response = client.execute(httpGet);
+			StatusLine statusLine = response.getStatusLine();
+			int statusCode = statusLine.getStatusCode();
+			if (statusCode == 200) {
+				HttpEntity entity = response.getEntity();
+				InputStream content = entity.getContent();
+				BufferedReader reader = new BufferedReader(new InputStreamReader(content));
+				String line;
+				while ((line = reader.readLine()) != null) {
+					builder.append(line);
+				}
+			} else {
+				Log.e(MapFragment.class.getName(), "Failed to download file");
+			}
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return builder.toString();
+	}
+
+	private void addMarkerForBus(JSONObject bus){
+
+	}
 }
