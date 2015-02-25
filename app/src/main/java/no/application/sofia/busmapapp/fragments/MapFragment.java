@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -43,6 +45,7 @@ public class MapFragment extends Fragment {
     private static GoogleMap busMap;
     private LatLng myLocation;
     private static final String ARG_SECTION_NUMBER = "section_number";
+	private static EditText searchField;
 
 
     public static MapFragment newInstance(int sectionNumber) {
@@ -63,7 +66,9 @@ public class MapFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
-        return view;
+
+	   searchField = (EditText) view.findViewById(R.id.search_box);
+       return view;
     }
 
     @Override
@@ -107,6 +112,7 @@ public class MapFragment extends Fragment {
         }
         busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
 	    addRouteMarkersToMap("Ruter", 21);
+
     }
 
     @Override
@@ -143,7 +149,6 @@ public class MapFragment extends Fragment {
 		StrictMode.setThreadPolicy(policy);
 
 		String URL = "http://api.bausk.no/Bus/getBusPositionsOnLine/" + operator + "/" + lineID;
-		Log.d("HELLO", URL);
 
 		String input = sendJSONRequest(URL);
 		JSONArray json = new JSONArray();
@@ -184,7 +189,4 @@ public class MapFragment extends Fragment {
 		return builder.toString();
 	}
 
-	private void addMarkerForBus(JSONObject bus){
-
-	}
 }
