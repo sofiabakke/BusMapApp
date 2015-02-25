@@ -1,23 +1,27 @@
-package no.application.sofia.busmapapp;
+package no.application.sofia.busmapapp.activities;
 
-import android.app.Activity;
 import android.net.Uri;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+
+import no.application.sofia.busmapapp.R;
+import no.application.sofia.busmapapp.fragments.MapFragment;
+import no.application.sofia.busmapapp.fragments.NavigationDrawerFragment;
+import no.application.sofia.busmapapp.fragments.OracleFragment;
+import no.application.sofia.busmapapp.interfaces.OnStopItemClickedListener;
+import no.application.sofia.busmapapp.subfragments.StopFragment;
+import no.application.sofia.busmapapp.fragments.StopsFragment;
 
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, OracleFragment.OnFragmentInteractionListener{
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnStopItemClickedListener{
 
     //used to save the fragments when they are created
     private MapFragment mapFragment;
@@ -49,6 +53,9 @@ public class MainActivity extends ActionBarActivity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
+    /*
+    Code for the navigation drawer
+     */
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
@@ -127,9 +134,52 @@ public class MainActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.container);
+        CharSequence tempMTitle = mTitle;
+        onSectionAttached(currentFragment.getArguments().getInt("section_number"));
+        if (!tempMTitle.equals(mTitle))
+            restoreActionBar(); //Need to change action bar when mTitle is changed
+    }
+
+    /*
+        Used for Lists in FavoritesFragment and NearByFragment for stops
+         */
+    @Override
+    public void onStopItemClicked(int id) {
+        onStopItemAttached(id);
+        restoreActionBar(); //Changing the title in the action bar
+    }
+
+    //Used when an element is selected in a list.
+    public void onStopItemAttached(int number){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        switch (number) {
+            case 1:
+                mTitle = "Item 1"; //These should be the name of the stop attached in the future
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, StopFragment.newInstance(number))
+                        .addToBackStack(null)
+                        .commit();
+                break;
+            case 2:
+                mTitle = "Item 2";
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, StopFragment.newInstance(number))
+                        .addToBackStack(null)
+                        .commit();
+                break;
+            case 3:
+                mTitle = "Item 3";
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, StopFragment.newInstance(number))
+                        .addToBackStack(null)
+                        .commit();
+                break;
+        }
     }
 
 }

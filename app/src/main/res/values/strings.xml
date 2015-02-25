@@ -15,10 +15,17 @@
     <string name="action_settings">Settings</string>
 
     <!--Stops Strings-->
+    <string name="title_section_favorites">Favorites</string>
     <string name="stops_button_favorites">Favorites</string>
+
+    <string name="title_section_nearby">Near By</string>
     <string name="stops_button_nearby">Near By</string>
+
 
     <!--Oracle Strings-->
     <string name="oracle_submit_button">Submit</string>
     <string name="oracle_ask_question">Ask a Question</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

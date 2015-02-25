@@ -1,28 +1,32 @@
-package no.application.sofia.busmapapp;
+package no.application.sofia.busmapapp.fragments;
 
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
+import no.application.sofia.busmapapp.R;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link //OracleFragment.OnFragmentInteractionListener} interface
+ * {@link DummyFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link OracleFragment#newInstance} factory method to
+ * Use the {@link DummyFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class OracleFragment extends Fragment {
-    private static final String ARG_SECTION_NUMBER = "section_number";
-    private int sectionNumber; //Don't know if this is necessary to save?
+public class DummyFragment extends Fragment {
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
@@ -30,19 +34,21 @@ public class OracleFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param sectionNumber the number in the navigation drawer
-     * @return A new instance of fragment OracleFragment.
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment DummyFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static OracleFragment newInstance(int sectionNumber) {
-        OracleFragment fragment = new OracleFragment();
+    public static DummyFragment newInstance(String param1, String param2) {
+        DummyFragment fragment = new DummyFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public OracleFragment() {
+    public DummyFragment() {
         // Required empty public constructor
     }
 
@@ -50,7 +56,8 @@ public class OracleFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            sectionNumber = getArguments().getInt(ARG_SECTION_NUMBER);
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -58,20 +65,7 @@ public class OracleFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_oracle, container, false);
-
-        final Button submitButton = (Button) view.findViewById(R.id.button_submit);
-        final EditText textQuestion = (EditText) view.findViewById(R.id.texfield_question);
-        final TextView answer = (TextView) view.findViewById(R.id.textView_answer);
-
-        submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                answer.setText(textQuestion.getText());
-            }
-        });
-
-        return view;
+        return inflater.inflate(R.layout.fragment_dummy, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -90,7 +84,6 @@ public class OracleFragment extends Fragment {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
-        ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER)); //Setting the Action Bar text
     }
 
     @Override

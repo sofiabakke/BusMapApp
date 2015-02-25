@@ -1,4 +1,4 @@
-package no.application.sofia.busmapapp;
+package no.application.sofia.busmapapp.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -12,9 +12,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import java.util.Locale;
+
+import no.application.sofia.busmapapp.R;
+import no.application.sofia.busmapapp.activities.MainActivity;
+import no.application.sofia.busmapapp.subfragments.FavoritesFragment;
+import no.application.sofia.busmapapp.subfragments.NearByFragment;
 
 
 /**
@@ -24,6 +30,7 @@ import java.util.Locale;
  */
 public class StopsFragment extends Fragment implements ActionBar.TabListener{
     private static final String ARG_SECTION_NUMBER = "section_number";
+    private int sectionNumber;
     private SectionsPagerAdapter sectionsPagerAdapter;
     private ViewPager viewPager;
 
@@ -46,12 +53,22 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() != null) {
+            sectionNumber = getArguments().getInt(ARG_SECTION_NUMBER);
+        }
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_stops, container, false);
-        sectionsPagerAdapter = new SectionsPagerAdapter(getActivity().getSupportFragmentManager());
+
+        sectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
 
         viewPager = (ViewPager)view.findViewById(R.id.pager);
         viewPager.setAdapter(sectionsPagerAdapter);
@@ -67,8 +84,7 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
     public void setupButton(final Button button){
         button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Log.d("Click", button.getText() + "");
+            public void onClick(View view) {
                 if (button.getTag().equals("favorite"))
                     viewPager.setCurrentItem(0);
                 else if (button.getTag().equals("nearby"))
@@ -114,14 +130,11 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position){
-//                case 0:
-//                    Fragment placeholder = new PlaceholderFragment();
-//                    return placeholder;
                 case 0:
-                    Fragment favoriteFragment = FavoriteFragment.newInstance(position+1);
+                    FavoritesFragment favoriteFragment = FavoritesFragment.newInstance(position + 1);
                     return favoriteFragment;
                 case 1:
-                    Fragment nearByFragment = NearByFragment.newInstance(position+1);
+                    NearByFragment nearByFragment = NearByFragment.newInstance(position + 1);
                     return nearByFragment;
             }
             return null;
@@ -129,7 +142,7 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
+            // Show 2 total pages.
             return 2;
         }
 
@@ -138,44 +151,12 @@ public class StopsFragment extends Fragment implements ActionBar.TabListener{
             Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
-                    return getString(R.string.title_section1).toUpperCase(l);
+                    return getString(R.string.title_section_favorites).toUpperCase(l);
                 case 1:
-                    return getString(R.string.title_section2).toUpperCase(l);
+                    return getString(R.string.title_section_nearby).toUpperCase(l);
             }
             return null;
         }
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment2 extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment2 newInstance(int sectionNumber) {
-            PlaceholderFragment2 fragment = new PlaceholderFragment2();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment2() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
-        }
-    }
 }
