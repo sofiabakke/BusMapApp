@@ -26,6 +26,9 @@
     <string name="oracle_submit_button">Submit</string>
     <string name="oracle_ask_question">Ask a Question</string>
 
+    <!--Map Strings-->
+    <string name="route_search">Positions by line ID:</string>
+
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

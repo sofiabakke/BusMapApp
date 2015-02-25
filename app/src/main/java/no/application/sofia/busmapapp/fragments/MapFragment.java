@@ -8,9 +8,11 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -67,9 +69,26 @@ public class MapFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
-	   searchField = (EditText) view.findViewById(R.id.search_box);
+	    searchField = (EditText) view.findViewById(R.id.search_box);
+	    searchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+		    @Override
+		    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+			    boolean handled = false;
+			    if (actionId == EditorInfo.IME_ACTION_SEND) {
+				    busMap.clear();
+					addRouteMarkersToMap("Ruter", Integer.parseInt(searchField.getText().toString()));
+
+				    handled = true;
+			    }
+			    return handled;
+		    }
+	    });
+
+
+
        return view;
     }
+
 
     @Override
     public void onResume() {
@@ -111,7 +130,7 @@ public class MapFragment extends Fragment {
             myLocation = new LatLng(59.9138688, 10.7522454);
         }
         busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
-	    addRouteMarkersToMap("Ruter", 21);
+	    //addRouteMarkersToMap("Ruter", 21);
 
     }
 
@@ -137,6 +156,7 @@ public class MapFragment extends Fragment {
 					.position(pos)
 					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
 					.snippet("HELLO THERE!"));
+				busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
 			}catch(JSONException e){
 				e.printStackTrace();
 			}
