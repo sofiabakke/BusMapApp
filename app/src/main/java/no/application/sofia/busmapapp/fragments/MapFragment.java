@@ -15,6 +15,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.activities.MainActivity;
@@ -24,6 +25,7 @@ public class MapFragment extends Fragment {
     private static GoogleMap busMap;
     private LatLng myLocation;
     private static final String ARG_SECTION_NUMBER = "section_number";
+    private boolean fromNavDrawer = false; //To check where the map was selected
 
 
     public static MapFragment newInstance(int sectionNumber) {
@@ -78,15 +80,22 @@ public class MapFragment extends Fragment {
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        if(lastKnownLocation != null){
-            //Try to use the last known location to set lat long
-            myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+        if (fromNavDrawer) {
+            if (lastKnownLocation != null) {
+                //Try to use the last known location to set lat long
+                myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+            } else {
+                //If the app is not able to find the last known location, the map is centered to Oslo
+                myLocation = new LatLng(59.9138688, 10.7522454);
+            }
+            fromNavDrawer = false;
+            busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
         }
         else{
-            //If the app is not able to find the last known location, the map is centered to Oslo
-            myLocation = new LatLng(59.9138688, 10.7522454);
+            //Setting the camera to pin on the location of a stop clicked from the stops fragment
+            busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 13));
+            busMap.addMarker(new MarkerOptions().position(myLocation).title("Chosen Sop Location"));
         }
-        busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
     }
 
     @Override
@@ -96,5 +105,14 @@ public class MapFragment extends Fragment {
         // null again to be able to setup the map when the fragment is reattached.
         busMap = null;
         Log.d("onDetach", "In MapFragment");
+    }
+
+    public void setFromNavDrawer(boolean fromNavDrawer){
+        this.fromNavDrawer = fromNavDrawer;
+    }
+
+    //This needs to be called before replacing a stops fragment to this one in order to zoom to the stops location
+    public void setMyLocation(double lat, double lng){
+        myLocation = new LatLng(lat, lng);
     }
 }

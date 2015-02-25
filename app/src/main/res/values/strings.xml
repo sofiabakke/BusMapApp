@@ -26,6 +26,10 @@
     <string name="oracle_submit_button">Submit</string>
     <string name="oracle_ask_question">Ask a Question</string>
 
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!--Dialog Strings-->
+    <string name="title_dialog">Add Stop</string>
+    <string name="button_confirm_dialog">Add</string>
+    <string name="button_cancel_dialog">Cancel</string>
+
+    <string name="hello_blank_fragment">Blank Fragment</string>
 </resources>

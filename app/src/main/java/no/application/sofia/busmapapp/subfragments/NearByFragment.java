@@ -75,7 +75,7 @@ public class NearByFragment extends Fragment implements AbsListView.OnItemClickL
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_nearby_item, container, false);
+        View view = inflater.inflate(R.layout.fragment_nearby_item_list, container, false);
 
         // Set the adapter
         mListView = (AbsListView) view.findViewById(android.R.id.list);
@@ -109,7 +109,7 @@ public class NearByFragment extends Fragment implements AbsListView.OnItemClickL
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onStopItemClicked(DummyContent.ITEMS.get(position).id);
+//            mListener.onStopItemClicked(mListViewt);
         }
     }
 
