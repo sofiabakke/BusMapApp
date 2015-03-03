@@ -22,6 +22,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -38,6 +40,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.activities.MainActivity;
@@ -76,8 +79,9 @@ public class MapFragment extends Fragment {
 			    boolean handled = false;
 			    if (actionId == EditorInfo.IME_ACTION_SEND) {
 				    busMap.clear();
-					addRouteMarkersToMap("Ruter", Integer.parseInt(searchField.getText().toString()));
-
+				    int lineID = Integer.parseInt(searchField.getText().toString());
+					addRouteMarkersToMap("Ruter", lineID);
+					addRouteLineToMap("Ruter", lineID);
 				    handled = true;
 			    }
 			    return handled;
@@ -143,6 +147,29 @@ public class MapFragment extends Fragment {
         Log.d("onDetach", "In MapFragment");
     }
 
+	private void addRouteLineToMap(String operator, int lineID){
+
+		JSONArray busStops = getBusStops(operator, lineID);
+		ArrayList<LatLng> stopPositions = new ArrayList<LatLng>();
+		for(int i = 0; i < busStops.length(); i++){
+			try {
+				JSONObject positionJSON = busStops.getJSONObject(i).getJSONObject("Position");
+				stopPositions.add(new LatLng(positionJSON.getDouble("Latitude"),
+					positionJSON.getDouble("Longitude")));
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+
+
+
+		// Instantiates a new Polyline object and adds points to define a rectangle
+		PolylineOptions rectOptions = new PolylineOptions()
+			.addAll(stopPositions);
+
+		// Get back the mutable Polyline
+		Polyline polyline = busMap.addPolyline(rectOptions);
+	}
 
 	private void addRouteMarkersToMap(String operator, int lineID){
 		JSONArray buses = getBusPositionsOnLine(operator, lineID);
@@ -161,6 +188,26 @@ public class MapFragment extends Fragment {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private JSONArray getBusStops(String operator, int lineID){
+		StrictMode.ThreadPolicy policy = new StrictMode.
+		ThreadPolicy.Builder().permitAll().build();
+		StrictMode.setThreadPolicy(policy);
+
+		String URL = "http://api.bausk.no/Stops/getBusStopsOnLine/" + operator + "/" + lineID;
+
+		String input = sendJSONRequest(URL);
+		JSONArray json = new JSONArray();
+		try {
+			json = new JSONArray(input);
+			Log.i(MapFragment.class.getName(), json.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return json;
+
 	}
 
 	private JSONArray getBusPositionsOnLine(String operator, int lineID){
@@ -208,5 +255,4 @@ public class MapFragment extends Fragment {
 		}
 		return builder.toString();
 	}
-
 }
