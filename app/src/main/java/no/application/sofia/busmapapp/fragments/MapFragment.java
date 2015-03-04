@@ -7,7 +7,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -15,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -25,7 +23,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.apache.http.HttpEntity;
@@ -109,6 +106,13 @@ public class MapFragment extends Fragment {
                 addRouteMarkersToMap("Ruter", lineID);
             }
         }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                addStopMarkersToMap("Ruter", lineID);
+            }
+        }).start();
     }
 
     @Override
@@ -181,7 +185,7 @@ public class MapFragment extends Fragment {
         myLocation = new LatLng(lat, lng);
     }
     private void addRouteLineToMap(String operator, int lineID){
-        JSONArray busStops = getBusStops(operator, lineID);
+        JSONArray busStops = getBusStopsOnLine(operator, lineID);
         ArrayList<LatLng> stopPositions = new ArrayList<LatLng>();
         for(int i = 0; i < busStops.length(); i++){
             try {
@@ -257,7 +261,39 @@ public class MapFragment extends Fragment {
         }
     }
 
-    private JSONArray getBusStops(String operator, int lineID){
+    private void addStopMarkersToMap(String operator, int lineID){
+        Log.d("Stops", "Adding Stops");
+        JSONArray stops = getBusStopsOnLine(operator, lineID);
+        for (int i = 0; i < stops.length(); i++){
+            try{
+                Log.d("try", "First Try");
+                final JSONObject json = stops.getJSONObject(i);
+                final JSONObject positionJSON = json.getJSONObject("Position");
+                final LatLng pos = new LatLng(positionJSON.getDouble("Latitude"), positionJSON.getDouble("Longitude"));
+
+                final Handler mainHandler = new Handler(Looper.getMainLooper());
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try{
+                            busMap.addMarker(new MarkerOptions()
+                            .title("Name: " + json.getString("Name"))
+                            .position(pos)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker_stop))
+                            .snippet("STOOOOP"));
+                            busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
+                        }catch(Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private JSONArray getBusStopsOnLine(String operator, int lineID){
         String URL = "http://api.bausk.no/Stops/getBusStopsOnLine/" + operator + "/" + lineID;
 
         String busStopJSONs = sendJSONRequest(URL);
