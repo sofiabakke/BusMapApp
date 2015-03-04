@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/search_box"
         android:layout_gravity="center_horizontal"
-        android:imeOptions="actionSend"
+        android:imeOptions="actionDone"
         android:inputType="number"
         android:hint="@string/route_search"/>
 

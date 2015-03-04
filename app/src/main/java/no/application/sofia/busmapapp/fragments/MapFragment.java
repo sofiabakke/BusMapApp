@@ -5,6 +5,8 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -13,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -76,15 +79,26 @@ public class MapFragment extends Fragment {
 	    searchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 		    @Override
 		    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-			    boolean handled = false;
-			    if (actionId == EditorInfo.IME_ACTION_SEND) {
+			    //boolean handled = false;
+			    if (actionId == EditorInfo.IME_ACTION_DONE) {
 				    busMap.clear();
-				    int lineID = Integer.parseInt(searchField.getText().toString());
-					addRouteMarkersToMap("Ruter", lineID);
-					addRouteLineToMap("Ruter", lineID);
-				    handled = true;
+
+				    final int lineID = Integer.parseInt(searchField.getText().toString());
+
+				    new Thread(new Runnable() {
+					    public void run() {
+						    addRouteLineToMap("Ruter", lineID);
+					    }
+				    }).start();
+
+				    new Thread(new Runnable() {
+					    public void run() {
+						    addRouteMarkersToMap("Ruter", lineID);
+					    }
+				    }).start();
 			    }
-			    return handled;
+			    // It must return false to remove the keyboard on submit
+			    return false;
 		    }
 	    });
 
@@ -92,7 +106,6 @@ public class MapFragment extends Fragment {
 
        return view;
     }
-
 
     @Override
     public void onResume() {
@@ -164,26 +177,45 @@ public class MapFragment extends Fragment {
 
 
 		// Instantiates a new Polyline object and adds points to define a rectangle
-		PolylineOptions rectOptions = new PolylineOptions()
+		final PolylineOptions rectOptions = new PolylineOptions()
 			.addAll(stopPositions);
 
-		// Get back the mutable Polyline
-		Polyline polyline = busMap.addPolyline(rectOptions);
+
+		final Handler mainHandler = new Handler(Looper.getMainLooper());
+		mainHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				busMap.addPolyline(rectOptions);
+			}
+		});
+
 	}
 
 	private void addRouteMarkersToMap(String operator, int lineID){
 		JSONArray buses = getBusPositionsOnLine(operator, lineID);
 		for(int i = 0; i < buses.length(); i++){
 			try {
-				JSONObject json = buses.getJSONObject(i);
-				JSONObject positionJSON = json.getJSONObject("Position");
-				LatLng pos = new LatLng(positionJSON.getDouble("Latitude"), positionJSON.getDouble("Longitude"));
-				busMap.addMarker(new MarkerOptions()
-					.title("Line: " + json.getString("LineID") + " VehicleID: " + json.getString("VehicleID"))
-					.position(pos)
-					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-					.snippet("HELLO THERE!"));
-				busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
+				final JSONObject json = buses.getJSONObject(i);
+				final JSONObject positionJSON = json.getJSONObject("Position");
+				final LatLng pos = new LatLng(positionJSON.getDouble("Latitude"), positionJSON.getDouble("Longitude"));
+				
+				final Handler mainHandler = new Handler(Looper.getMainLooper());
+				mainHandler.post(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							busMap.addMarker(new MarkerOptions()
+								.title("Line: " + json.getString("LineID") + " VehicleID: " + json.getString("VehicleID"))
+								.position(pos)
+								.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+								.snippet("HELLO THERE!"));
+							busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
+						}catch(Exception e){
+							e.printStackTrace();
+						}
+					}
+				});
+
 			}catch(JSONException e){
 				e.printStackTrace();
 			}
@@ -191,10 +223,11 @@ public class MapFragment extends Fragment {
 	}
 
 	private JSONArray getBusStops(String operator, int lineID){
+		/*
 		StrictMode.ThreadPolicy policy = new StrictMode.
 		ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy);
-
+		*/
 		String URL = "http://api.bausk.no/Stops/getBusStopsOnLine/" + operator + "/" + lineID;
 
 		String input = sendJSONRequest(URL);
@@ -211,10 +244,11 @@ public class MapFragment extends Fragment {
 	}
 
 	private JSONArray getBusPositionsOnLine(String operator, int lineID){
+		/*
 		StrictMode.ThreadPolicy policy = new StrictMode.
 		ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy);
-
+		*/
 		String URL = "http://api.bausk.no/Bus/getBusPositionsOnLine/" + operator + "/" + lineID;
 
 		String input = sendJSONRequest(URL);
