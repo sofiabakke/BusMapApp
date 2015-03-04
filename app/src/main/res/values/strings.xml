@@ -32,4 +32,7 @@
     <string name="button_cancel_dialog">Cancel</string>
 
     <string name="hello_blank_fragment">Blank Fragment</string>
+
+    <!--Map Strings-->
+    <string name="route_search">Positions by line ID:</string>
 </resources>
