@@ -79,23 +79,8 @@ public class MapFragment extends Fragment {
 	    searchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 		    @Override
 		    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-			    //boolean handled = false;
 			    if (actionId == EditorInfo.IME_ACTION_DONE) {
-				    busMap.clear();
-
-				    final int lineID = Integer.parseInt(searchField.getText().toString());
-
-				    new Thread(new Runnable() {
-					    public void run() {
-						    addRouteLineToMap("Ruter", lineID);
-					    }
-				    }).start();
-
-				    new Thread(new Runnable() {
-					    public void run() {
-						    addRouteMarkersToMap("Ruter", lineID);
-					    }
-				    }).start();
+					searchForRoute(searchField.getText().toString());
 			    }
 			    // It must return false to remove the keyboard on submit
 			    return false;
@@ -106,6 +91,24 @@ public class MapFragment extends Fragment {
 
        return view;
     }
+
+	private void searchForRoute(String route){
+		busMap.clear();
+
+		final int lineID = Integer.parseInt(route);
+
+		new Thread(new Runnable() {
+			public void run() {
+				addRouteLineToMap("Ruter", lineID);
+			}
+		}).start();
+
+		new Thread(new Runnable() {
+			public void run() {
+				addRouteMarkersToMap("Ruter", lineID);
+			}
+		}).start();
+	}
 
     @Override
     public void onResume() {
@@ -161,7 +164,6 @@ public class MapFragment extends Fragment {
     }
 
 	private void addRouteLineToMap(String operator, int lineID){
-
 		JSONArray busStops = getBusStops(operator, lineID);
 		ArrayList<LatLng> stopPositions = new ArrayList<LatLng>();
 		for(int i = 0; i < busStops.length(); i++){
@@ -180,7 +182,7 @@ public class MapFragment extends Fragment {
 		final PolylineOptions rectOptions = new PolylineOptions()
 			.addAll(stopPositions);
 
-
+		// Forces main thread to add polyline to the map, as this can not be done in a separate thread
 		final Handler mainHandler = new Handler(Looper.getMainLooper());
 		mainHandler.post(new Runnable() {
 			@Override
@@ -198,7 +200,8 @@ public class MapFragment extends Fragment {
 				final JSONObject json = buses.getJSONObject(i);
 				final JSONObject positionJSON = json.getJSONObject("Position");
 				final LatLng pos = new LatLng(positionJSON.getDouble("Latitude"), positionJSON.getDouble("Longitude"));
-				
+
+				// Forces main thread to add markers to the map, as this can not be done in a separate thread
 				final Handler mainHandler = new Handler(Looper.getMainLooper());
 				mainHandler.post(new Runnable() {
 					@Override
@@ -223,17 +226,12 @@ public class MapFragment extends Fragment {
 	}
 
 	private JSONArray getBusStops(String operator, int lineID){
-		/*
-		StrictMode.ThreadPolicy policy = new StrictMode.
-		ThreadPolicy.Builder().permitAll().build();
-		StrictMode.setThreadPolicy(policy);
-		*/
 		String URL = "http://api.bausk.no/Stops/getBusStopsOnLine/" + operator + "/" + lineID;
 
-		String input = sendJSONRequest(URL);
+		String busStopJSONs = sendJSONRequest(URL);
 		JSONArray json = new JSONArray();
 		try {
-			json = new JSONArray(input);
+			json = new JSONArray(busStopJSONs);
 			Log.i(MapFragment.class.getName(), json.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -244,17 +242,12 @@ public class MapFragment extends Fragment {
 	}
 
 	private JSONArray getBusPositionsOnLine(String operator, int lineID){
-		/*
-		StrictMode.ThreadPolicy policy = new StrictMode.
-		ThreadPolicy.Builder().permitAll().build();
-		StrictMode.setThreadPolicy(policy);
-		*/
 		String URL = "http://api.bausk.no/Bus/getBusPositionsOnLine/" + operator + "/" + lineID;
 
-		String input = sendJSONRequest(URL);
+		String busJSONs = sendJSONRequest(URL);
 		JSONArray json = new JSONArray();
 		try {
-			json = new JSONArray(input);
+			json = new JSONArray(busJSONs);
 			Log.i(MapFragment.class.getName(), json.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -263,6 +256,7 @@ public class MapFragment extends Fragment {
 		return json;
 	}
 
+	// Downloads JSON from a given URL
 	private String sendJSONRequest(String URL){
 		StringBuilder builder = new StringBuilder();
 		HttpClient client = new DefaultHttpClient();
