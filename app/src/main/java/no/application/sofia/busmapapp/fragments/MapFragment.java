@@ -7,7 +7,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -15,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -25,7 +23,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.apache.http.HttpEntity;
@@ -54,7 +51,7 @@ public class MapFragment extends Fragment {
     private LatLng myLocation;
     private static final String ARG_SECTION_NUMBER = "section_number";
     private boolean fromNavDrawer = false; //To check where the map was selected
-	private static EditText searchField;
+    private static EditText searchField;
 
 
     public static MapFragment newInstance(int sectionNumber) {
@@ -76,40 +73,47 @@ public class MapFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
-	    searchField = (EditText) view.findViewById(R.id.search_box);
-	    searchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-		    @Override
-		    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-			    if (actionId == EditorInfo.IME_ACTION_DONE) {
-					searchForRoute(searchField.getText().toString());
-			    }
-			    // It must return false to remove the keyboard on submit
-			    return false;
-		    }
-	    });
+        searchField = (EditText) view.findViewById(R.id.search_box);
+        searchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    searchForRoute(searchField.getText().toString());
+                }
+                // It must return false to remove the keyboard on submit
+                return false;
+            }
+        });
 
 
 
-       return view;
+        return view;
     }
 
-	private void searchForRoute(String route){
-		busMap.clear();
+    private void searchForRoute(String route){
+        busMap.clear();
 
-		final int lineID = Integer.parseInt(route);
+        final int lineID = Integer.parseInt(route);
 
-		new Thread(new Runnable() {
-			public void run() {
-				addRouteLineToMap("Ruter", lineID);
-			}
-		}).start();
+        new Thread(new Runnable() {
+            public void run() {
+                addRouteLineToMap("Ruter", lineID);
+            }
+        }).start();
 
-		new Thread(new Runnable() {
-			public void run() {
-				addRouteMarkersToMap("Ruter", lineID);
-			}
-		}).start();
-	}
+        new Thread(new Runnable() {
+            public void run() {
+                addRouteMarkersToMap("Ruter", lineID);
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                addStopMarkersToMap("Ruter", lineID);
+            }
+        }).start();
+    }
 
     @Override
     public void onResume() {
@@ -159,7 +163,7 @@ public class MapFragment extends Fragment {
             busMap.addMarker(new MarkerOptions().position(myLocation).title("Chosen Sop Location"));
         }
         busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
-	    //addRouteMarkersToMap("Ruter", 21);
+        //addRouteMarkersToMap("Ruter", 21);
 
     }
 
@@ -180,124 +184,171 @@ public class MapFragment extends Fragment {
     public void setMyLocation(double lat, double lng){
         myLocation = new LatLng(lat, lng);
     }
-	private void addRouteLineToMap(String operator, int lineID){
-		JSONArray busStops = getBusStops(operator, lineID);
-		ArrayList<LatLng> stopPositions = new ArrayList<LatLng>();
-		for(int i = 0; i < busStops.length(); i++){
-			try {
-				JSONObject positionJSON = busStops.getJSONObject(i).getJSONObject("Position");
-				stopPositions.add(new LatLng(positionJSON.getDouble("Latitude"),
-					positionJSON.getDouble("Longitude")));
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-		}
+    private void addRouteLineToMap(String operator, int lineID){
+        JSONArray busStops = getBusStopsOnLine(operator, lineID);
+        ArrayList<LatLng> stopPositions = new ArrayList<LatLng>();
+        for(int i = 0; i < busStops.length(); i++){
+            try {
+                JSONObject positionJSON = busStops.getJSONObject(i).getJSONObject("Position");
+                stopPositions.add(new LatLng(positionJSON.getDouble("Latitude"),
+                        positionJSON.getDouble("Longitude")));
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
 
 
 
-		// Instantiates a new Polyline object and adds points to define a rectangle
-		final PolylineOptions rectOptions = new PolylineOptions()
-			.addAll(stopPositions);
+        // Instantiates a new Polyline object and adds points to define a rectangle
+        final PolylineOptions rectOptions = new PolylineOptions()
+                .addAll(stopPositions);
 
-		// Forces main thread to add polyline to the map, as this can not be done in a separate thread
-		final Handler mainHandler = new Handler(Looper.getMainLooper());
-		mainHandler.post(new Runnable() {
-			@Override
-			public void run() {
-				busMap.addPolyline(rectOptions);
-			}
-		});
+        // Forces main thread to add polyline to the map, as this can not be done in a separate thread
+        final Handler mainHandler = new Handler(Looper.getMainLooper());
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                busMap.addPolyline(rectOptions);
+            }
+        });
 
-	}
+    }
 
-	private void addRouteMarkersToMap(String operator, int lineID){
-		JSONArray buses = getBusPositionsOnLine(operator, lineID);
-		for(int i = 0; i < buses.length(); i++){
-			try {
-				final JSONObject json = buses.getJSONObject(i);
-				final JSONObject positionJSON = json.getJSONObject("Position");
-				final LatLng pos = new LatLng(positionJSON.getDouble("Latitude"), positionJSON.getDouble("Longitude"));
+    private void addRouteMarkersToMap(String operator, int lineID){
+        JSONArray buses = getBusPositionsOnLine(operator, lineID);
+        for(int i = 0; i < buses.length(); i++){
+            try {
+                final JSONObject json = buses.getJSONObject(i);
+                final JSONObject positionJSON = json.getJSONObject("Position");
+                final LatLng pos = new LatLng(positionJSON.getDouble("Latitude"), positionJSON.getDouble("Longitude"));
 
-				// Forces main thread to add markers to the map, as this can not be done in a separate thread
-				final Handler mainHandler = new Handler(Looper.getMainLooper());
-				mainHandler.post(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							busMap.addMarker(new MarkerOptions()
-								.title("Line: " + json.getString("LineID") + " VehicleID: " + json.getString("VehicleID"))
-								.position(pos)
-								.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-								.snippet("HELLO THERE!"));
-							busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
-						}catch(Exception e){
-							e.printStackTrace();
-						}
-					}
-				});
+                // Forces main thread to add markers to the map, as this can not be done in a separate thread
+                final Handler mainHandler = new Handler(Looper.getMainLooper());
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+//                            Log.d("Transportation", json.getInt("Transportation") + "");
+                            int transportation = json.getInt("Transportation");
+                            if (transportation == 7)
+                                busMap.addMarker(new MarkerOptions()
+                                        .title("Line: " + json.getString("LineID") + " VehicleID: " + json.getString("VehicleID"))
+                                        .position(pos)
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker_tram))
+                                        .snippet("HELLO THERE!"));
+                            else if (transportation == 8)
+                                busMap.addMarker(new MarkerOptions()
+                                        .title("Line: " + json.getString("LineID") + " VehicleID: " + json.getString("VehicleID"))
+                                        .position(pos)
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker_sub))
+                                        .snippet("HELLO THERE!"));
+                            else
+                                busMap.addMarker(new MarkerOptions()
+                                        .title("Line: " + json.getString("LineID") + " VehicleID: " + json.getString("VehicleID"))
+                                        .position(pos)
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker_bus))
+                                        .snippet("HELLO THERE!"));
+                            busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
+                        }catch(Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                });
 
-			}catch(JSONException e){
-				e.printStackTrace();
-			}
-		}
-	}
+            }catch(JSONException e){
+                e.printStackTrace();
+            }
+        }
+    }
 
-	private JSONArray getBusStops(String operator, int lineID){
-		String URL = "http://api.bausk.no/Stops/getBusStopsOnLine/" + operator + "/" + lineID;
+    private void addStopMarkersToMap(String operator, int lineID){
+        Log.d("Stops", "Adding Stops");
+        JSONArray stops = getBusStopsOnLine(operator, lineID);
+        for (int i = 0; i < stops.length(); i++){
+            try{
+                Log.d("try", "First Try");
+                final JSONObject json = stops.getJSONObject(i);
+                final JSONObject positionJSON = json.getJSONObject("Position");
+                final LatLng pos = new LatLng(positionJSON.getDouble("Latitude"), positionJSON.getDouble("Longitude"));
 
-		String busStopJSONs = sendJSONRequest(URL);
-		JSONArray json = new JSONArray();
-		try {
-			json = new JSONArray(busStopJSONs);
-			Log.i(MapFragment.class.getName(), json.toString());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+                final Handler mainHandler = new Handler(Looper.getMainLooper());
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try{
+                            busMap.addMarker(new MarkerOptions()
+                            .title("Name: " + json.getString("Name"))
+                            .position(pos)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker_stop))
+                            .snippet("STOOOOP"));
+                            busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
+                        }catch(Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
 
-		return json;
+    private JSONArray getBusStopsOnLine(String operator, int lineID){
+        String URL = "http://api.bausk.no/Stops/getBusStopsOnLine/" + operator + "/" + lineID;
 
-	}
+        String busStopJSONs = sendJSONRequest(URL);
+        JSONArray json = new JSONArray();
+        try {
+            json = new JSONArray(busStopJSONs);
+            Log.i(MapFragment.class.getName(), json.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-	private JSONArray getBusPositionsOnLine(String operator, int lineID){
-		String URL = "http://api.bausk.no/Bus/getBusPositionsOnLine/" + operator + "/" + lineID;
+        return json;
 
-		String busJSONs = sendJSONRequest(URL);
-		JSONArray json = new JSONArray();
-		try {
-			json = new JSONArray(busJSONs);
-			Log.i(MapFragment.class.getName(), json.toString());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+    }
 
-		return json;
-	}
+    private JSONArray getBusPositionsOnLine(String operator, int lineID){
+        String URL = "http://api.bausk.no/Bus/getBusPositionsOnLine/" + operator + "/" + lineID;
 
-	// Downloads JSON from a given URL
-	private String sendJSONRequest(String URL){
-		StringBuilder builder = new StringBuilder();
-		HttpClient client = new DefaultHttpClient();
-		HttpGet httpGet = new HttpGet(URL);
-		try {
-			HttpResponse response = client.execute(httpGet);
-			StatusLine statusLine = response.getStatusLine();
-			int statusCode = statusLine.getStatusCode();
-			if (statusCode == 200) {
-				HttpEntity entity = response.getEntity();
-				InputStream content = entity.getContent();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(content));
-				String line;
-				while ((line = reader.readLine()) != null) {
-					builder.append(line);
-				}
-			} else {
-				Log.e(MapFragment.class.getName(), "Failed to download file");
-			}
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return builder.toString();
-	}
+        String busJSONs = sendJSONRequest(URL);
+        JSONArray json = new JSONArray();
+        try {
+            json = new JSONArray(busJSONs);
+            Log.i(MapFragment.class.getName(), json.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return json;
+    }
+
+    // Downloads JSON from a given URL
+    private String sendJSONRequest(String URL){
+        StringBuilder builder = new StringBuilder();
+        HttpClient client = new DefaultHttpClient();
+        HttpGet httpGet = new HttpGet(URL);
+        try {
+            HttpResponse response = client.execute(httpGet);
+            StatusLine statusLine = response.getStatusLine();
+            int statusCode = statusLine.getStatusCode();
+            if (statusCode == 200) {
+                HttpEntity entity = response.getEntity();
+                InputStream content = entity.getContent();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(content));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    builder.append(line);
+                }
+            } else {
+                Log.e(MapFragment.class.getName(), "Failed to download file");
+            }
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return builder.toString();
+    }
 }
