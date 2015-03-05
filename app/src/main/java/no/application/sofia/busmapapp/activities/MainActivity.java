@@ -1,6 +1,5 @@
 package no.application.sofia.busmapapp.activities;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -133,14 +132,14 @@ public class MainActivity extends ActionBarActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_settings)
             return true;
-        }
 
-        if(id == R.id.action_add_stop){
+        if(id == R.id.action_add_stop)
             showDialog();
-        }
 
+        if(id == R.id.action_add_lines)
+            mapFragment.decideIfAddLinesToLocalDb();
         return super.onOptionsItemSelected(item);
     }
 
@@ -204,4 +203,5 @@ public class MainActivity extends ActionBarActivity
         fm.beginTransaction().replace(R.id.container, mapFragment).addToBackStack(null).commit();
 
     }
+
 }

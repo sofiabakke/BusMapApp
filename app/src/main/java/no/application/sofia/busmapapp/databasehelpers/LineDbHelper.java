@@ -3,9 +3,12 @@ package no.application.sofia.busmapapp.databasehelpers;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +36,8 @@ public class LineDbHelper extends SQLiteOpenHelper {
         String sql = "CREATE TABLE IF NOT EXISTS " + TABLE_LINES + " ("
                 + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_LINEID + " INTEGER, "
-                + COLUMN_NAME + " TEXT)";
+                + COLUMN_NAME + " TEXT, "
+                + COLUMN_TRANSPORTATION + " INTEGER)";
         db.execSQL(sql);
     }
 
@@ -72,6 +76,13 @@ public class LineDbHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         return lineList;
+    }
+
+    public long dbLength(){
+        SQLiteDatabase db = getWritableDatabase();
+        long length = DatabaseUtils.queryNumEntries(db, TABLE_LINES);
+        db.close();
+        return length;
     }
 
 }
