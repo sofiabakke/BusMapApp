@@ -24,6 +24,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -41,6 +42,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.activities.MainActivity;
@@ -163,7 +165,9 @@ public class MapFragment extends Fragment {
             busMap.addMarker(new MarkerOptions().position(myLocation).title("Chosen Sop Location"));
         }
         busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
-        //addRouteMarkersToMap("Ruter", 21);
+
+	    addPolyline("clzlJelpaAdBsGp@_C`@e@XGb@Fp@lANxACjBJhALNl@@HAJjBn@xD~BtGZ~ATtDJhAEXBXJHf@zEfAzIbAzFlCdKd@xEJdCCRyB@a@CW^@n@Bj@lAlEjBdHpCnNj@vA~ErZfNxy@z@pDtB|GrB`FrB`ExBnEbChFjCnGv@dC|BvI|AjIhApIhB|RhBfPbEfYjAhMh@vJT~HAv]BtIMvBFvEDrCP~Dr@~HhAbLXxICnDkAna@MtQNjP`@|KN~IKrB]zAqA`BiAbAq@|@iAnBw@vB{@nBcA`CyAlDiAjCw@lA_Ar@i@PgBRwAFwCEkDEaCAsC^o@TwAx@w@p@{AfBgAfBo@zAuAvE_ArEoGhd@yBjNiBxHoCvJgCbHiBfD}BrCuAlAwBrAsJlDeGnCyBfAgEdByAl@qFzAmFdAeHrCiEnBoBvBi@z@_AhCmA~FqDdS}A`Io@lD]`DU`GC~CLtJFfLApHDbFIfBDbAHXNDLU@_@M[GsIDiAFQ@u@S]WLCH}A`@WA_AMqAy@cB{C{ByEcAeA_A]sDUmDOqCcAsA_@SoDeAcDgBkEeHgJgAaAoAm@eBcAaAqAeAqAuBmB}A{AqDaDiEyDYWb@kCc@jCXVvAlApBjBpD`D|AzAtBlBdApAbBlB~BhAz@l@jAtA~C~DnBtCxAtDt@tBR|ADjA@d@NDVF|Ah@fCr@tDHlBN~@Tn@^|@lApCbGl@dAf@d@`Af@z@H`@?fARBJBHJHL?Pa@JKl@KpBIFI?QAy@Ky@Si@uAaAi@a@Sc@Io@M}DEwEE}F@wD^yFb@aDzAoHfC_N~BsMpAyD~@}AvAqAhDgBfCeAjCgA|D_AvDu@~By@rFsBxDiBbEkBrGaClCeArD{BdCiCdBeC~@eBl@_BbE{MhEiQr@aEdCkQdEgYVoApAaEbA}BhAiB`C_CvBgAhCu@`@AtOCdBYrA}@lAiBpA}CvE{Kp@o@jAw@d@B^RxArBv@x@XBZKj@{AJoAOsF{@aL[cF[gKSeMBsOHsF^kMj@}P\\{MEkISwDi@cFqAuL[aFKiADqHCaa@]iKa@gH_AkKgByMiCcQ}AsO{AcPgBmLqBeJuBoHqBiF_BiD{CkGoFkLqCoIcAiEiBqJ_Nkz@kA{HQoAaAuHeCaUOiCDs@BSCk@GMEC_@aE{@mF}AmFk@mCsAqJ{@sHCyAO_@]qD{@gEy@_Co@aCYmBSkCU_IFwGRmIJkBVApAGh@_@b@sADqB[sJ");
+
 
     }
 
@@ -351,4 +355,12 @@ public class MapFragment extends Fragment {
         }
         return builder.toString();
     }
+
+	private void addPolyline(String encodedLine){
+		List<LatLng> waypoints = PolyUtil.decode(encodedLine);
+		final PolylineOptions rectOptions = new PolylineOptions()
+			.addAll(waypoints);
+
+		busMap.addPolyline(rectOptions);
+	}
 }
