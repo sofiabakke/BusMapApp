@@ -14,8 +14,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -44,6 +46,8 @@ import java.util.ArrayList;
 
 import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.activities.MainActivity;
+import no.application.sofia.busmapapp.databasehelpers.Line;
+import no.application.sofia.busmapapp.databasehelpers.LineDbHelper;
 
 
 public class MapFragment extends Fragment {
@@ -52,6 +56,7 @@ public class MapFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
     private boolean fromNavDrawer = false; //To check where the map was selected
     private static EditText searchField;
+    private LineDbHelper db;
 
 
     public static MapFragment newInstance(int sectionNumber) {
@@ -68,6 +73,11 @@ public class MapFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        db = new LineDbHelper(getActivity());
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -85,10 +95,25 @@ public class MapFragment extends Fragment {
             }
         });
 
+            return view;
+        }
 
-
-        return view;
+    //Used to decide whether or not all lines should be added to the database
+    //If the database already contains any number of records, no stops are added and a toast is shown to the user.
+    public void decideIfAddLinesToLocalDb(){
+        long databaseLength = db.dbLength();
+        if (databaseLength <= 0) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    addAllLinesToDb();
+                }
+            }).start();
+        }
+        else
+            Toast.makeText(getActivity(), "All stops are already added to the database. There are " + databaseLength + " records in the database.", Toast.LENGTH_LONG).show();
     }
+
 
     private void searchForRoute(String route){
         busMap.clear();
@@ -228,7 +253,6 @@ public class MapFragment extends Fragment {
                     @Override
                     public void run() {
                         try {
-//                            Log.d("Transportation", json.getInt("Transportation") + "");
                             int transportation = json.getInt("Transportation");
                             if (transportation == 7)
                                 busMap.addMarker(new MarkerOptions()
@@ -262,11 +286,9 @@ public class MapFragment extends Fragment {
     }
 
     private void addStopMarkersToMap(String operator, int lineID){
-        Log.d("Stops", "Adding Stops");
         JSONArray stops = getBusStopsOnLine(operator, lineID);
         for (int i = 0; i < stops.length(); i++){
             try{
-                Log.d("try", "First Try");
                 final JSONObject json = stops.getJSONObject(i);
                 final JSONObject positionJSON = json.getJSONObject("Position");
                 final LatLng pos = new LatLng(positionJSON.getDouble("Latitude"), positionJSON.getDouble("Longitude"));
@@ -277,10 +299,10 @@ public class MapFragment extends Fragment {
                     public void run() {
                         try{
                             busMap.addMarker(new MarkerOptions()
-                            .title("Name: " + json.getString("Name"))
-                            .position(pos)
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker_stop))
-                            .snippet("STOOOOP"));
+                                    .title("Name: " + json.getString("Name"))
+                                    .position(pos)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker_stop))
+                                    .snippet("STOOOOP"));
                             busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
                         }catch(Exception e){
                             e.printStackTrace();
@@ -350,5 +372,44 @@ public class MapFragment extends Fragment {
             e.printStackTrace();
         }
         return builder.toString();
+    }
+
+    private JSONArray getBusLinesByOperator(String operator){
+        String url = "http://api.bausk.no/Bus/getBusLinesByOperator/" + operator;
+        String busInfoJsons = sendJSONRequest(url);
+        JSONArray json = new JSONArray();
+        try {
+            json = new JSONArray(busInfoJsons);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return json;
+    }
+
+    //Called when the button to add all lines in the action menu is clicked
+    private void addAllLinesToDb(){
+        JSONArray busLines = getBusLinesByOperator("Ruter");
+//        Log.d("BusInfo Length", busLines.length() + ""); //731
+//        Log.d("BusInfo", busLines.toString());
+
+        for (int i = 0; i < busLines.length(); i++){
+            try {
+                JSONObject currentJson = busLines.getJSONObject(i);
+                int lineID = currentJson.getInt("LineID");
+                String name = currentJson.getString("Name");
+                int transportation = currentJson.getInt("Transportation");
+                Line line = new Line(lineID, name, transportation);
+                db.addLine(line);
+
+//                Log.d("currentJson", currentJson.toString());
+//                Log.d("lineID", lineID + "");
+//                Log.d("name", name.toString());
+//                Log.d("transportation", transportation + "");
+            }catch (Exception e){
+                e.printStackTrace();
+                break;
+            }
+        }
+        Log.i("DataBase Length", db.dbLength() + "");
     }
 }
