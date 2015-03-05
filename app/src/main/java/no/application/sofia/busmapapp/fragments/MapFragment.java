@@ -166,9 +166,9 @@ public class MapFragment extends Fragment {
         }
         busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
 
-	    addPolyline("clzlJelpaAdBsGp@_C`@e@XGb@Fp@lANxACjBJhALNl@@HAJjBn@xD~BtGZ~ATtDJhAEXBXJHf@zEfAzIbAzFlCdKd@xEJdCCRyB@a@CW^@n@Bj@lAlEjBdHpCnNj@vA~ErZfNxy@z@pDtB|GrB`FrB`ExBnEbChFjCnGv@dC|BvI|AjIhApIhB|RhBfPbEfYjAhMh@vJT~HAv]BtIMvBFvEDrCP~Dr@~HhAbLXxICnDkAna@MtQNjP`@|KN~IKrB]zAqA`BiAbAq@|@iAnBw@vB{@nBcA`CyAlDiAjCw@lA_Ar@i@PgBRwAFwCEkDEaCAsC^o@TwAx@w@p@{AfBgAfBo@zAuAvE_ArEoGhd@yBjNiBxHoCvJgCbHiBfD}BrCuAlAwBrAsJlDeGnCyBfAgEdByAl@qFzAmFdAeHrCiEnBoBvBi@z@_AhCmA~FqDdS}A`Io@lD]`DU`GC~CLtJFfLApHDbFIfBDbAHXNDLU@_@M[GsIDiAFQ@u@S]WLCH}A`@WA_AMqAy@cB{C{ByEcAeA_A]sDUmDOqCcAsA_@SoDeAcDgBkEeHgJgAaAoAm@eBcAaAqAeAqAuBmB}A{AqDaDiEyDYWb@kCc@jCXVvAlApBjBpD`D|AzAtBlBdApAbBlB~BhAz@l@jAtA~C~DnBtCxAtDt@tBR|ADjA@d@NDVF|Ah@fCr@tDHlBN~@Tn@^|@lApCbGl@dAf@d@`Af@z@H`@?fARBJBHJHL?Pa@JKl@KpBIFI?QAy@Ky@Si@uAaAi@a@Sc@Io@M}DEwEE}F@wD^yFb@aDzAoHfC_N~BsMpAyD~@}AvAqAhDgBfCeAjCgA|D_AvDu@~By@rFsBxDiBbEkBrGaClCeArD{BdCiCdBeC~@eBl@_BbE{MhEiQr@aEdCkQdEgYVoApAaEbA}BhAiB`C_CvBgAhCu@`@AtOCdBYrA}@lAiBpA}CvE{Kp@o@jAw@d@B^RxArBv@x@XBZKj@{AJoAOsF{@aL[cF[gKSeMBsOHsF^kMj@}P\\{MEkISwDi@cFqAuL[aFKiADqHCaa@]iKa@gH_AkKgByMiCcQ}AsO{AcPgBmLqBeJuBoHqBiF_BiD{CkGoFkLqCoIcAiEiBqJ_Nkz@kA{HQoAaAuHeCaUOiCDs@BSCk@GMEC_@aE{@mF}AmFk@mCsAqJ{@sHCyAO_@]qD{@gEy@_Co@aCYmBSkCU_IFwGRmIJkBVApAGh@_@b@sADqB[sJ");
+	    //addPolyline("clzlJelpaAdBsGp@_C`@e@XGb@Fp@lANxACjBJhALNl@@HAJjBn@xD~BtGZ~ATtDJhAEXBXJHf@zEfAzIbAzFlCdKd@xEJdCCRyB@a@CW^@n@Bj@lAlEjBdHpCnNj@vA~ErZfNxy@z@pDtB|GrB`FrB`ExBnEbChFjCnGv@dC|BvI|AjIhApIhB|RhBfPbEfYjAhMh@vJT~HAv]BtIMvBFvEDrCP~Dr@~HhAbLXxICnDkAna@MtQNjP`@|KN~IKrB]zAqA`BiAbAq@|@iAnBw@vB{@nBcA`CyAlDiAjCw@lA_Ar@i@PgBRwAFwCEkDEaCAsC^o@TwAx@w@p@{AfBgAfBo@zAuAvE_ArEoGhd@yBjNiBxHoCvJgCbHiBfD}BrCuAlAwBrAsJlDeGnCyBfAgEdByAl@qFzAmFdAeHrCiEnBoBvBi@z@_AhCmA~FqDdS}A`Io@lD]`DU`GC~CLtJFfLApHDbFIfBDbAHXNDLU@_@M[GsIDiAFQ@u@S]WLCH}A`@WA_AMqAy@cB{C{ByEcAeA_A]sDUmDOqCcAsA_@SoDeAcDgBkEeHgJgAaAoAm@eBcAaAqAeAqAuBmB}A{AqDaDiEyDYWb@kCc@jCXVvAlApBjBpD`D|AzAtBlBdApAbBlB~BhAz@l@jAtA~C~DnBtCxAtDt@tBR|ADjA@d@NDVF|Ah@fCr@tDHlBN~@Tn@^|@lApCbGl@dAf@d@`Af@z@H`@?fARBJBHJHL?Pa@JKl@KpBIFI?QAy@Ky@Si@uAaAi@a@Sc@Io@M}DEwEE}F@wD^yFb@aDzAoHfC_N~BsMpAyD~@}AvAqAhDgBfCeAjCgA|D_AvDu@~By@rFsBxDiBbEkBrGaClCeArD{BdCiCdBeC~@eBl@_BbE{MhEiQr@aEdCkQdEgYVoApAaEbA}BhAiB`C_CvBgAhCu@`@AtOCdBYrA}@lAiBpA}CvE{Kp@o@jAw@d@B^RxArBv@x@XBZKj@{AJoAOsF{@aL[cF[gKSeMBsOHsF^kMj@}P\\{MEkISwDi@cFqAuL[aFKiADqHCaa@]iKa@gH_AkKgByMiCcQ}AsO{AcPgBmLqBeJuBoHqBiF_BiD{CkGoFkLqCoIcAiEiBqJ_Nkz@kA{HQoAaAuHeCaUOiCDs@BSCk@GMEC_@aE{@mF}AmFk@mCsAqJ{@sHCyAO_@]qD{@gEy@_Co@aCYmBSkCU_IFwGRmIJkBVApAGh@_@b@sADqB[sJ");
 
-
+		addPolyline("ojylJygsaAg@XUFQg@COOFm@^m@v@oA|Cy@jCgArE_@jBS|AWnCCf@ClA@`D@PqyylJmaraAVpHDdBCv@Kp@Qf@QXYP]D_@@w@DOAC`CApBBTCv@IlEChD?r@C|DBlAC?i@DMIMUGk@ByACmASeA]o@WOe@?c@Z[r@w@bDy@~CSj@clzlJelpaAwAhDsAtCa@r@c@\\_@Ty@\\aDrAyAh@k~zlJazoaA}Ar@iFpBiAn@u@x@g@bAmAtCgAdC_@h@eAv@wu{lJocoaAgAj@_@XQVqA|BY^a@`@_@VO?SFMLLjARvAJ~AZtD|@lKF`AF~@?xBQFMJc@n@Yr@i@xCET_@vAMFE^?RDRLDFAHSBSCS@a@N}Af@uCLa@`@u@^a@`@KCsAm{{lJwymaAC[ES]eEcAgLUiDC_AIqA\\g@^WZYLOhAoBj@}@^Yv@a@l@]f@c@^i@fAeClAuCf@cAt@y@RMDRHh@L|ACl@Kp@Sj@eA~AQ^If@@`BDrAE`AW`AOGYKi@a@KEM?_@Vi@l@MFeARQTE^EdABbBRdCPdA`@fAdAfBj@pAZvAPfCN|D?tBKn@u@lAm@oA[]{AkAc@WWEi@Au@BQFMJc@n@Yr@i@xCET_@vAMFE^m@|@W\\s@VA?we|lJcfmaAaDNwABeAJJtAHb@ao|lJiamaARt@Zh@z@j@~@\\p@Rv@`@kf|lJizlaAnAdAtA|Ap@~@~@jBXr@h@lAIXE@g@?CBk}{lJwjlaAPE^?HYn@vAx@nBlBtFnApEt@xC^lBqo{lJ_okaA_@mBu@yCoAqEmBuF}BoFc@_AKYSl@Ox@KnAApALjA^pBt@pD^dB~@lEThAtA~F\\hCHfCD|@d@j@^d@ar{lJ_{jaA^d@Zp@Rh@l@pCh@lDtAfIn@lCt@pB\\p@pB`DNV`@mBf@{BaA}Ac@cAk@kCo@uDqAqHu@gE}i{lJqyjaAfCxNn@tDj@jCb@bA`A|Ag@zBa@lBOWqBaD]q@u@qBi@}B}i{lJebjaAh@|Bt@pB\\p@pB`DNVCHab{lJ_siaA}@|DMz@O|AElBRfI?hAGt@A\\ICgAGm@AWJm@GwAOqAUs@Y_Am@aAaAoBeD_A_B{@kAe@i@SOSc@WSWMe@Mc@O{ASg@MCECEECG@KJGZ@PBPFHF@JEJS@INC`@Bf@H`A^lAd@RNL?RNd@h@z@jAnBdD~@~A`A`A~@l@r@XpATvANl@FTRbAAwf{lJcuhaAjAJ?WEAGAICgAGm@AWJm@GwAOqAUs@Y_Am@aAaA_A_BoBeD{@kAe@i@SOSc@WSWMiA]{ASg@MCEIIODGNAd@BPFHJ?NKBK@INC`@Bf@H`A^TF{a|lJeiiaAfAj@L?HF`@^\\d@~AbCXf@`AbBz@lAd@`@t@d@b@Tn@PlBXrALTRh@CtAHNBv@V^Hj@^t@p@n@r@fA`BbBvDnAvCz@lBr@nAh@l@b@RLLTHn@T^h@@B?FBF@@AnCKzA?v@Bd@H~@P|@FP_@hBoAbEiAdEaB~Fm@hCUzASjCQ|EQrD[lB_@fBSj@w@fBk@v@u@rAcAxA[COOWs@m@oEe@qDg@aDy@kDyAmFqD_N[kAe@_Bo@_BiAmBqA{Aq@}@aAaBc@_Ac@sAe@aBi@qCa@iCQcBSeDKaCYuIUaHUyDQsAQ_Aug|lJmciaAi@qBi@eAWa@q@u@]WyBaAmAg@sAo@g@]k@g@q@s@]e@_HiK_A}AU}@Ko@Ao@N{@NsADo@?u@Gy@UaA[g@OKSO_@I_@A_@Da@JGFm@t@i@z@Ql@Ez@Dp@\\bA`@bA\\jAHVDKVo@LKLBPJRV~AvBXTx@pAh@|@fEnGtAnBj@p@`Av@FDrAp@fDtA|@f@b@Z^d@z@`B\\nAT~@Hj@RfBXpGXfLVjG\\bEh@hDdAlEt@vBv@`BXd@vCrDz@tA`@|@fAjDlE`P~AdGh@dCf@bDtBfPfDrWDnAb@bFR|CLhI@ZJQj@O~Ag@RQN[NWH[Hg@Dg@?{@Bc@e@gEIFGP]V[Tg@\\SBGAEGIQ_@{CUwAOs@Sk@aDqVoBkOk@eEo@eDeA}DwByHeCkJg@eBo@_BYi@o@cA}@cAa@e@q@aAy@yAaAgCOi@i@{BWuAa@sCYeDM_CKaC?Ood|lJcghaAc@oMDmBGaDMwA_@{CQyAAq@BK?e@GOIIODGNAd@BPFHBt@?pC?d@FbB|@fKJt@TbIVjG\\bEh@hDdAlEt@vBv@`BXd@`ApAwy{lJibgaAnBdCd@v@jA`DvBzHnElPh@dCf@bDbA`Iwc{lJsheaAxD~Y^xCDnAp@bIJ~CBjBBzBSBe@JB^J~C{{zlJmicaAK_Dv@SL|HIdG@dBLbBRfAn@fC`A~DFj@Pj@R`CRhEBxCEzCGjBSrBa@nCaArDy@bDc@~B]fDOxBGdDBhDPhDNzAfCfSf@`Ef@nDF~Ap@|LDtB?ZGbAA@CFARBPFHF@FGJ[Zc@ZYd@UB?HEBK?QCOGIG?GKIUWkAgAyIKk@Qi@i@gE}AwLc@eDm@{E[yCK_BKgEB_DJcCRcC^wC`AcEz@uCZ}AZaCLuADeAFgB@eDGyCOcD]aEk@gFq@iHGwAE_BGmDFy@?aB_xzlJojcaAGwGSgFB[Vs@bAs@\\WJDb@zD@D@h@Al@Ih@Mn@OXYb@e@R{Ab@SFMIJpEBzDKdFDdBN|ARjAbArD^bBPhAPj@J|@NjCL`E?BqszlJ{zaaA?dDG`CO~BS`BUvAc@dBcArDm@tCSpAK`ASxCItB?dDJnDFjAXjCJbAmzzlJsy_aAlCxSr@hFF~AP|C^~GDtBG|ACDCP@PDNFBFCDM@CFMZc@ZYPMRGD?BADK@OAOEKGCIFCP@P_ozlJih~`ADLFBHEBM?QCMGIG@GJABy@dAi@^AAE?C@GJAPBPDJH@FLDPyqzlJ_c~`ALl@Ff@tBpU@FJ\\D^zAjOtA`NjGpn@j@~EhA~H\\nBJn@@b@@JVvAd@dCf@dBxAvEJZZxA?H?HFx@HVLPPLF@NCLKJQHWFo@Ey@Qk@KMMEKAE?_CsGs@cCk@aCYqACEIK]oByAqJYqB}AiOuHwu@yAiOG_AGy@Dq@?IOmFQ_H?m@H_B?C@E@OAQGIGAIHAFy@dAi@^CAE?GHAFKPk@~@uAvAkA`AMNQFO@QGUMu@i@a~zlJg_~`A}B_Ba@WIKCGKl@?VDj@@x@PjETvCZxDNhBSTa@Vub{lJqh}`A{CbB{Az@o@r@m@`BGFMIEMgn{lJk_}`ADLLHFGVs@Tm@n@s@`DgBvBoA|@uA\\w@\\iAZaBTeBHyAPgCFBNAPGLOjAaAtAwAb@SXU@@BBB?@APj@Jj@Fp@rBbUL`@x@jIrEhd@`Efa@nAxJj@nDVvA@h@j@`Dl@bC|@tCj@dBZlAHh@?HMh@Qf@g@`AQJCBY\\UZ[^mAtASLWXYJSZa@XcB`AgBv@_A^UDUM}@cB}CaG{@gBKOo@wAaAmBkAqBs@aAWe@Wi@aAwCa@aBaDcRq@iDe@gAUYu@u@yD_DSOUCMBWVSp@GZm@jCg@`ASRQFQ?e@]aByB{@oA[o@c@u@}@}@y@y@_BqByAcBYi@Ss@n@uBp@qAh@m@TMTIbASdASa~{lJkx{`AiCf@UHULi@l@q@pAADuf|lJer{`Am@nB{@jCiAjD_AjCkAzCO@_CHeu|lJi{z`Ac@?w@Fk@b@uA|AaAhA[j@g@`B_ApDe@nAo@jAk@r@kf}lJedz`AeFlEkAr@eAXaAX[PaAl@_BdA_BfAUP@pAF|C?HOH_~}lJkky`A_@Rq@b@a@^WVEDOEi@b@q@d@{@j@e@P_ACo@[}@y@GEAL]vA_@jAup~lJaay`Ai@fB]p@SN]BmBWa@@o@Vg@^QPaAfAESq@yDEKKEOLE`@Dl@Jb@y`_mJuzx`AFXNDXBL@DZBPBHOT]f@_@n@a@bAOr@Cd@An@FdALnA\\bD?b@Cl@Ed@c@|AU`AWbByc_mJexw`AmB`Nig_mJyhw`Ac@jCXVvAlA`FpEtGdGl@p@V^FHur~lJsov`Ah@t@p@l@~BhAz@l@jAtA~C~D`AlAl@fAxAtDt@tBR|ADjA@d@NDVFmx}lJaku`A|Ah@jAb@z@NDnB@`A?b@}p}lJcau`ACnDIbEQjGSrDWrCa@nCw@`ECNgv}lJyws`Aa@dD]`Egx}lJqls`AWtCc@bDk@dC_AzCy@zCm@lDk@fEc@rEe@fG[bFie~lJcsq`Ac@xJSxGMxFK`HAzAFnCLhBTrB\\vBRv@Dl@Cj@GNAL@THNLADK@Ied~lJcvo`ACQIII?GNAL@THNLAVn@Zd@Tf@n@~@vAxAfBbBb@\\\\Pn@Rh@Fj@?dBKeq}lJago`A~C@bAFfAR|@\\|@l@t@x@r@lAtBtEpAnD`CrGh@rA_u|lJahn`AXd@x@v@VLl@Pn@?f@KhAg@REXFZHRgBVkAXq@b@s@oe|lJenn`Ac@r@Yp@WjASfBHPt@bBr@zAZj@Zb@|FpGr@j@t@`ATh@fAbDZlAJV?HDNHFH@HIBE?C`@PXVr@`@PHh@BHAPCz@SFDLALMFY?]GYEIIEM@MI][Ym@y@cCeA}Dk@oBeDkR}BsL]iBa|{lJ_|n`AgBuJ}@aGy@qGMqCU_FQqGCaC@SD]A]IYMKMCIBGHENA^B\\FRArBHrEX|D`AnI`B|KlCjO~B~LvCxP?d@TxAFbA@|@Cd@Er@WdCMj@EBINCb@BPDLHFHAHI@G`@PXVr@`@PHh@BZEz@SBBF@LCJQD[A]IWGGECG@C@MI][Ym@y@cCeA}Dk@oBeDkR}BsLGsA@]Li@f@s@d@i@v@y@J?LGl@g@mt{lJyco`An@a@FAZAJJF?LIDOn@ULMRE|@EXB~Bb@nA^lBv@nAt@jAx@n@j@?L}zzlJs}n`A?MVRvAlA|BrBfBxA\\Pl@Nh@HjA?lAIXNvAGd@Ix@OF`@DHIPGNEJoazlJgqn`AVm@KWASJDJHH?dFo@xDe@csylJgvn`A^MLEvAcAx@cAfA{ArAmBghylJmao`A|@wArAyBtBcDlDsF\\]PCPB`Bx@t@Xj@Xl@TOZcBlDi@fAq@pAYp@EVQhA[~BcC`HKZYH[GMM{`ylJ{tn`AoAwE}AqGKo@UZiAlBoApB{@nAs@r@_@Xq@XQFmATsE^oC\\YF?J@b@Xz@~AfEzAhErEfO~ApEnAxCJZb@aARq@VkAXcAv@eBdB}Cn@gAR]Pm@l@yCHILyATuBa`ylJkin`AVmCBmAeAyDuAqFkAcFCKCQGHIJCD@NH`@T|@`AxDjAlERt@r@jBf@tA|AbE|@rCr@rAr@zAzDzJFPcpxlJspm`AlBvFn@xB`DzKlFbRf@pBcAlBq@lAcaxlJs{k`AmDdGeI`OgDjGIBa@j@WRq@XcCTEFU@_@CeCEYD]Fg@^]p@Of@WxBWvBO`@a@t@_AtAcBhCsCdE_ApAkAfAcAp@a@Nu@VcANyABo@CeAMoBi@gAk@iAu@]WoAmAgAwA{A}B_CiDe@_Aw@kCw@}Ce@kBC[W_Am@aAc@i@SQCOIc@AUDsALaCl@{KPoD@aEMsEQeCc@eDi@mCImAg@wCQ_BMyAEwADeA@K@_@GYCIIGM?MNGX?NGVIHYLSDS?UCc@Sk@]_@WUSAKCSGKICIDINCNBd@DLHFHAHI@G`@PXVr@`@PHL@");
     }
 
     @Override
@@ -189,34 +189,40 @@ public class MapFragment extends Fragment {
         myLocation = new LatLng(lat, lng);
     }
     private void addRouteLineToMap(String operator, int lineID){
-        JSONArray busStops = getBusStopsOnLine(operator, lineID);
-        ArrayList<LatLng> stopPositions = new ArrayList<LatLng>();
-        for(int i = 0; i < busStops.length(); i++){
-            try {
-                JSONObject positionJSON = busStops.getJSONObject(i).getJSONObject("Position");
-                stopPositions.add(new LatLng(positionJSON.getDouble("Latitude"),
-                        positionJSON.getDouble("Longitude")));
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-        }
+	    final JSONObject busLine = getBusLineInfo(operator, lineID);
 
 
-
-        // Instantiates a new Polyline object and adds points to define a rectangle
-        final PolylineOptions rectOptions = new PolylineOptions()
-                .addAll(stopPositions);
 
         // Forces main thread to add polyline to the map, as this can not be done in a separate thread
         final Handler mainHandler = new Handler(Looper.getMainLooper());
         mainHandler.post(new Runnable() {
             @Override
             public void run() {
-                busMap.addPolyline(rectOptions);
+	            try {
+		            addPolyline(busLine.getString("Polyline"));
+	            }catch(Exception e){
+		            e.printStackTrace();
+	            }
             }
         });
 
+
     }
+
+	private JSONObject getBusLineInfo(String operator, int lineID){
+		String URL = "http://api.bausk.no/Stops/getBusLineInfo/" + operator + "/" + lineID;
+
+		String busStopJSONs = sendJSONRequest(URL);
+		JSONObject json = new JSONObject();
+		try {
+			json = new JSONObject(busStopJSONs);
+			Log.i(MapFragment.class.getName(), json.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return json;
+	}
 
     private void addRouteMarkersToMap(String operator, int lineID){
         JSONArray buses = getBusPositionsOnLine(operator, lineID);
