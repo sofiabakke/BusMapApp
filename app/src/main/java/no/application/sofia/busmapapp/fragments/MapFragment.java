@@ -228,7 +228,6 @@ public class MapFragment extends Fragment {
                     @Override
                     public void run() {
                         try {
-//                            Log.d("Transportation", json.getInt("Transportation") + "");
                             int transportation = json.getInt("Transportation");
                             if (transportation == 7)
                                 busMap.addMarker(new MarkerOptions()
@@ -262,11 +261,9 @@ public class MapFragment extends Fragment {
     }
 
     private void addStopMarkersToMap(String operator, int lineID){
-        Log.d("Stops", "Adding Stops");
         JSONArray stops = getBusStopsOnLine(operator, lineID);
         for (int i = 0; i < stops.length(); i++){
             try{
-                Log.d("try", "First Try");
                 final JSONObject json = stops.getJSONObject(i);
                 final JSONObject positionJSON = json.getJSONObject("Position");
                 final LatLng pos = new LatLng(positionJSON.getDouble("Latitude"), positionJSON.getDouble("Longitude"));
