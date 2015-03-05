@@ -2,8 +2,12 @@ package no.application.sofia.busmapapp.databasehelpers;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Sofia on 05.03.15.
@@ -47,6 +51,27 @@ public class LineDbHelper extends SQLiteOpenHelper {
         values.put(COLUMN_NAME, line.getName());
         values.put(COLUMN_TRANSPORTATION, line.getTransportation());
         db.insert(TABLE_LINES, null, values);
+        db.close();
+    }
+
+    public List<Line> getAllLines(){
+        List<Line> lineList = new ArrayList<>();
+        String selectQuery = "SELECT * FROM " + TABLE_LINES;
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()){
+            do {
+                Line line = new Line();
+                line.setId(cursor.getInt(0));
+                line.setLineId(cursor.getInt(1));
+                line.setName(cursor.getString(2));
+                line.setTransportation(cursor.getInt(3));
+                lineList.add(line);
+            }
+            while (cursor.moveToNext());
+        }
+        cursor.close();
+        return lineList;
     }
 
 }
