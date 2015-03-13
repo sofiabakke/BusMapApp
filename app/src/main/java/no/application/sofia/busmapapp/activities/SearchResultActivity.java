@@ -58,7 +58,6 @@ public class SearchResultActivity extends ActionBarActivity {
     private void handleIntent(Intent intent){
         if (Intent.ACTION_SEARCH.equals(intent.getAction())){
             String query = intent.getStringExtra(SearchManager.QUERY);
-            Log.d("Query", query);
             Intent newIntent = new Intent("search-event");
             newIntent.putExtra("query", query);
             LocalBroadcastManager.getInstance(this).sendBroadcast(newIntent);

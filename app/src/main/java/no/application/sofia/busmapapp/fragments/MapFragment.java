@@ -58,7 +58,7 @@ public class MapFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
     private boolean fromNavDrawer = false; //To check where the map was selected
     private LineDbHelper db;
-    private Menu mMenu;
+
 
 
     public static MapFragment newInstance(int sectionNumber) {
@@ -92,10 +92,9 @@ public class MapFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        mMenu = menu;
-        mMenu.clear();
-        inflater.inflate(R.menu.menu_map, mMenu);
-        final MenuItem searchMenuItem = mMenu.findItem(R.id.action_line_search);
+        menu.clear();
+        inflater.inflate(R.menu.menu_map, menu);
+        final MenuItem searchMenuItem = menu.findItem(R.id.action_line_search);
         //Setting the input type on the searchview
         try {
             SearchView searchView = (SearchView) searchMenuItem.getActionView();
