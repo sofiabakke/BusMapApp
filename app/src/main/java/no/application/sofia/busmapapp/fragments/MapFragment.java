@@ -1,6 +1,7 @@
 package no.application.sofia.busmapapp.fragments;
 
 import android.app.Activity;
+import android.app.SearchManager;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
@@ -8,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SearchViewCompat;
 import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -110,12 +110,16 @@ public class MapFragment extends Fragment {
         menu.clear();
         inflater.inflate(R.menu.menu_map, menu);
         MenuItem searchMenuItem = menu.findItem(R.id.action_line_search);
-        if (searchMenuItem != null){
+        //Setting the input type on the searchview
+        try {
             SearchView searchView = (SearchView) searchMenuItem.getActionView();
-            if (searchView != null){
-                searchView.setInputType(InputType.TYPE_CLASS_NUMBER);
-            }
+            SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+            searchView.setInputType(InputType.TYPE_CLASS_NUMBER);
+        }catch(Exception e){
+            e.printStackTrace();
         }
+
     }
 
     @Override
