@@ -35,4 +35,5 @@
 
     <!--Map Strings-->
     <string name="route_search">Positions by line ID:</string>
+    <string name="action_search">Search Lines</string>
 </resources>

@@ -8,14 +8,19 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SearchViewCompat;
+import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
+import android.support.v7.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -95,8 +100,32 @@ public class MapFragment extends Fragment {
             }
         });
 
-            return view;
+        setHasOptionsMenu(true);
+        return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.menu_map, menu);
+        MenuItem searchMenuItem = menu.findItem(R.id.action_line_search);
+        if (searchMenuItem != null){
+            SearchView searchView = (SearchView) searchMenuItem.getActionView();
+            if (searchView != null){
+                searchView.setInputType(InputType.TYPE_CLASS_NUMBER);
+            }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_line_search){
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     //Used to decide whether or not all lines should be added to the database
     //If the database already contains any number of records, no stops are added and a toast is shown to the user.
