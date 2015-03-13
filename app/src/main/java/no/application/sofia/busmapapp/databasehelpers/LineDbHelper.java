@@ -85,4 +85,20 @@ public class LineDbHelper extends SQLiteOpenHelper {
         return length;
     }
 
+    public Line getLineByName(String name){
+        SQLiteDatabase db = getReadableDatabase();
+        String selectQuery = "SELECT * FROM " + TABLE_LINES + " WHERE " + COLUMN_NAME + " = " + name;
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        Line line = new Line();
+        if (cursor.moveToFirst()) {
+            line.setId(cursor.getInt(0));
+            line.setLineId(cursor.getInt(1));
+            line.setName(cursor.getString(2));
+            line.setTransportation(cursor.getInt(3));
+        }
+
+        db.close();
+        return line;
+    }
+
 }

@@ -147,6 +147,11 @@ public class MapFragment extends Fragment {
             Toast.makeText(getActivity(), "All stops are already added to the database. There are " + databaseLength + " records in the database.", Toast.LENGTH_LONG).show();
     }
 
+    public void searchRouteByName(String name){
+        Line line = db.getLineByName(name);
+        String lineId = line.getLineId()+"";
+        searchForRoute(lineId);
+    }
 
     private void searchForRoute(String route){
         busMap.clear();
