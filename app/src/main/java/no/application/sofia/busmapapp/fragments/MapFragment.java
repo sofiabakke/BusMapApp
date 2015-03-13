@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -253,26 +254,44 @@ public class MapFragment extends Fragment {
                     @Override
                     public void run() {
                         try {
-                            int transportation = json.getInt("Transportation");
-                            if (transportation == 7)
-                                busMap.addMarker(new MarkerOptions()
-                                        .title("Line: " + json.getString("LineID") + " VehicleID: " + json.getString("VehicleID"))
-                                        .position(pos)
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker_tram))
-                                        .snippet("HELLO THERE!"));
-                            else if (transportation == 8)
-                                busMap.addMarker(new MarkerOptions()
-                                        .title("Line: " + json.getString("LineID") + " VehicleID: " + json.getString("VehicleID"))
-                                        .position(pos)
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker_sub))
-                                        .snippet("HELLO THERE!"));
-                            else
-                                busMap.addMarker(new MarkerOptions()
-                                        .title("Line: " + json.getString("LineID") + " VehicleID: " + json.getString("VehicleID"))
-                                        .position(pos)
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker_bus))
-                                        .snippet("HELLO THERE!"));
-                            busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
+	                        int transportation = json.getInt("Transportation");
+	                        BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.map_marker_bus);
+	                        String transName = "Bus";
+
+                            if (transportation == 0){ // Walking
+
+		                    }else if (transportation == 1){
+	                            transName = "Airport Bus";
+	                            // icon =
+		                    }else if (transportation == 2){
+	                            transName = "Bus";
+	                            // icon =
+		                    }else if (transportation == 3){
+	                            transName = "Dummy";
+	                            // icon =
+		                    }else if (transportation == 4){
+	                            transName = "Airport Train";
+	                            // icon =
+                            }else if (transportation == 5){
+	                            transName = "Boat";
+	                            // icon =
+                            }else if (transportation == 6){
+	                            transName = "Train";
+	                            // icon =
+                            }else if (transportation == 7){
+	                            transName = "Tram";
+	                            icon = BitmapDescriptorFactory.fromResource(R.drawable.map_marker_tram);
+                            }else if(transportation == 8){
+	                            transName = "Metro";
+	                            icon = BitmapDescriptorFactory.fromResource(R.drawable.map_marker_sub);
+                            }
+
+	                        busMap.addMarker(new MarkerOptions()
+		                        .title(transName + " " + json.getString("LineID") + " towards " + json.getString("DestinationName"))
+		                        .position(pos)
+		                        .icon(icon)
+		                        .snippet("Arrives at " + json.getString("NextBusStopName") + " at " + json.getString("NextBusStopArrival").substring(11,19)));
+	                        busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
                         }catch(Exception e){
                             e.printStackTrace();
                         }
