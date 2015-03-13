@@ -1,6 +1,7 @@
 package no.application.sofia.busmapapp.fragments;
 
 import android.app.Activity;
+import android.app.SearchManager;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
@@ -8,15 +9,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.Fragment;
+import android.text.InputType;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.support.v7.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -56,8 +57,8 @@ public class MapFragment extends Fragment {
     private LatLng myLocation;
     private static final String ARG_SECTION_NUMBER = "section_number";
     private boolean fromNavDrawer = false; //To check where the map was selected
-    private static EditText searchField;
     private LineDbHelper db;
+    private Menu mMenu;
 
 
     public static MapFragment newInstance(int sectionNumber) {
@@ -84,20 +85,49 @@ public class MapFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
-        searchField = (EditText) view.findViewById(R.id.search_box);
-        searchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    searchForRoute(searchField.getText().toString());
-                }
-                // It must return false to remove the keyboard on submit
-                return false;
-            }
-        });
+        setHasOptionsMenu(true);
+        return view;
+    }
 
-            return view;
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        mMenu = menu;
+        mMenu.clear();
+        inflater.inflate(R.menu.menu_map, mMenu);
+        final MenuItem searchMenuItem = mMenu.findItem(R.id.action_line_search);
+        //Setting the input type on the searchview
+        try {
+            SearchView searchView = (SearchView) searchMenuItem.getActionView();
+            SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+            searchView.setInputType(InputType.TYPE_CLASS_NUMBER);
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String s) {
+                    searchMenuItem.collapseActionView(); //collapsing the searchview after search
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String s) {
+                    return false;
+                }
+            });
+        }catch(Exception e){
+            e.printStackTrace();
         }
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_line_search){
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     //Used to decide whether or not all lines should be added to the database
     //If the database already contains any number of records, no stops are added and a toast is shown to the user.
@@ -115,6 +145,11 @@ public class MapFragment extends Fragment {
             Toast.makeText(getActivity(), "All stops are already added to the database. There are " + databaseLength + " records in the database.", Toast.LENGTH_LONG).show();
     }
 
+    public void searchRouteByName(String name){
+        Line line = db.getLineByName(name);
+        String lineId = line.getLineId()+"";
+        searchForRoute(lineId);
+    }
 
     private void searchForRoute(String route){
         busMap.clear();
@@ -408,8 +443,6 @@ public class MapFragment extends Fragment {
     //Called when the button to add all lines in the action menu is clicked
     private void addAllLinesToDb(){
         JSONArray busLines = getBusLinesByOperator("Ruter");
-//        Log.d("BusInfo Length", busLines.length() + ""); //731
-//        Log.d("BusInfo", busLines.toString());
 
         for (int i = 0; i < busLines.length(); i++){
             try {
@@ -419,11 +452,6 @@ public class MapFragment extends Fragment {
                 int transportation = currentJson.getInt("Transportation");
                 Line line = new Line(lineID, name, transportation);
                 db.addLine(line);
-
-//                Log.d("currentJson", currentJson.toString());
-//                Log.d("lineID", lineID + "");
-//                Log.d("name", name.toString());
-//                Log.d("transportation", transportation + "");
             }catch (Exception e){
                 e.printStackTrace();
                 break;

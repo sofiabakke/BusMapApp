@@ -1,7 +1,6 @@
 package no.application.sofia.busmapapp.subfragments;
 
 import android.app.Activity;
-import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,10 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import no.application.sofia.busmapapp.R;
-import no.application.sofia.busmapapp.activities.MainActivity;
 import no.application.sofia.busmapapp.databasehelpers.Stop;
 import no.application.sofia.busmapapp.databasehelpers.StopsDbHelper;
-import no.application.sofia.busmapapp.fragments.MapFragment;
 import no.application.sofia.busmapapp.interfaces.OnLatLngClickedListener;
 import no.application.sofia.busmapapp.interfaces.OnStopItemClickedListener;
 

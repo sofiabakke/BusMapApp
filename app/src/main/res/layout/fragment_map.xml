@@ -4,14 +4,6 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/search_box"
-        android:layout_gravity="center_horizontal"
-        android:imeOptions="actionDone"
-        android:inputType="number"
-        android:hint="@string/route_search"/>
 
     <fragment
         xmlns:android="http://schemas.android.com/apk/res/android"
