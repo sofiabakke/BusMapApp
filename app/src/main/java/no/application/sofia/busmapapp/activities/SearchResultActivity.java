@@ -1,10 +1,13 @@
 package no.application.sofia.busmapapp.activities;
 
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,7 +60,7 @@ public class SearchResultActivity extends ActionBarActivity {
             String query = intent.getStringExtra(SearchManager.QUERY);
             Log.d("Query", query);
             Intent newIntent = new Intent("search-event");
-            intent.putExtra("query", query);
+            newIntent.putExtra("query", query);
             LocalBroadcastManager.getInstance(this).sendBroadcast(newIntent);
         }
     }

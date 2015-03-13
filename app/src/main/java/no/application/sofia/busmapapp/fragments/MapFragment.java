@@ -11,17 +11,13 @@ import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.support.v7.widget.SearchView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -60,8 +56,8 @@ public class MapFragment extends Fragment {
     private LatLng myLocation;
     private static final String ARG_SECTION_NUMBER = "section_number";
     private boolean fromNavDrawer = false; //To check where the map was selected
-    private static EditText searchField;
     private LineDbHelper db;
+    private Menu mMenu;
 
 
     public static MapFragment newInstance(int sectionNumber) {
@@ -88,18 +84,6 @@ public class MapFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
-        searchField = (EditText) view.findViewById(R.id.search_box);
-        searchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    searchForRoute(searchField.getText().toString());
-                }
-                // It must return false to remove the keyboard on submit
-                return false;
-            }
-        });
-
         setHasOptionsMenu(true);
         return view;
     }
@@ -107,15 +91,28 @@ public class MapFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        menu.clear();
-        inflater.inflate(R.menu.menu_map, menu);
-        MenuItem searchMenuItem = menu.findItem(R.id.action_line_search);
+        mMenu = menu;
+        mMenu.clear();
+        inflater.inflate(R.menu.menu_map, mMenu);
+        final MenuItem searchMenuItem = mMenu.findItem(R.id.action_line_search);
         //Setting the input type on the searchview
         try {
             SearchView searchView = (SearchView) searchMenuItem.getActionView();
             SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
             searchView.setInputType(InputType.TYPE_CLASS_NUMBER);
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String s) {
+                    searchMenuItem.collapseActionView(); //collapsing the searchview after search
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String s) {
+                    return false;
+                }
+            });
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -427,8 +424,6 @@ public class MapFragment extends Fragment {
     //Called when the button to add all lines in the action menu is clicked
     private void addAllLinesToDb(){
         JSONArray busLines = getBusLinesByOperator("Ruter");
-//        Log.d("BusInfo Length", busLines.length() + ""); //731
-//        Log.d("BusInfo", busLines.toString());
 
         for (int i = 0; i < busLines.length(); i++){
             try {
@@ -438,11 +433,6 @@ public class MapFragment extends Fragment {
                 int transportation = currentJson.getInt("Transportation");
                 Line line = new Line(lineID, name, transportation);
                 db.addLine(line);
-
-//                Log.d("currentJson", currentJson.toString());
-//                Log.d("lineID", lineID + "");
-//                Log.d("name", name.toString());
-//                Log.d("transportation", transportation + "");
             }catch (Exception e){
                 e.printStackTrace();
                 break;
