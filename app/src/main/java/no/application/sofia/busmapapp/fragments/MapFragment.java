@@ -100,7 +100,7 @@ public class MapFragment extends Fragment {
             SearchView searchView = (SearchView) searchMenuItem.getActionView();
             SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
-            searchView.setInputType(InputType.TYPE_CLASS_NUMBER);
+//            searchView.setInputType(InputType.TYPE_CLASS_NUMBER);
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String s) {
@@ -140,14 +140,18 @@ public class MapFragment extends Fragment {
                 }
             }).start();
         }
-        else
-            Toast.makeText(getActivity(), "All stops are already added to the database. There are " + databaseLength + " records in the database.", Toast.LENGTH_LONG).show();
+//        else
+//            Toast.makeText(getActivity(), "All stops are already added to the database. There are " + databaseLength + " records in the database.", Toast.LENGTH_LONG).show();
     }
 
     public void searchRouteByName(String name){
+        try{
         Line line = db.getLineByName(name);
         String lineId = line.getLineId()+"";
         searchForRoute(lineId);
+        }catch (Exception e){
+            Toast.makeText(getActivity(), "Line " + name + " does not exist", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void searchForRoute(String route){
@@ -442,13 +446,15 @@ public class MapFragment extends Fragment {
     //Called when the button to add all lines in the action menu is clicked
     private void addAllLinesToDb(){
         JSONArray busLines = getBusLinesByOperator("Ruter");
-
+        int counter = 1;
         for (int i = 0; i < busLines.length(); i++){
             try {
                 JSONObject currentJson = busLines.getJSONObject(i);
                 int lineID = currentJson.getInt("LineID");
                 String name = currentJson.getString("Name");
                 int transportation = currentJson.getInt("Transportation");
+                Log.d("Line " + counter, "LineID: " + lineID + ", Name: " + name + ", Transportation: " + transportation);
+                counter++;
                 Line line = new Line(lineID, name, transportation);
                 db.addLine(line);
             }catch (Exception e){

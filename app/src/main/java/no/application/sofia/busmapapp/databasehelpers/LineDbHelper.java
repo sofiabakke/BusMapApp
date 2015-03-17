@@ -87,7 +87,7 @@ public class LineDbHelper extends SQLiteOpenHelper {
 
     public Line getLineByName(String name){
         SQLiteDatabase db = getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + TABLE_LINES + " WHERE " + COLUMN_NAME + " = " + name;
+        String selectQuery = "SELECT * FROM " + TABLE_LINES + " WHERE " + COLUMN_NAME + " = " + "'" + name + "'";
         Cursor cursor = db.rawQuery(selectQuery, null);
         Line line = new Line();
         if (cursor.moveToFirst()) {

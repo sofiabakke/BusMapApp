@@ -74,9 +74,16 @@ public class MainActivity extends ActionBarActivity
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("search-event"));
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(mapFragment != null)
+            mapFragment.decideIfAddLinesToLocalDb();
+    }
+
     /*
-    Code for the navigation drawer
-     */
+        Code for the navigation drawer
+         */
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
