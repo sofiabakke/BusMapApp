@@ -177,7 +177,7 @@ public class MapFragment extends Fragment {
 
     //Called when the button to add all lines in the action menu is clicked
     private void addAllLinesToDb(){
-        JSONArray busLines = BusLineMarkerHandler.getBusLinesByOperator("Ruter");
+        JSONArray busLines = busLineHandler.getBusLinesByOperator("Ruter");
 //        Log.d("BusInfo Length", busLines.length() + ""); //731
 //        Log.d("BusInfo", busLines.toString());
 

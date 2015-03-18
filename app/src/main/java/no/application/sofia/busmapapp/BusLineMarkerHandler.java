@@ -9,6 +9,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -34,13 +35,16 @@ import java.util.ArrayList;
  */
 public class BusLineMarkerHandler {
 	private static GoogleMap busMap;
+	private ArrayList<BusLineMarker> vehicleMarkers;
 
 	public BusLineMarkerHandler(GoogleMap busMap){
 		this.busMap = busMap;
+		vehicleMarkers = new ArrayList<BusLineMarker>();
 	}
 
 	public void addRouteMarkers(String route){
 		busMap.clear();
+		vehicleMarkers.clear();
 
 		final int lineID = Integer.parseInt(route);
 
@@ -52,7 +56,8 @@ public class BusLineMarkerHandler {
 
 		new Thread(new Runnable() {
 			public void run() {
-				addRouteMarkersToMap("Ruter", lineID);
+				//addRouteMarkersToMap("Ruter", lineID);
+				addVehicleMarkersToMap("Ruter", lineID);
 			}
 		}).start();
 
@@ -94,8 +99,55 @@ public class BusLineMarkerHandler {
 
 	}
 
+	private void addVehicleMarkersToMap(String operator, int lineID){
+		JSONArray buses = getBusArrivalsOnLine(operator, lineID);
+		for(int i = 0; i < buses.length(); i++){
+			try {
+				final JSONObject busJSON = buses.getJSONObject(i);
+
+				final Handler mainHandler = new Handler(Looper.getMainLooper());
+				mainHandler.post(new Runnable() {
+					@Override
+					public void run() {
+						try {
+
+							BusLineMarker marker = new BusLineMarker(
+								busMap.addMarker(new MarkerOptions()
+									.position(new LatLng(0,0))
+									.title("asdasdasd")
+									.icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker_bus))),
+								busJSON
+							);
+							marker.update();
+							vehicleMarkers.add(marker);
+						}catch(Exception e){
+							e.printStackTrace();
+						}
+					}
+				});
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+	}
+
+
+
+	private JSONArray getBusArrivalsOnLine(String operator, int lineID){
+		String url = "http://api.bausk.no/Bus/getBusArrivalsOnLine/" + operator + "/" + lineID;
+		String busArrivals = sendJSONRequest(url);
+		JSONArray json = new JSONArray();
+		try{
+			json = new JSONArray(busArrivals);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return json;
+	}
+
 	private void addRouteMarkersToMap(String operator, int lineID){
 		JSONArray buses = getBusPositionsOnLine(operator, lineID);
+
 		for(int i = 0; i < buses.length(); i++){
 			try {
 				final JSONObject json = buses.getJSONObject(i);
