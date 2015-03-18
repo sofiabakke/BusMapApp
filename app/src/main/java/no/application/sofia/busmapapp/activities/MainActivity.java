@@ -11,9 +11,11 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import no.application.sofia.busmapapp.R;
@@ -56,6 +58,11 @@ public class MainActivity extends ActionBarActivity
             mapFragment.searchRouteByName(query);
         }
     };
+
+    public void sendQuery(Editable editable){
+        String query = editable.toString();
+        mapFragment.searchRouteByName(query);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -176,6 +183,10 @@ public class MainActivity extends ActionBarActivity
         onSectionAttached(currentFragment.getArguments().getInt("section_number"));
         if (!tempMTitle.equals(mTitle))
             restoreActionBar(); //Need to change action bar when mTitle is changed
+        if(mapFragment.mKeyboard.isCustomKeyboard())
+            mapFragment.mKeyboard.hideCustomKeyboard();
+        else
+            this.finish();
     }
 
     /*

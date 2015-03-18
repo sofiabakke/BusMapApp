@@ -1,10 +1,7 @@
 package no.application.sofia.busmapapp.fragments;
 
 import android.app.Activity;
-import android.app.SearchManager;
 import android.content.Context;
-import android.inputmethodservice.Keyboard;
-import android.inputmethodservice.KeyboardView;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -17,10 +14,11 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.SearchView;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -48,7 +46,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 import no.application.sofia.busmapapp.CustomKeyboard;
@@ -65,7 +62,8 @@ public class MapFragment extends Fragment {
     private boolean fromNavDrawer = false; //To check where the map was selected
     private LineDbHelper db;
     private ArrayList<String> characters;
-    private CustomKeyboard mKeyboard;
+    public CustomKeyboard mKeyboard;
+    private InputMethodManager imm;
 
 
 
@@ -88,12 +86,13 @@ public class MapFragment extends Fragment {
         super.onCreate(savedInstanceState);
         db = new LineDbHelper(getActivity());
         characters = new ArrayList<>();
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
-
         setHasOptionsMenu(true);
         return view;
     }
@@ -107,58 +106,16 @@ public class MapFragment extends Fragment {
         final MenuItem searchMenuItem = menu.findItem(R.id.action_line_search);
         //Setting the input type on the searchview
         try {
-            SearchView searchView = (SearchView) searchMenuItem.getActionView();
-            SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
-//            searchView.setInputType();
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String s) {
-                    searchMenuItem.collapseActionView(); //collapsing the searchview after search
-                    return false;
-                }
+            final SearchView searchView = (SearchView) searchMenuItem.getActionView();
+            Class searchClass = searchView.getClass();
+            searchView.setInputType(InputType.TYPE_NULL);
+            mKeyboard.registerSearchView(searchView, searchMenuItem);
 
-                @Override
-                public boolean onQueryTextChange(String s) {
-                    return false;
-                }
-            });
-            mKeyboard.registerSearchView(searchView);
 
-//            searchView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//                @Override
-//                public void onFocusChange(View v, boolean hasFocus) {
-//                    if (hasFocus)
-//                        mKeyboard.showCustomKeyboard(v);
-//                    else
-//                        mKeyboard.hideCustomKeyboard();
-//
-//                }
-//            });
-//
-//            searchView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    mKeyboard.showCustomKeyboard(v);
-//                }
-//            });
-//
-//            searchView.setOnTouchListener(new View.OnTouchListener() {
-//                @Override
-//                public boolean onTouch(View v, MotionEvent event) {
-//                    SearchView searchViewTemp = (SearchView)v;
-//                    int inType = searchViewTemp.getInputType();         //backup the input type
-//                    searchViewTemp.setInputType(InputType.TYPE_NULL);   //Disable standard keyboard
-//                    searchViewTemp.onTouchEvent(event);
-//                    searchViewTemp.setInputType(inType);
-//                    return true;
-//                }
-//            });
-//            //Disable spell check
-//            searchView.setInputType(searchView.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         }catch(Exception e){
             e.printStackTrace();
         }
+
 
     }
 
@@ -166,7 +123,7 @@ public class MapFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_line_search){
-
+            Log.d("Item Selected", item.toString());
         }
         return super.onOptionsItemSelected(item);
     }
@@ -183,8 +140,6 @@ public class MapFragment extends Fragment {
                 }
             }).start();
         }
-//        else
-//            Toast.makeText(getActivity(), "All stops are already added to the database. There are " + databaseLength + " records in the database.", Toast.LENGTH_LONG).show();
     }
 
     /**
