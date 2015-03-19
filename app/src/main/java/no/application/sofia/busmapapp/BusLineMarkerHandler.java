@@ -40,6 +40,22 @@ public class BusLineMarkerHandler {
 	public BusLineMarkerHandler(GoogleMap busMap){
 		this.busMap = busMap;
 		vehicleMarkers = new ArrayList<BusLineMarker>();
+		new Thread(new Runnable() {
+			@Override
+			public void run()
+			{
+				while (!Thread.interrupted()) {
+					try {
+						Thread.sleep(1000);
+						for (int i = 0; i < vehicleMarkers.size(); i++) {
+							vehicleMarkers.get(i).update();
+						}
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}).start();
 	}
 
 	public void addRouteMarkers(String route){
