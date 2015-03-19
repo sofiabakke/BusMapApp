@@ -1,5 +1,9 @@
 package no.application.sofia.busmapapp;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+
 import com.google.android.gms.analytics.ExceptionParser;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -8,8 +12,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
+import java.text.FieldPosition;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Created by oknak_000 on 18.03.2015.
@@ -36,7 +43,7 @@ public class BusLineMarker {
 			JSONObject nextStop = null;
 			for (int i = 0; i < arrivals.length(); i++){
 				JSONObject currentArrival = arrivals.getJSONObject(i);
-				Date arrivalTime = new Date(currentArrival.getJSONObject("Arrival").getString("ExpectedArrivalTime"));
+				Date arrivalTime = new Date(currentArrival.getJSONObject("Arrival").getLong("ExpectedArrivalTimeMS"));
 				if(currentTime.getTime() > arrivalTime.getTime()){
 					previousStop = currentArrival;
 				}else{
@@ -47,24 +54,33 @@ public class BusLineMarker {
 
 
 
-			LatLng position = calculatePosition(previousStop, nextStop, currentTime);
-			vehicleMarker.setPosition(position);
-			String title = generateTitle(nextStop);
-			vehicleMarker.setTitle(title);
+			final LatLng position = calculatePosition(previousStop, nextStop, currentTime);
+			final String title = generateTitle(vehicleInfoJSON);
+			final String snippet = generateSnippet(nextStop);
+
+			final Handler mainHandler = new Handler(Looper.getMainLooper());
+			mainHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					vehicleMarker.setPosition(position);
+					vehicleMarker.setTitle(title);
+					vehicleMarker.setSnippet(snippet);
+				}
+			});
+
 		}catch (Exception e){
 			e.printStackTrace();
 		}
 	}
 
-	private String generateTitle(JSONObject nextStop){
-		return "Hello";
-	}
 
 	private LatLng calculatePosition(JSONObject prev, JSONObject next, Date currentTime){
 		if(next == null){
+			Log.d("BusLineMarker", "Next=null");
 			return null;
 		}
 		if(prev == null){
+			Log.d("BusLineMarker", "Prev=null");
 			try {
 				double lat = next.getJSONObject("BusStopPosition").getDouble("Latitude");
 				double lng = next.getJSONObject("BusStopPosition").getDouble("Longitude");
@@ -82,14 +98,21 @@ public class BusLineMarker {
 			double lng1 = next.getJSONObject("BusStopPosition").getDouble("Longitude");
 
 
-			Date arrivalNext = new Date(next.getJSONObject("Arrival").getString("ExpectedArrivalTime"));
-			Date arrivalPrev = new Date(prev.getJSONObject("Arrival").getString("ExpectedArrivalTime"));
-			float multiplicator = (arrivalNext.getTime() - currentTime.getTime()) / (arrivalNext.getTime() - arrivalPrev.getTime());
+			//Date arrivalNext = new Date(next.getJSONObject("Arrival").getLong("ExpectedArrivalTimeMS"));
+			long arrivalNext = next.getJSONObject("Arrival").getLong("ExpectedArrivalTimeMS");
+			long arrivalPrev = prev.getJSONObject("Arrival").getLong("ExpectedArrivalTimeMS");
+			//Date arrivalPrev = new Date(prev.getJSONObject("Arrival").getLong("ExpectedArrivalTimeMS"));
+
+			long t0 = arrivalNext - currentTime.getTime();
+			long t1 = arrivalNext - arrivalPrev;
+			float multiplicator = (float)t0 / (float)t1;
+
 			if(multiplicator > 1 ){
 				multiplicator = 1;
 			}else if(multiplicator < 0){
 				multiplicator = 0;
 			}
+
 
 			double latX = multiplicator * (lat1 - lat0) + lat0;
 			double lngX = multiplicator * (lng1 - lng0) + lng0;
@@ -100,4 +123,33 @@ public class BusLineMarker {
 		}
 		return null;
 	}
+
+	private String generateTitle(JSONObject busJSON){
+		// Add transportation types
+		String type = "Bus ";
+		try {
+			String lineName = busJSON.getJSONArray("Arrivals").getJSONObject(0).getString("LineName");
+			String destination = busJSON.getJSONArray("Arrivals").getJSONObject(0).getString("DestinationName");
+			return type + lineName + " towards " + destination;
+		}catch(Exception e){
+			e.printStackTrace();
+			return "Bus";
+		}
+	}
+
+	private String generateSnippet(JSONObject nextStop){
+		try{
+			String nextStopName = nextStop.getString("BusStopName");
+			long arrivalTimeLong = nextStop.getJSONObject("Arrival").getLong("ExpectedArrivalTimeMS");
+			Date arrivalTime = new Date(arrivalTimeLong);
+			SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+			format.setTimeZone(TimeZone.getDefault());
+			String time = format.format(arrivalTime);
+			return ("Arrives at " + nextStopName + " at " + time);
+		}catch (Exception e){
+			e.printStackTrace();
+			return "";
+		}
+	}
+
 }
