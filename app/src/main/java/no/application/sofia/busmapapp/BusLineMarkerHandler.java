@@ -36,26 +36,39 @@ import java.util.ArrayList;
 public class BusLineMarkerHandler {
 	private static GoogleMap busMap;
 	private ArrayList<BusLineMarker> vehicleMarkers;
+	private Thread updateThread;
+	private boolean running = true;
 
 	public BusLineMarkerHandler(GoogleMap busMap){
 		this.busMap = busMap;
 		vehicleMarkers = new ArrayList<BusLineMarker>();
-		new Thread(new Runnable() {
+		updateThread = new Thread(new Runnable() {
 			@Override
 			public void run()
 			{
-				while (!Thread.interrupted()) {
+				while (!updateThread.isInterrupted()) {
 					try {
-						Thread.sleep(1000);
-						for (int i = 0; i < vehicleMarkers.size(); i++) {
-							vehicleMarkers.get(i).update();
+						Thread.sleep(500);
+						if(running) {
+							Log.d("BusLineMarker", "Update");
+							for (int i = 0; i < vehicleMarkers.size(); i++) {
+								vehicleMarkers.get(i).update();
+							}
 						}
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+
 					}
 				}
 			}
-		}).start();
+		});
+		updateThread.start();
+	}
+
+	public void stopUpdateThread(){
+		running = false;
+	}
+	public void restartUpdateThread(){
+		running = true;
 	}
 
 	public void addRouteMarkers(String route){

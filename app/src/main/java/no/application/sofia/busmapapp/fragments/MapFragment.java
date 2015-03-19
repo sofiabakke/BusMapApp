@@ -106,8 +106,14 @@ public class MapFragment extends Fragment {
     public void onResume() {
         super.onResume();
         setUpMapIfNeeded();
-
+		busLineHandler.restartUpdateThread();
     }
+
+	@Override
+	public void onPause(){
+		super.onPause();
+		busLineHandler.stopUpdateThread();
+	}
 
     @Override
     public void onAttach(Activity activity) {
@@ -160,6 +166,7 @@ public class MapFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+	    busLineHandler.stopUpdateThread();
         //When the some other fragment in the navigation drawer is selected, the busMap is set to
         // null again to be able to setup the map when the fragment is reattached.
         busMap = null;
