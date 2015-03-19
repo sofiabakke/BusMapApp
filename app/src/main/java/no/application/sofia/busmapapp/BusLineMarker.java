@@ -43,8 +43,8 @@ public class BusLineMarker {
 			JSONObject nextStop = null;
 			for (int i = 0; i < arrivals.length(); i++){
 				JSONObject currentArrival = arrivals.getJSONObject(i);
-				Date arrivalTime = new Date(currentArrival.getJSONObject("Arrival").getLong("ExpectedArrivalTimeMS"));
-				if(currentTime.getTime() > arrivalTime.getTime()){
+				long arrivalTime = currentArrival.getJSONObject("Arrival").getLong("ExpectedArrivalTimeMS");
+				if(currentTime.getTime() > arrivalTime){
 					previousStop = currentArrival;
 				}else{
 					nextStop = currentArrival;
@@ -114,8 +114,8 @@ public class BusLineMarker {
 			}
 
 
-			double latX = multiplicator * (lat1 - lat0) + lat0;
-			double lngX = multiplicator * (lng1 - lng0) + lng0;
+			double latX = multiplicator * (lat0 - lat1) + lat1;
+			double lngX = multiplicator * (lng0 - lng1) + lng1;
 
 			return new LatLng(latX, lngX);
 		}catch(Exception e){
