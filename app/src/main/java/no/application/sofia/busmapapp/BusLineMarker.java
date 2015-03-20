@@ -47,12 +47,6 @@ public class BusLineMarker {
 		}
 	}
 
-	public void APIupdate(){
-		for(int i=0; i < arrivals.size(); i++){
-			arrivals.get(i).updateFromAPIIfNeeded();
-		}
-	}
-
 	public void update(){
 		Date currentTime = new Date();
 
@@ -67,6 +61,8 @@ public class BusLineMarker {
 				break;
 			}
 		}
+
+
 
 		final LatLng position = calculatePosition(prevStop, nextStop, currentTime);
 
@@ -87,6 +83,8 @@ public class BusLineMarker {
 				}
 			}
 		});
+
+		//nextStop.updateFromAPIIfNeeded();
 	}
 
 	private LatLng calculatePosition(BusArrival prev, BusArrival next, Date currentTime){
