@@ -19,7 +19,6 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -44,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import no.application.sofia.busmapapp.CustomKeyboard;
+import no.application.sofia.busmapapp.MarkerInfoAdapter;
 import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.activities.MainActivity;
 import no.application.sofia.busmapapp.databasehelpers.Line;
@@ -58,6 +58,7 @@ public class MapFragment extends Fragment {
     private LineDbHelper db;
     private ArrayList<String> characters; //Used to find which letters are used in line names
     public CustomKeyboard mKeyboard; //The custom keyboard for doing search
+    private Bundle savedInstanceState; //Need it when using a custom snippet for the map
 
 
 
@@ -80,6 +81,7 @@ public class MapFragment extends Fragment {
         super.onCreate(savedInstanceState);
         db = new LineDbHelper(getActivity());
         characters = new ArrayList<>();
+        this.savedInstanceState = savedInstanceState;
     }
 
 
@@ -175,7 +177,6 @@ public class MapFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER)); //Setting the Action Bar text
-//        setUpMapIfNeeded();
     }
 
     private void setUpMapIfNeeded(){
@@ -183,6 +184,7 @@ public class MapFragment extends Fragment {
         if (busMap == null) {
             // Try to obtain the map from the SupportMapFragment.
             busMap = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.busmap)).getMap();
+            busMap.setInfoWindowAdapter(new MarkerInfoAdapter(getLayoutInflater(savedInstanceState)));
             // Check if we were successful in obtaining the map.
             if (busMap != null) {
                 setUpMap();
@@ -305,13 +307,13 @@ public class MapFragment extends Fragment {
                             }
 
                             busMap.addMarker(new MarkerOptions()
-                                    .title(transName + " " + json.getString("LineID") + " towards " + json.getString("DestinationName"))
+                                    .title(transName + " " + json.getString("LineID") + " " + json.getString("DestinationName"))
                                     .anchor(0.5f, 0.5f)
                                     .position(pos)
                                     .icon(BitmapDescriptorFactory.fromBitmap(icon))
                                     .rotation((float) bearing)
-                                    .snippet("Arrives at " + json.getString("NextBusStopName")
-                                            + " at " + json.getString("NextBusStopArrival").substring(11, 19)));
+                                    .snippet("Next Stop: " + json.getString("NextBusStopName")
+                                            + "\nArrival at Next Stop: " + json.getString("NextBusStopArrival").substring(11, 19)));
                             busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
                         }catch(Exception e){
                             e.printStackTrace();
