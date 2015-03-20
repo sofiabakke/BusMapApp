@@ -6,7 +6,9 @@ import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Created by oknak_000 on 20.03.2015.
@@ -14,12 +16,22 @@ import java.util.Date;
 public class BusArrival {
 	private Date arrivalTime;
 	private LatLng position;
-	private int transportation = 5;
+	private String type = "";
 	private String busStopName = "";
 	private String destName = "";
 	private String lineName = "";
+	private String[] transportationTypes= {
+		"Walk ",
+		"Airport Bus ",
+		"Bus ",
+		"Dummy ",
+		"Airport Train ",
+		"Boat ",
+		"Train ",
+		"Tram ",
+		"Metro "};
 
-	public BusArrival(JSONObject arrival){
+	public BusArrival(JSONObject arrival, int typeID){
 		try {
 			lineName = arrival.getString("LineName");
 			destName = arrival.getString("DestinationName");
@@ -32,13 +44,15 @@ public class BusArrival {
 
 			Log.d("BusArrival", arrival.toString());
 
-			transportation = 1; // DO SOMETHING ELSE
+			this.type = transportationTypes[typeID];
+
 
 
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 	}
+
 
 	public long getTime(){
 		return arrivalTime.getTime();
@@ -49,14 +63,19 @@ public class BusArrival {
 	}
 
 	public String generateTitle(){
-		return "";
+		String type = "Bus ";
+
+		return type + lineName + " towards " + destName;
 	}
 
 	public String generateSnippet(){
-		return "";
+		SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+		format.setTimeZone(TimeZone.getDefault());
+		String time = format.format(arrivalTime);
+		return ("Arrives at " + busStopName + " at " + time);
 	}
 
-	public void updateIfNeeded(){
+	public void updateFromAPIIfNeeded(){
 		// Update from api!
 	}
 

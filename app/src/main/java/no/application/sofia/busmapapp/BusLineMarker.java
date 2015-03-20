@@ -40,7 +40,7 @@ public class BusLineMarker {
 
 			JSONArray arrivalsJSON = vehicleInfoJSON.getJSONArray("Arrivals");
 			for (int i = 0; i < arrivalsJSON.length(); i++) {
-				arrivals.add(new BusArrival(arrivalsJSON.getJSONObject(i)));
+				arrivals.add(new BusArrival(arrivalsJSON.getJSONObject(i), transportation));
 			}
 		}catch(Exception e){
 			e.printStackTrace();
@@ -50,7 +50,7 @@ public class BusLineMarker {
 	public void APIupdate(){
 		//Add periodic update?
 		for(int i=0; i < arrivals.size(); i++){
-			arrivals.get(i).updateIfNeeded();
+			arrivals.get(i).updateFromAPIIfNeeded();
 		}
 	}
 
@@ -70,24 +70,25 @@ public class BusLineMarker {
 		}
 
 
+
+
 		final LatLng position = calculatePosition(prevStop, nextStop, currentTime);
+
+		final String title = nextStop.generateTitle();
+		final String snippet = nextStop.generateSnippet();
 
 		final Handler mainHandler = new Handler(Looper.getMainLooper());
 		mainHandler.post(new Runnable() {
 			@Override
 			public void run() {
-
-
 				if(position == null) {
 					vehicleMarker.setVisible(false);
-					//Log.d("Position", "FAILED");
 				}else {
 					vehicleMarker.setPosition(position);
-					//Log.d("Position", position.latitude + ", " + position.longitude);
+					vehicleMarker.setTitle(title);
+					vehicleMarker.setSnippet(snippet);
 					vehicleMarker.setVisible(true);
 				}
-//				vehicleMarker.setTitle(title);
-//				vehicleMarker.setSnippet(snippet);
 			}
 		});
 
