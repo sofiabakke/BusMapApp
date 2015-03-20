@@ -7,13 +7,14 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,15 +23,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,6 +38,7 @@ import java.util.Collections;
 
 import no.application.sofia.busmapapp.CustomKeyboard;
 import no.application.sofia.busmapapp.MarkerInfoAdapter;
+import no.application.sofia.busmapapp.BusLineMarkerHandler;
 import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.activities.MainActivity;
 import no.application.sofia.busmapapp.databasehelpers.Line;
@@ -60,6 +55,7 @@ public class MapFragment extends Fragment {
     public CustomKeyboard mKeyboard; //The custom keyboard for doing search
     private Bundle savedInstanceState; //Need it when using a custom snippet for the map
 
+	private BusLineMarkerHandler busLineHandler;
 
 
     public static MapFragment newInstance(int sectionNumber) {
@@ -142,36 +138,21 @@ public class MapFragment extends Fragment {
     }
 
     private void searchForRoute(String route){
-        busMap.clear();
-
-        final int lineID = Integer.parseInt(route);
-
-        new Thread(new Runnable() {
-            public void run() {
-                addRouteLineToMap("Ruter", lineID);
-            }
-        }).start();
-
-        new Thread(new Runnable() {
-            public void run() {
-                addRouteMarkersToMap("Ruter", lineID);
-            }
-        }).start();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                addStopMarkersToMap("Ruter", lineID);
-            }
-        }).start();
+	    busLineHandler.addRouteMarkers(route);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         setUpMapIfNeeded();
-
+		busLineHandler.restartUpdateThread();
     }
+
+	@Override
+	public void onPause(){
+		super.onPause();
+		busLineHandler.stopUpdateThread();
+	}
 
     @Override
     public void onAttach(Activity activity) {
@@ -194,6 +175,9 @@ public class MapFragment extends Fragment {
 
     private void setUpMap(){
         busMap.setMyLocationEnabled(true);
+
+	    busLineHandler = new BusLineMarkerHandler(busMap);
+
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
@@ -221,6 +205,7 @@ public class MapFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+	    busLineHandler.stopUpdateThread();
         //When the some other fragment in the navigation drawer is selected, the busMap is set to
         // null again to be able to setup the map when the fragment is reattached.
         busMap = null;
@@ -234,206 +219,10 @@ public class MapFragment extends Fragment {
     public void setMyLocation(double lat, double lng){
         myLocation = new LatLng(lat, lng);
     }
-    private void addRouteLineToMap(String operator, int lineID){
-        JSONArray busStops = getBusStopsOnLine(operator, lineID);
-        ArrayList<LatLng> stopPositions = new ArrayList<LatLng>();
-        for(int i = 0; i < busStops.length(); i++){
-            try {
-                JSONObject positionJSON = busStops.getJSONObject(i).getJSONObject("Position");
-                stopPositions.add(new LatLng(positionJSON.getDouble("Latitude"),
-                        positionJSON.getDouble("Longitude")));
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-        }
-
-
-
-        // Instantiates a new Polyline object and adds points to define a rectangle
-        final PolylineOptions rectOptions = new PolylineOptions()
-                .addAll(stopPositions);
-
-        // Forces main thread to add polyline to the map, as this can not be done in a separate thread
-        final Handler mainHandler = new Handler(Looper.getMainLooper());
-        mainHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                busMap.addPolyline(rectOptions);
-            }
-        });
-
-    }
-
-    private void addRouteMarkersToMap(String operator, int lineID){
-        JSONArray buses = getBusPositionsOnLine(operator, lineID);
-        for(int i = 0; i < buses.length(); i++){
-            try {
-                final JSONObject json = buses.getJSONObject(i);
-                final JSONObject positionJSON = json.getJSONObject("Position");
-                final LatLng pos = new LatLng(positionJSON.getDouble("Latitude"), positionJSON.getDouble("Longitude"));
-
-                // Forces main thread to add markers to the map, as this can not be done in a separate thread
-                final Handler mainHandler = new Handler(Looper.getMainLooper());
-                mainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            int transportation = json.getInt("Transportation");
-                            double bearing = json.getDouble("Bearing");
-                            if (bearing == -1)
-                                bearing = 0.0;
-                            Log.d("bearing ", bearing + "");
-                            Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.arrow_blue_half_and_half);
-                            String transName = "Bus";
-
-                            if (transportation == 0){ // Walking
-                                transName = "Walking";
-                            }else if (transportation == 1){
-                                transName = "Airport Bus";
-                            }else if (transportation == 2){
-                                transName = "Bus";
-                            }else if (transportation == 3){
-                                transName = "Dummy";
-                            }else if (transportation == 4){
-                                transName = "Airport Train";
-                            }else if (transportation == 5){
-                                transName = "Boat";
-                            }else if (transportation == 6){
-                                transName = "Train";
-                            }else if (transportation == 7){
-                                transName = "Tram";
-                            }else if(transportation == 8){
-                                transName = "Metro";
-                            }
-
-                            busMap.addMarker(new MarkerOptions()
-                                    .title(transName + " " + json.getString("LineID") + " " + json.getString("DestinationName"))
-                                    .anchor(0.5f, 0.5f)
-                                    .position(pos)
-                                    .icon(BitmapDescriptorFactory.fromBitmap(icon))
-                                    .rotation((float) bearing)
-                                    .snippet("Next Stop: " + json.getString("NextBusStopName")
-                                            + "\nArrival at Next Stop: " + json.getString("NextBusStopArrival").substring(11, 19)));
-                            busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
-                        }catch(Exception e){
-                            e.printStackTrace();
-                        }
-                    }
-                });
-
-            }catch(JSONException e){
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void addStopMarkersToMap(String operator, int lineID){
-        JSONArray stops = getBusStopsOnLine(operator, lineID);
-        for (int i = 0; i < stops.length(); i++){
-            try{
-                final JSONObject json = stops.getJSONObject(i);
-                final JSONObject positionJSON = json.getJSONObject("Position");
-                final LatLng pos = new LatLng(positionJSON.getDouble("Latitude"), positionJSON.getDouble("Longitude"));
-
-                final Handler mainHandler = new Handler(Looper.getMainLooper());
-                mainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        try{
-                            Bitmap stopIcon = BitmapFactory.decodeResource(getResources(), R.drawable.map_marker_stop_red);
-                            busMap.addMarker(new MarkerOptions()
-                                    .title("Name: " + json.getString("Name"))
-                                    .position(pos)
-                                    .icon(BitmapDescriptorFactory.fromBitmap(stopIcon))
-                                    .snippet("STOOOOP")
-                                    .anchor(0.5f, 0.5f)
-                                    .flat(true));
-                            busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
-                        }catch(Exception e){
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private JSONArray getBusStopsOnLine(String operator, int lineID){
-        String URL = "http://api.bausk.no/Stops/getBusStopsOnLine/" + operator + "/" + lineID;
-
-        String busStopJSONs = sendJSONRequest(URL);
-        JSONArray json = new JSONArray();
-        try {
-            json = new JSONArray(busStopJSONs);
-            Log.i(MapFragment.class.getName(), json.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return json;
-
-    }
-
-    private JSONArray getBusPositionsOnLine(String operator, int lineID){
-        String URL = "http://api.bausk.no/Bus/getBusPositionsOnLine/" + operator + "/" + lineID;
-
-        String busJSONs = sendJSONRequest(URL);
-        JSONArray json = new JSONArray();
-        try {
-            json = new JSONArray(busJSONs);
-            Log.i(MapFragment.class.getName(), json.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return json;
-    }
-
-    // Downloads JSON from a given URL
-    private String sendJSONRequest(String URL){
-        StringBuilder builder = new StringBuilder();
-        HttpClient client = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet(URL);
-        try {
-            HttpResponse response = client.execute(httpGet);
-            StatusLine statusLine = response.getStatusLine();
-            int statusCode = statusLine.getStatusCode();
-            if (statusCode == 200) {
-                HttpEntity entity = response.getEntity();
-                InputStream content = entity.getContent();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(content));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    builder.append(line);
-                }
-            } else {
-                Log.e(MapFragment.class.getName(), "Failed to download file");
-            }
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return builder.toString();
-    }
-
-    private JSONArray getBusLinesByOperator(String operator){
-        String url = "http://api.bausk.no/Bus/getBusLinesByOperator/" + operator;
-        String busInfoJsons = sendJSONRequest(url);
-        JSONArray json = new JSONArray();
-        try {
-            json = new JSONArray(busInfoJsons);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return json;
-    }
 
     //Called when the button to add all lines in the action menu is clicked
     private void addAllLinesToDb(){
-        JSONArray busLines = getBusLinesByOperator("Ruter");
+        JSONArray busLines = busLineHandler.getBusLinesByOperator("Ruter");
         int counter = 1;
         for (int i = 0; i < busLines.length(); i++){
             try {
