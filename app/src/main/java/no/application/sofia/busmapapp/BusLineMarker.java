@@ -85,7 +85,7 @@ public class BusLineMarker {
 			}
 		});
 
-		//nextStop.updateFromAPIIfNeeded();
+		nextStop.updateFromAPIIfNeeded();
 	}
 
 	private LatLng calculatePosition(BusArrival prev, BusArrival next, Date currentTime){
