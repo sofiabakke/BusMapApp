@@ -55,10 +55,11 @@ public class BusLineMarker {
 		for(int i = 0; i < arrivals.size(); i++){
 			BusArrival currentArrival = arrivals.get(i);
 			if(currentTime.getTime() > currentArrival.getTime()){
-				prevStop = currentArrival;
+				if(prevStop == null || prevStop.getTime() < currentArrival.getTime())
+					prevStop = currentArrival;
 			}else{
-				nextStop = currentArrival;
-				break;
+				if(nextStop == null || nextStop.getTime() > currentArrival.getTime())
+					nextStop = currentArrival;
 			}
 		}
 
