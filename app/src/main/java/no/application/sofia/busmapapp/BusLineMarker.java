@@ -29,7 +29,7 @@ public class BusLineMarker {
 	private int vehicleID = 0;
 	private int transportation = 0;
 
-	public BusLineMarker(Marker marker, JSONObject vehicleInfoJSON){
+	public BusLineMarker(Marker marker, JSONObject vehicleInfoJSON) {
 		vehicleMarker = marker;
 		arrivals = new ArrayList<BusArrival>();
 		this.vehicleInfoJSON = vehicleInfoJSON;
@@ -42,30 +42,31 @@ public class BusLineMarker {
 			for (int i = 0; i < arrivalsJSON.length(); i++) {
 				arrivals.add(new BusArrival(arrivalsJSON.getJSONObject(i), transportation));
 			}
-		}catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void update(){
+	public void update() {
 		Date currentTime = new Date();
 
 		BusArrival prevStop = null;
 		BusArrival nextStop = null;
-		for(int i = 0; i < arrivals.size(); i++){
+		for (int i = 0; i < arrivals.size(); i++) {
 			BusArrival currentArrival = arrivals.get(i);
-			if(currentTime.getTime() > currentArrival.getTime()){
-				if(prevStop == null || prevStop.getTime() < currentArrival.getTime())
+			if (currentTime.getTime() > currentArrival.getTime()) {
+				if (prevStop == null || prevStop.getTime() < currentArrival.getTime())
 					prevStop = currentArrival;
-			}else{
-				if(nextStop == null || nextStop.getTime() > currentArrival.getTime())
+			} else {
+				if (nextStop == null || nextStop.getTime() > currentArrival.getTime())
 					nextStop = currentArrival;
 			}
 		}
 
 
-
 		final LatLng position = calculatePosition(prevStop, nextStop, currentTime);
+
+		final float bearing = caluclateBearing(prevStop, nextStop);
 
 		final String title = nextStop.generateTitle();
 		final String snippet = nextStop.generateSnippet();
@@ -74,13 +75,14 @@ public class BusLineMarker {
 		mainHandler.post(new Runnable() {
 			@Override
 			public void run() {
-				if(position == null) {
+				if (position == null) {
 					vehicleMarker.setVisible(false);
-				}else {
+				} else {
 					vehicleMarker.setPosition(position);
 					vehicleMarker.setTitle(title);
 					vehicleMarker.setSnippet(snippet);
 					vehicleMarker.setVisible(true);
+					vehicleMarker.setRotation(bearing);
 				}
 			}
 		});
@@ -88,17 +90,17 @@ public class BusLineMarker {
 		nextStop.updateFromAPIIfNeeded();
 	}
 
-	private LatLng calculatePosition(BusArrival prev, BusArrival next, Date currentTime){
-		if(next == null){
+	private LatLng calculatePosition(BusArrival prev, BusArrival next, Date currentTime) {
+		if (next == null) {
 			return null;
 		}
-		if(prev == null){
+		if (prev == null) {
 			return next.getPosition();
 		}
 
 		long m1 = next.getTime() - currentTime.getTime();
 		long m2 = next.getTime() - prev.getTime();
-		double multiplicator = (double)m1 / (double)m2;
+		double multiplicator = (double) m1 / (double) m2;
 
 		multiplicator = multiplicator < 0 ? 0 : multiplicator > 1 ? 1 : multiplicator;
 
@@ -106,6 +108,33 @@ public class BusLineMarker {
 		double lng = multiplicator * (prev.getPosition().longitude - next.getPosition().longitude) + next.getPosition().longitude;
 
 		return new LatLng(lat, lng);
+	}
 
+	private float caluclateBearing(BusArrival prev, BusArrival next) {
+		if (next == null || prev == null)
+			return 0;
+
+		LatLng pos1 = prev.getPosition();
+		LatLng pos2 = next.getPosition();
+
+		double φ1 = toRadians(pos1.latitude);
+		double φ2 = toRadians(pos2.latitude);
+		double λ1 = toRadians(pos1.longitude);
+		double λ2 = toRadians(pos2.longitude);
+
+		double y = Math.sin(λ2 - λ1) * Math.cos(φ2);
+		double x = Math.cos(φ1) * Math.sin(φ2) -
+			Math.sin(φ1) * Math.cos(φ2) * Math.cos(λ2 - λ1);
+
+		double deg = toDegrees(Math.atan2(y, x));
+		return (float)(deg) % 360f;
+	}
+
+	private double toRadians(double deg) {
+		return (deg * (Math.PI / 180.0));
+	}
+
+	private double toDegrees(double rad) {
+		return rad * (180.0 / Math.PI);
 	}
 }
