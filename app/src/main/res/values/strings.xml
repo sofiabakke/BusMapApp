@@ -35,7 +35,7 @@
 
     <!--Map Strings-->
     <string name="route_search">Positions by line ID:</string>
-    <string name="search_hint">Search Lines by Name</string>
+    <string name="search_hint">Search Lines by Number</string>
     <string name="title_activity_search_result">SearchResultActivity</string>
 
     <string name="hello_world">Hello world!</string>

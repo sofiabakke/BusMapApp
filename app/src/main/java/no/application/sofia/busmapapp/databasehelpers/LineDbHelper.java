@@ -7,6 +7,7 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
+import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -96,8 +97,9 @@ public class LineDbHelper extends SQLiteOpenHelper {
             line.setName(cursor.getString(2));
             line.setTransportation(cursor.getInt(3));
         }
-
         db.close();
+
+        Log.d("Line", line.getId() + ", " + line.getLineId() + ", " + line.getName() + ", " + line.getTransportation());
         return line;
     }
 
