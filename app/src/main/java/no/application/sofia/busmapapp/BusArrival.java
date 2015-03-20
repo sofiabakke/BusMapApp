@@ -16,6 +16,7 @@ import java.util.TimeZone;
 public class BusArrival {
 	private Date arrivalTime;
 	private LatLng position;
+	private String vehicleID;
 	private String type = "";
 	private String busStopName = "";
 	private String destName = "";
@@ -38,6 +39,7 @@ public class BusArrival {
 			busStopName = arrival.getString("BusStopName");
 			arrivalTime = new Date(arrival.getJSONObject("Arrival").getLong("ExpectedArrivalTimeMS"));
 
+			vehicleID = arrival.getString("VehicleID");
 			double lat = arrival.getJSONObject("BusStopPosition").getDouble("Latitude");
 			double lng = arrival.getJSONObject("BusStopPosition").getDouble("Longitude");
 			position = new LatLng(lat, lng);
