@@ -50,15 +50,6 @@ public class MainActivity extends ActionBarActivity
     private CharSequence mTitle;
 
 
-    //Will handle the searchrequest
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String query = intent.getStringExtra("query");
-            mapFragment.searchRouteByName(query);
-        }
-    };
-
     public void sendQuery(Editable editable){
         String query = editable.toString();
         mapFragment.searchRouteByName(query);
@@ -77,8 +68,6 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
-
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("search-event"));
     }
 
     @Override
@@ -177,7 +166,6 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.container);
         CharSequence tempMTitle = mTitle;
         onSectionAttached(currentFragment.getArguments().getInt("section_number"));
@@ -186,7 +174,7 @@ public class MainActivity extends ActionBarActivity
         if(mapFragment.mKeyboard.isCustomKeyboard())
             mapFragment.mKeyboard.hideCustomKeyboard();
         else
-            this.finish();
+            super.onBackPressed();
     }
 
     /*

@@ -15,9 +15,5 @@
         android:title="Add All Lines"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/action_line_search"
-        android:title="@string/search_hint"
-        android:icon="@android:drawable/ic_menu_search"
-        app:showAsAction="ifRoom|collapseActionView"
-        app:actionViewClass="android.support.v7.widget.SearchView"/>
+
 </menu>

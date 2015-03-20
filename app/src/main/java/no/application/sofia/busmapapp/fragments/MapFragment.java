@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.support.v7.widget.SearchView;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -61,9 +62,8 @@ public class MapFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
     private boolean fromNavDrawer = false; //To check where the map was selected
     private LineDbHelper db;
-    private ArrayList<String> characters;
-    public CustomKeyboard mKeyboard;
-    private InputMethodManager imm;
+    private ArrayList<String> characters; //Used to find which letters are used in line names
+    public CustomKeyboard mKeyboard; //The custom keyboard for doing search
 
 
 
@@ -86,47 +86,19 @@ public class MapFragment extends Fragment {
         super.onCreate(savedInstanceState);
         db = new LineDbHelper(getActivity());
         characters = new ArrayList<>();
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
-        setHasOptionsMenu(true);
+
+        mKeyboard = new CustomKeyboard(getActivity(), view, R.id.keyboardview, R.xml.line_search_keyboard);
+
+        mKeyboard.registerEditText(R.id.edittext_search_lines);
         return view;
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        menu.clear();
-        inflater.inflate(R.menu.menu_map, menu);
-        mKeyboard = new CustomKeyboard(getActivity(), R.id.keyboardview, R.xml.line_search_keyboard);
-        final MenuItem searchMenuItem = menu.findItem(R.id.action_line_search);
-        //Setting the input type on the searchview
-        try {
-            final SearchView searchView = (SearchView) searchMenuItem.getActionView();
-            Class searchClass = searchView.getClass();
-            searchView.setInputType(InputType.TYPE_NULL);
-            mKeyboard.registerSearchView(searchView, searchMenuItem);
-
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_line_search){
-            Log.d("Item Selected", item.toString());
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     //Used to decide whether or not all lines should be added to the database
     //If the database already contains any number of records, no stops are added and a toast is shown to the user.

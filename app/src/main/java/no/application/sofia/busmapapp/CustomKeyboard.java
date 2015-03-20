@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethod;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.support.v7.widget.SearchView;
@@ -29,8 +30,7 @@ public class CustomKeyboard {
 
     private KeyboardView mKeyboardView;
     private MainActivity mHostActivity;
-    private MenuItem searchMenuItem;
-
+    private View mCurrentView;
 
     private OnKeyboardActionListener mOnKeyBoardActionListener = new OnKeyboardActionListener() {
 
@@ -47,26 +47,36 @@ public class CustomKeyboard {
         @Override
         public void onKey(int primaryCode, int[] keyCodes) {
             View focusCurrent = mHostActivity.getWindow().getCurrentFocus();
-            Class currentClass = focusCurrent.getClass();
-            Class searchClass = mHostActivity.findViewById(R.id.action_line_search).getClass();
-            SearchView.SearchAutoComplete sac = new SearchView.SearchAutoComplete(mHostActivity);
-            Class searchAutoCompleteClass = sac.getClass();
 
-            if( focusCurrent.getClass() == SearchView.SearchAutoComplete.class) {
-
-                SearchAutoComplete searchView = (SearchAutoComplete) focusCurrent;
-                Editable editable = searchView.getText();
-                int start = searchView.getSelectionStart();
+            if( focusCurrent.getClass() == EditText.class) {
+                EditText editText = (EditText) focusCurrent;
+                Editable editable = editText.getText();
+                int start = editText.getSelectionStart();
                 if (primaryCode == Keyboard.KEYCODE_DONE) {
-                    Log.d("onKey", "Done Clicked");
                     mHostActivity.sendQuery(editable);
                     hideCustomKeyboard();
-                } else if (primaryCode == Keyboard.KEYCODE_DELETE) {
-                    Log.d("onKey", "Deleting input");
+                }
+                else if (primaryCode == Keyboard.KEYCODE_DELETE) {
                     if (editable != null && start > 0)
                         editable.delete(start - 1, start);
-                } else {
-                    Log.d("onKey", "Letter or number clicked");
+                }
+                else {
+                    editable.insert(start, Character.toString((char) primaryCode));
+                }
+            }
+            else if (focusCurrent.getClass() == TintEditText.class){
+                TintEditText editText = (TintEditText) focusCurrent;
+                Editable editable = editText.getText();
+                int start = editText.getSelectionStart();
+                if (primaryCode == Keyboard.KEYCODE_DONE) {
+                    mHostActivity.sendQuery(editable);
+                    hideCustomKeyboard();
+                }
+                else if (primaryCode == Keyboard.KEYCODE_DELETE) {
+                    if (editable != null && start > 0)
+                        editable.delete(start - 1, start);
+                }
+                else {
                     editable.insert(start, Character.toString((char) primaryCode));
                 }
             }
@@ -98,12 +108,14 @@ public class CustomKeyboard {
         }
     };
 
-    public CustomKeyboard(Activity host, int viewId, int layoutId){
-        mHostActivity = (MainActivity)host;
-        mKeyboardView = (KeyboardView)mHostActivity.findViewById(viewId);
-        mKeyboardView.setKeyboard(new Keyboard(mHostActivity, layoutId));
-        mKeyboardView.setPreviewEnabled(false);
-        mKeyboardView.setOnKeyboardActionListener(mOnKeyBoardActionListener);
+    public CustomKeyboard(Activity host, View currentView, int viewId, int layoutId){
+        mHostActivity = (MainActivity)host; //Saving the host activity for later
+        mCurrentView = currentView;
+        mKeyboardView = (KeyboardView)mCurrentView.findViewById(viewId); //Getting the reference for the KeyboardView
+        mKeyboardView.setKeyboard(new Keyboard(mHostActivity, layoutId)); //Setting the Keyboard for the KeyboardView
+        mKeyboardView.setPreviewEnabled(false); //making the keyboard not show the preview balloons every time a key is tapped
+        mKeyboardView.setOnKeyboardActionListener(mOnKeyBoardActionListener); //Setting the listener. Defined above this constructor
+        mHostActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN); //Hide the standard keyboard initially
     }
 
     public boolean isCustomKeyboard(){
@@ -113,84 +125,48 @@ public class CustomKeyboard {
     public void showCustomKeyboard(View view){
         mKeyboardView.setVisibility(View.VISIBLE);
         mKeyboardView.setEnabled(true);
-
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) mHostActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     public void hideCustomKeyboard(){
         mKeyboardView.setVisibility(View.GONE);
         mKeyboardView.setEnabled(false);
-        if (searchMenuItem != null)
-            searchMenuItem.collapseActionView();
     }
 
-    public void registerSearchView(SearchView searchView, final MenuItem searchMenuItem){
-        SearchManager searchManager = (SearchManager) mHostActivity.getSystemService(Context.SEARCH_SERVICE);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(mHostActivity.getComponentName()));
-        this.searchMenuItem = searchMenuItem;
-        final IBinder searchToken = searchView.getWindowToken();
-        searchView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                Log.d("Focus change", "hasFocus: " + hasFocus);
-
-                if (hasFocus) {
-                    showCustomKeyboard(v);
-                    InputMethodManager imm = (InputMethodManager) mHostActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(searchToken, 0);
-                }
-                else
-                    hideCustomKeyboard();
-
+    public void registerEditText(int resid) {
+        // Find the EditText 'resid'
+        EditText edittext= (EditText)mCurrentView.findViewById(resid);
+        // Make the custom keyboard appear
+        edittext.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            // NOTE By setting the on focus listener, we can show the custom keyboard when the edit box gets focus, but also hide it when the edit box loses focus
+            @Override public void onFocusChange(View v, boolean hasFocus) {
+                if( hasFocus ) showCustomKeyboard(v); else hideCustomKeyboard();
             }
         });
-
-        //The searchview clicked after the it is already in focus
-        searchView.setOnClickListener(onClickListener);
-
-        //When the searc view is clicked before it is focused
-        searchView.setOnSearchClickListener(onClickListener);
-
-        searchView.setOnTouchListener(new View.OnTouchListener() {
+        edittext.setOnClickListener(new View.OnClickListener() {
+            // NOTE By setting the on click listener, we can show the custom keyboard again, by tapping on an edit box that already had focus (but that had the keyboard hidden).
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Log.d("Touch", event.getAction() + "");
-                SearchView searchViewTemp = (SearchView) v;
-                int inType = searchViewTemp.getInputType();         //backup the input type
-                searchViewTemp.setInputType(InputType.TYPE_NULL);   //Disable standard keyboard
-                searchViewTemp.onTouchEvent(event);
-                searchViewTemp.setInputType(inType);
-                InputMethodManager imm = (InputMethodManager) mHostActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(searchToken, 0);
-                return true;
+            public void onClick(View v) {
+                showCustomKeyboard(v);
             }
         });
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                searchMenuItem.collapseActionView(); //collapsing the searchview after search
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                return false;
+        // Disable standard keyboard hard way
+        // NOTE There is also an easy way: 'edittext.setInputType(InputType.TYPE_NULL)' (but you will not have a cursor, and no 'edittext.setCursorVisible(true)' doesn't work )
+        edittext.setOnTouchListener(new View.OnTouchListener() {
+            @Override public boolean onTouch(View v, MotionEvent event) {
+                EditText edittext = (EditText) v;
+                int inType = edittext.getInputType();       // Backup the input type
+                edittext.setInputType(InputType.TYPE_NULL); // Disable standard keyboard
+                edittext.onTouchEvent(event);               // Call native handler
+                edittext.setInputType(inType);              // Restore input type
+                return true; // Consume touch event
             }
         });
-
-        //Disable spell check
-        searchView.setInputType(searchView.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-
+        // Disable spell check (hex strings look like words to Android)
+        edittext.setInputType(edittext.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
     }
-
-    private View.OnClickListener onClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Log.d("onClick", v.getLayerType()+"");
-            showCustomKeyboard(v);
-            InputMethodManager imm = (InputMethodManager) mHostActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-        }
-    };
 
 }
