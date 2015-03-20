@@ -85,8 +85,6 @@ public class BusArrival {
 	}
 
 	public String generateTitle(){
-		String type = "Bus ";
-
 		return type + lineName + " towards " + destName;
 	}
 
