@@ -1,16 +1,13 @@
 package no.application.sofia.busmapapp.activities;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
@@ -48,14 +45,10 @@ public class MainActivity extends ActionBarActivity
     private CharSequence mTitle;
 
 
-    //Will handle the searchrequest
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String query = intent.getStringExtra("query");
-            mapFragment.searchRouteByName(query);
-        }
-    };
+    public void sendQuery(Editable editable){
+        String query = editable.toString();
+        mapFragment.searchRouteByName(query);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,13 +63,18 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+    }
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("search-event"));
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(mapFragment != null)
+            mapFragment.decideIfAddLinesToLocalDb();
     }
 
     /*
-    Code for the navigation drawer
-     */
+        Code for the navigation drawer
+         */
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
@@ -163,12 +161,15 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.container);
         CharSequence tempMTitle = mTitle;
         onSectionAttached(currentFragment.getArguments().getInt("section_number"));
         if (!tempMTitle.equals(mTitle))
             restoreActionBar(); //Need to change action bar when mTitle is changed
+        if(mapFragment.mKeyboard.isCustomKeyboard())
+            mapFragment.mKeyboard.hideCustomKeyboard();
+        else
+            super.onBackPressed();
     }
 
     /*

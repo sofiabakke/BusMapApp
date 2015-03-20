@@ -1,7 +1,6 @@
 package no.application.sofia.busmapapp.fragments;
 
 import android.app.Activity;
-import android.app.SearchManager;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
@@ -9,15 +8,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.Fragment;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v7.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -45,7 +39,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 
+import no.application.sofia.busmapapp.CustomKeyboard;
 import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.activities.MainActivity;
 import no.application.sofia.busmapapp.databasehelpers.Line;
@@ -58,6 +54,8 @@ public class MapFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
     private boolean fromNavDrawer = false; //To check where the map was selected
     private LineDbHelper db;
+    private ArrayList<String> characters; //Used to find which letters are used in line names
+    public CustomKeyboard mKeyboard; //The custom keyboard for doing search
 
 
 
@@ -79,54 +77,20 @@ public class MapFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         db = new LineDbHelper(getActivity());
+        characters = new ArrayList<>();
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
-        setHasOptionsMenu(true);
+        mKeyboard = new CustomKeyboard(getActivity(), view, R.id.keyboardview, R.xml.line_search_keyboard);
+
+        mKeyboard.registerEditText(R.id.edittext_search_lines);
         return view;
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        menu.clear();
-        inflater.inflate(R.menu.menu_map, menu);
-        final MenuItem searchMenuItem = menu.findItem(R.id.action_line_search);
-        //Setting the input type on the searchview
-        try {
-            SearchView searchView = (SearchView) searchMenuItem.getActionView();
-            SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
-            searchView.setInputType(InputType.TYPE_CLASS_NUMBER);
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String s) {
-                    searchMenuItem.collapseActionView(); //collapsing the searchview after search
-                    return false;
-                }
-
-                @Override
-                public boolean onQueryTextChange(String s) {
-                    return false;
-                }
-            });
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_line_search){
-
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     //Used to decide whether or not all lines should be added to the database
     //If the database already contains any number of records, no stops are added and a toast is shown to the user.
@@ -140,14 +104,36 @@ public class MapFragment extends Fragment {
                 }
             }).start();
         }
-        else
-            Toast.makeText(getActivity(), "All stops are already added to the database. There are " + databaseLength + " records in the database.", Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * Makes all line names have uppercase letter
+     * @param name
+     * @return
+     */
+    private String myToUpperCase(String name){
+        char[] chars = name.toCharArray();
+        String newName = "";
+        for (char c : chars){
+            if (Character.isLetter(c)) {
+                newName += (c + "").toUpperCase();
+                if (!characters.contains(c+""))
+                    characters.add(c + "");
+            }
+            else
+                newName += c;
+        }
+        return newName;
     }
 
     public void searchRouteByName(String name){
+        try{
         Line line = db.getLineByName(name);
         String lineId = line.getLineId()+"";
         searchForRoute(lineId);
+        }catch (Exception e){
+            Toast.makeText(getActivity(), "Line " + name + " does not exist", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void searchForRoute(String route){
@@ -233,7 +219,6 @@ public class MapFragment extends Fragment {
         //When the some other fragment in the navigation drawer is selected, the busMap is set to
         // null again to be able to setup the map when the fragment is reattached.
         busMap = null;
-        Log.d("onDetach", "In MapFragment");
     }
 
     public void setFromNavDrawer(boolean fromNavDrawer){
@@ -442,13 +427,15 @@ public class MapFragment extends Fragment {
     //Called when the button to add all lines in the action menu is clicked
     private void addAllLinesToDb(){
         JSONArray busLines = getBusLinesByOperator("Ruter");
-
+        int counter = 1;
         for (int i = 0; i < busLines.length(); i++){
             try {
                 JSONObject currentJson = busLines.getJSONObject(i);
                 int lineID = currentJson.getInt("LineID");
-                String name = currentJson.getString("Name");
+                String name = myToUpperCase(currentJson.getString("Name"));
                 int transportation = currentJson.getInt("Transportation");
+                Log.d("Line " + counter, "LineID: " + lineID + ", Name: " + name + ", Transportation: " + transportation);
+                counter++;
                 Line line = new Line(lineID, name, transportation);
                 db.addLine(line);
             }catch (Exception e){
@@ -457,5 +444,8 @@ public class MapFragment extends Fragment {
             }
         }
         Log.i("DataBase Length", db.dbLength() + "");
+        Collections.sort(characters);
+        Log.d("Characters discovered: ", characters.toString());
     }
+
 }
