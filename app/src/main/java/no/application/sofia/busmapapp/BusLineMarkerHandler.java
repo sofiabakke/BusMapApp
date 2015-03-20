@@ -50,7 +50,6 @@ public class BusLineMarkerHandler {
 					try {
 						Thread.sleep(500);
 						if(running) {
-							Log.d("BusLineMarker", "Update");
 							for (int i = 0; i < vehicleMarkers.size(); i++) {
 								vehicleMarkers.get(i).update();
 							}
