@@ -2,6 +2,8 @@ package no.application.sofia.busmapapp.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -127,12 +129,13 @@ public class MapFragment extends Fragment {
     }
 
     public void searchRouteByName(String name){
-        try{
         Line line = db.getLineByName(name);
-        String lineId = line.getLineId()+"";
-        searchForRoute(lineId);
-        }catch (Exception e){
+        if (line.getName() == null)
             Toast.makeText(getActivity(), "Line " + name + " does not exist", Toast.LENGTH_LONG).show();
+        else {
+            String lineId = line.getLineId() + "";
+            Toast.makeText(getActivity(), "Line " + line.getName() + " does exist", Toast.LENGTH_LONG).show();
+            searchForRoute(lineId);
         }
     }
 
@@ -273,44 +276,43 @@ public class MapFragment extends Fragment {
                     @Override
                     public void run() {
                         try {
-	                        int transportation = json.getInt("Transportation");
-	                        BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.map_marker_bus);
-	                        String transName = "Bus";
+                            int transportation = json.getInt("Transportation");
+                            double bearing = json.getDouble("Bearing");
+                            if (bearing == -1)
+                                bearing = 0.0;
+                            Log.d("bearing ", bearing + "");
+                            Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.arrow_blue_half_and_half);
+                            String transName = "Bus";
 
                             if (transportation == 0){ // Walking
-
-		                    }else if (transportation == 1){
-	                            transName = "Airport Bus";
-	                            // icon =
-		                    }else if (transportation == 2){
-	                            transName = "Bus";
-	                            // icon =
-		                    }else if (transportation == 3){
-	                            transName = "Dummy";
-	                            // icon =
-		                    }else if (transportation == 4){
-	                            transName = "Airport Train";
-	                            // icon =
+                                transName = "Walking";
+                            }else if (transportation == 1){
+                                transName = "Airport Bus";
+                            }else if (transportation == 2){
+                                transName = "Bus";
+                            }else if (transportation == 3){
+                                transName = "Dummy";
+                            }else if (transportation == 4){
+                                transName = "Airport Train";
                             }else if (transportation == 5){
-	                            transName = "Boat";
-	                            // icon =
+                                transName = "Boat";
                             }else if (transportation == 6){
-	                            transName = "Train";
-	                            // icon =
+                                transName = "Train";
                             }else if (transportation == 7){
-	                            transName = "Tram";
-	                            icon = BitmapDescriptorFactory.fromResource(R.drawable.map_marker_tram);
+                                transName = "Tram";
                             }else if(transportation == 8){
-	                            transName = "Metro";
-	                            icon = BitmapDescriptorFactory.fromResource(R.drawable.map_marker_sub);
+                                transName = "Metro";
                             }
 
-	                        busMap.addMarker(new MarkerOptions()
-		                        .title(transName + " " + json.getString("LineID") + " towards " + json.getString("DestinationName"))
-		                        .position(pos)
-		                        .icon(icon)
-		                        .snippet("Arrives at " + json.getString("NextBusStopName") + " at " + json.getString("NextBusStopArrival").substring(11,19)));
-	                        busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
+                            busMap.addMarker(new MarkerOptions()
+                                    .title(transName + " " + json.getString("LineID") + " towards " + json.getString("DestinationName"))
+                                    .anchor(0.5f, 0.5f)
+                                    .position(pos)
+                                    .icon(BitmapDescriptorFactory.fromBitmap(icon))
+                                    .rotation((float) bearing)
+                                    .snippet("Arrives at " + json.getString("NextBusStopName")
+                                            + " at " + json.getString("NextBusStopArrival").substring(11, 19)));
+                            busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
                         }catch(Exception e){
                             e.printStackTrace();
                         }
@@ -336,11 +338,14 @@ public class MapFragment extends Fragment {
                     @Override
                     public void run() {
                         try{
+                            Bitmap stopIcon = BitmapFactory.decodeResource(getResources(), R.drawable.map_marker_stop_red);
                             busMap.addMarker(new MarkerOptions()
                                     .title("Name: " + json.getString("Name"))
                                     .position(pos)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker_stop))
-                                    .snippet("STOOOOP"));
+                                    .icon(BitmapDescriptorFactory.fromBitmap(stopIcon))
+                                    .snippet("STOOOOP")
+                                    .anchor(0.5f, 0.5f)
+                                    .flat(true));
                             busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
                         }catch(Exception e){
                             e.printStackTrace();

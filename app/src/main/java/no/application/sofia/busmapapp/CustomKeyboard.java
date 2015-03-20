@@ -138,15 +138,18 @@ public class CustomKeyboard {
 
     public void registerEditText(int resid) {
         // Find the EditText 'resid'
-        EditText edittext= (EditText)mCurrentView.findViewById(resid);
+        final EditText editText= (EditText)mCurrentView.findViewById(resid);
         // Make the custom keyboard appear
-        edittext.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             // NOTE By setting the on focus listener, we can show the custom keyboard when the edit box gets focus, but also hide it when the edit box loses focus
-            @Override public void onFocusChange(View v, boolean hasFocus) {
-                if( hasFocus ) showCustomKeyboard(v); else hideCustomKeyboard();
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                editText.setText("");
+                if (hasFocus) showCustomKeyboard(v);
+                else hideCustomKeyboard();
             }
         });
-        edittext.setOnClickListener(new View.OnClickListener() {
+        editText.setOnClickListener(new View.OnClickListener() {
             // NOTE By setting the on click listener, we can show the custom keyboard again, by tapping on an edit box that already had focus (but that had the keyboard hidden).
             @Override
             public void onClick(View v) {
@@ -154,19 +157,21 @@ public class CustomKeyboard {
             }
         });
         // Disable standard keyboard hard way
-        // NOTE There is also an easy way: 'edittext.setInputType(InputType.TYPE_NULL)' (but you will not have a cursor, and no 'edittext.setCursorVisible(true)' doesn't work )
-        edittext.setOnTouchListener(new View.OnTouchListener() {
-            @Override public boolean onTouch(View v, MotionEvent event) {
-                EditText edittext = (EditText) v;
-                int inType = edittext.getInputType();       // Backup the input type
-                edittext.setInputType(InputType.TYPE_NULL); // Disable standard keyboard
-                edittext.onTouchEvent(event);               // Call native handler
-                edittext.setInputType(inType);              // Restore input type
+        // NOTE There is also an easy way: 'editText.setInputType(InputType.TYPE_NULL)' (but you will not have a cursor, and no 'editText.setCursorVisible(true)' doesn't work )
+        editText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                EditText editText = (EditText) v;
+                editText.setText("");
+                int inType = editText.getInputType();       // Backup the input type
+                editText.setInputType(InputType.TYPE_NULL); // Disable standard keyboard
+                editText.onTouchEvent(event);               // Call native handler
+                editText.setInputType(inType);              // Restore input type
                 return true; // Consume touch event
             }
         });
         // Disable spell check (hex strings look like words to Android)
-        edittext.setInputType(edittext.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        editText.setInputType(editText.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
     }
 
 }
