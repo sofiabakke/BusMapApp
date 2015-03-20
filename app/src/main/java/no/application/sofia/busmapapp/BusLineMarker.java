@@ -15,6 +15,7 @@ import java.text.DateFormat;
 import java.text.FieldPosition;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -24,18 +25,74 @@ import java.util.TimeZone;
 public class BusLineMarker {
 	private Marker vehicleMarker;
 	private JSONObject vehicleInfoJSON;
+	private ArrayList<BusArrival> arrivals;
+	private int vehicleID = 0;
+	private int transportation = 0;
 
 	public BusLineMarker(Marker marker, JSONObject vehicleInfoJSON){
 		vehicleMarker = marker;
+		arrivals = new ArrayList<BusArrival>();
 		this.vehicleInfoJSON = vehicleInfoJSON;
+		try {
 
+			vehicleID = vehicleInfoJSON.getInt("VehicleID");
+			transportation = vehicleInfoJSON.getInt("Transportation");
+
+			JSONArray arrivalsJSON = vehicleInfoJSON.getJSONArray("Arrivals");
+			for (int i = 0; i < arrivalsJSON.length(); i++) {
+				arrivals.add(new BusArrival(arrivalsJSON.getJSONObject(i)));
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 
 	public void APIupdate(){
-
+		//Add periodic update?
+		for(int i=0; i < arrivals.size(); i++){
+			arrivals.get(i).updateIfNeeded();
+		}
 	}
 
 	public void update(){
+		Date currentTime = new Date();
+
+		BusArrival prevStop = null;
+		BusArrival nextStop = null;
+		for(int i = 0; i < arrivals.size(); i++){
+			BusArrival currentArrival = arrivals.get(i);
+			if(currentTime.getTime() > currentArrival.getTime()){
+				prevStop = currentArrival;
+			}else{
+				nextStop = currentArrival;
+				break;
+			}
+		}
+
+
+		final LatLng position = calculatePosition(prevStop, nextStop, currentTime);
+
+		final Handler mainHandler = new Handler(Looper.getMainLooper());
+		mainHandler.post(new Runnable() {
+			@Override
+			public void run() {
+
+
+				if(position == null) {
+					vehicleMarker.setVisible(false);
+					//Log.d("Position", "FAILED");
+				}else {
+					vehicleMarker.setPosition(position);
+					//Log.d("Position", position.latitude + ", " + position.longitude);
+					vehicleMarker.setVisible(true);
+				}
+//				vehicleMarker.setTitle(title);
+//				vehicleMarker.setSnippet(snippet);
+			}
+		});
+
+
+		/*
 		Date currentTime = new Date();
 		try {
 			JSONArray arrivals = vehicleInfoJSON.getJSONArray("Arrivals");
@@ -70,9 +127,29 @@ public class BusLineMarker {
 
 		}catch (Exception e){
 			e.printStackTrace();
-		}
+		}*/
 	}
 
+	private LatLng calculatePosition(BusArrival prev, BusArrival next, Date currentTime){
+		if(next == null){
+			return null;
+		}
+		if(prev == null){
+			return next.getPosition();
+		}
+
+		long m1 = next.getTime() - currentTime.getTime();
+		long m2 = next.getTime() - prev.getTime();
+		double multiplicator = (double)m1 / (double)m2;
+
+		multiplicator = multiplicator < 0 ? 0 : multiplicator > 1 ? 1 : multiplicator;
+
+		double lat = multiplicator * (next.getPosition().latitude - prev.getPosition().latitude) + prev.getPosition().latitude;
+		double lng = multiplicator * (next.getPosition().longitude - prev.getPosition().longitude) + prev.getPosition().longitude;
+
+		return new LatLng(lat, lng);
+
+	}
 
 	private LatLng calculatePosition(JSONObject prev, JSONObject next, Date currentTime){
 		if(next == null){
