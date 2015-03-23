@@ -36,6 +36,7 @@ public class BusLineMarkerHandler {
 	private ArrayList<BusLineMarker> vehicleMarkers;
 	private Thread updateThread;
 	private boolean running = true;
+	private int lastLineID = 0;
 
 	public BusLineMarkerHandler(GoogleMap busMap){
 		this.busMap = busMap;
@@ -44,6 +45,7 @@ public class BusLineMarkerHandler {
 			@Override
 			public void run()
 			{
+				int loops = 0;
 				while (!updateThread.isInterrupted()) {
 					try {
 						Thread.sleep(500);
@@ -52,6 +54,13 @@ public class BusLineMarkerHandler {
 								vehicleMarkers.get(i).updatePosition();
 							}
 						}
+						loops++;
+						if(loops == 120000) {
+							if (lastLineID != 0)
+								updateAllStops(lastLineID);
+							loops = 0;
+						}
+
 					} catch (InterruptedException e) {
 
 					}
@@ -73,7 +82,9 @@ public class BusLineMarkerHandler {
 		busMap.clear();
 		vehicleMarkers.clear();
 
+
 		final int lineID = Integer.parseInt(route);
+		lastLineID = lineID;
 
 		new Thread(new Runnable() {
 			public void run() {
@@ -268,6 +279,7 @@ public class BusLineMarkerHandler {
 						vehicleMarkers.get(j).updateVehicle(json.getJSONObject(i), 0, transportation);
 						handled = true;
 					}
+
 				}catch(Exception e){
 					e.printStackTrace();
 				}
