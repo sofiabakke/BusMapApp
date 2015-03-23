@@ -144,6 +144,7 @@ public class BusLineMarkerHandler {
 									.position(new LatLng(0,0))
 									.title("asdasdasd")
 									.anchor(0.5f, 0.5f)
+									.flat(true)
 									.icon(BitmapDescriptorFactory.fromResource(R.drawable.arrow_blue_half_and_half))),
 								busJSON
 							);
