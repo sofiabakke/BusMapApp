@@ -31,10 +31,11 @@ public class BusArrival {
 	private String vehicleID;
 	private String type = "";
 	private String busStopName = "";
-	private int busStopID = 0;
+	public int busStopID = 0;
 	private String destName = "";
 	private String lineName = "";
 	private String lineID = "";
+	private BusLineMarkerHandler markerHandler;
 
 
 	private String[] transportationTypes= {
@@ -50,7 +51,7 @@ public class BusArrival {
 
 	private Date lastUpdate;
 
-	public BusArrival(JSONObject arrival, int typeID){
+	public BusArrival(JSONObject arrival, int typeID, BusLineMarkerHandler markerHandler){
 		try {
 			lineName = arrival.getString("LineName");
 			lineID = arrival.getString("LineID");
@@ -68,11 +69,29 @@ public class BusArrival {
 
 			this.type = transportationTypes[typeID];
 			lastUpdate = new Date();
-
+			this.markerHandler = markerHandler;
 
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+	}
+
+	public boolean updateArrivalIfSame(JSONObject arrival, int stopID){
+		try {
+			if(lineName == arrival.getString("LineName") &&
+			lineID == arrival.getString("LineID") &&
+			destName == arrival.getString("DestinationName") &&
+			(busStopID == stopID || busStopID == arrival.getInt("BusStopID"))) {
+
+				arrivalTime = new Date(arrival.getJSONObject("Arrival").getLong("ExpectedArrivalTimeMS"));
+				lastUpdate = new Date();
+				return true;
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+
+		return false;
 	}
 
 
@@ -100,60 +119,42 @@ public class BusArrival {
 		Date currentTime = new Date();
 
 		if(currentTime.getTime() > lastUpdate.getTime() + 25000){
-			lastUpdate = currentTime;
-			new Thread(new Runnable() {
-				public void run() {
-					update();
-				}
-			}).start();
+			update();
 		}
+	}
+	public void forceUpdate(int time){
+		Date currentTime = new Date();
+		if(lastUpdate.getTime() + time > currentTime.getTime())
+			update();
 	}
 
 	private void update(){
-		String url = "http://api.bausk.no/Bus/getStopVisitsOnStop/Ruter/" + busStopID + "/" + lineID;
-		try {
-			JSONObject json = new JSONObject(sendJSONRequest(url));
-			JSONArray stopVisits = json.getJSONArray("StopVisits");
+		Date currentTime = new Date();
+		lastUpdate = currentTime;
 
-			for(int i = 0; i < stopVisits.length(); i++){
-				JSONObject stopVisit = stopVisits.getJSONObject(i);
 
-				if(stopVisit.getString("VehicleID").equals(vehicleID)){
-					arrivalTime = new Date(stopVisit.getJSONObject("Arrival").getLong("ExpectedArrivalTimeMS"));
-				}
+
+
+		new Thread(new Runnable() {
+			public void run() {
+				markerHandler.updateOneStop(Integer.parseInt(lineID), busStopID);
+				/*String url = "http://api.bausk.no/Bus/getStopVisitsOnStop/Ruter/" + busStopID + "/" + lineID;
+				try {
+					JSONObject json = new JSONObject(sendJSONRequest(url));
+					JSONArray stopVisits = json.getJSONArray("StopVisits");
+
+					for(int i = 0; i < stopVisits.length(); i++){
+						JSONObject stopVisit = stopVisits.getJSONObject(i);
+
+						if(stopVisit.getString("VehicleID").equals(vehicleID)){
+							arrivalTime = new Date(stopVisit.getJSONObject("Arrival").getLong("ExpectedArrivalTimeMS"));
+						}
+					}
+
+				}catch(Exception e){
+					e.printStackTrace();
+				}*/
 			}
-
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+		}).start();
 	}
-
-
-	private String sendJSONRequest(String URL){
-		StringBuilder builder = new StringBuilder();
-		HttpClient client = new DefaultHttpClient();
-		HttpGet httpGet = new HttpGet(URL);
-		try {
-			HttpResponse response = client.execute(httpGet);
-			StatusLine statusLine = response.getStatusLine();
-			int statusCode = statusLine.getStatusCode();
-			if (statusCode == 200) {
-				HttpEntity entity = response.getEntity();
-				InputStream content = entity.getContent();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(content));
-				String line;
-				while ((line = reader.readLine()) != null) {
-					builder.append(line);
-				}
-			} else {
-				Log.e(BusLineMarkerHandler.class.getName(), "Failed to download file");
-			}
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return builder.toString();
-	}
-
 }

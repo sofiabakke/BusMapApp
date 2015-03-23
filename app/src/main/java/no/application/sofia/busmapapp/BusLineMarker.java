@@ -4,20 +4,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import com.google.android.gms.analytics.ExceptionParser;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
-import java.text.FieldPosition;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.TimeZone;
 
 /**
  * Created by oknak_000 on 18.03.2015.
@@ -26,13 +20,16 @@ public class BusLineMarker {
 	private Marker vehicleMarker;
 	private JSONObject vehicleInfoJSON;
 	private ArrayList<BusArrival> arrivals;
-	private int vehicleID = 0;
+	public int vehicleID = 0;
 	private int transportation = 0;
+	private BusArrival storedNextStop;
+	private BusLineMarkerHandler markerHandler;
 
-	public BusLineMarker(Marker marker, JSONObject vehicleInfoJSON) {
+	public BusLineMarker(Marker marker, JSONObject vehicleInfoJSON, BusLineMarkerHandler markerHandler) {
 		vehicleMarker = marker;
 		arrivals = new ArrayList<BusArrival>();
 		this.vehicleInfoJSON = vehicleInfoJSON;
+		this.markerHandler = markerHandler;
 		try {
 
 			vehicleID = vehicleInfoJSON.getInt("VehicleID");
@@ -40,27 +37,75 @@ public class BusLineMarker {
 
 			JSONArray arrivalsJSON = vehicleInfoJSON.getJSONArray("Arrivals");
 			for (int i = 0; i < arrivalsJSON.length(); i++) {
-				arrivals.add(new BusArrival(arrivalsJSON.getJSONObject(i), transportation));
+				arrivals.add(new BusArrival(arrivalsJSON.getJSONObject(i), transportation, markerHandler));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void update() {
+	public void update(JSONObject stopVisit, int busStopID){
+		try{
+			for(int i = 0; i < arrivals.size(); i++){
+				arrivals.get(i).updateArrivalIfSame(stopVisit, busStopID);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	public void updateVehicle(JSONObject vehicleInfoJSON, int busStopID, int transportation){
+		try {
+
+			for (int i = 0; i < vehicleInfoJSON.length(); i++) {
+				boolean handled = false;
+				JSONObject arrivalJSON = vehicleInfoJSON.getJSONArray("Arrivals").getJSONObject(i);
+				for (int j = 0; j < arrivals.size() && !handled; j++) {
+					handled = arrivals.get(j).updateArrivalIfSame(arrivalJSON, busStopID);
+				}
+
+				if (!handled) {
+					arrivals.add(new BusArrival(arrivalJSON, transportation, markerHandler));
+				}
+			}
+		}catch(Exception e){
+			Log.d("JSON ERROR", vehicleInfoJSON.toString());
+			e.printStackTrace();
+		}
+	}
+
+
+	public void updatePosition() {
 		Date currentTime = new Date();
 
 		BusArrival prevStop = null;
 		BusArrival nextStop = null;
+		BusArrival afterNextStop = null;
 		for (int i = 0; i < arrivals.size(); i++) {
 			BusArrival currentArrival = arrivals.get(i);
 			if (currentTime.getTime() > currentArrival.getTime()) {
 				if (prevStop == null || prevStop.getTime() < currentArrival.getTime())
 					prevStop = currentArrival;
 			} else {
-				if (nextStop == null || nextStop.getTime() > currentArrival.getTime())
+				if (nextStop == null || nextStop.getTime() > currentArrival.getTime()) {
+					afterNextStop = nextStop;
 					nextStop = currentArrival;
+				}else if (afterNextStop == null || afterNextStop.getTime() > currentArrival.getTime()){
+					afterNextStop = currentArrival;
+				}
+
 			}
+		}
+
+		if(storedNextStop != nextStop){
+			if(storedNextStop != null) {
+				//Date passed = new Date(storedNextStop.getTime());
+				//Log.d("Stop passed", "New next stop = " + passed.toString());
+				storedNextStop.forceUpdate(2000);
+				nextStop.forceUpdate(2000);
+				prevStop.forceUpdate(2000);
+			}
+			storedNextStop = nextStop;
 		}
 
 
@@ -88,6 +133,7 @@ public class BusLineMarker {
 		});
 
 		nextStop.updateFromAPIIfNeeded();
+		afterNextStop.updateFromAPIIfNeeded();
 	}
 
 	private LatLng calculatePosition(BusArrival prev, BusArrival next, Date currentTime) {

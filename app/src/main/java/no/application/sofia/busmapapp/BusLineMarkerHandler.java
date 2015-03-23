@@ -6,10 +6,8 @@ import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -21,7 +19,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -29,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by oknak_000 on 18.03.2015.
@@ -51,7 +49,7 @@ public class BusLineMarkerHandler {
 						Thread.sleep(500);
 						if(running) {
 							for (int i = 0; i < vehicleMarkers.size(); i++) {
-								vehicleMarkers.get(i).update();
+								vehicleMarkers.get(i).updatePosition();
 							}
 						}
 					} catch (InterruptedException e) {
@@ -62,6 +60,7 @@ public class BusLineMarkerHandler {
 		});
 		updateThread.start();
 	}
+
 
 	public void stopUpdateThread(){
 		running = false;
@@ -84,7 +83,6 @@ public class BusLineMarkerHandler {
 
 		new Thread(new Runnable() {
 			public void run() {
-				//addRouteMarkersToMap("Ruter", lineID);
 				addVehicleMarkersToMap("Ruter", lineID);
 			}
 		}).start();
@@ -132,33 +130,39 @@ public class BusLineMarkerHandler {
 		for(int i = 0; i < buses.length(); i++){
 			try {
 				final JSONObject busJSON = buses.getJSONObject(i);
+				addMarker(busJSON);
 
-				final Handler mainHandler = new Handler(Looper.getMainLooper());
-				mainHandler.post(new Runnable() {
-					@Override
-					public void run() {
-						try {
-
-							BusLineMarker marker = new BusLineMarker(
-								busMap.addMarker(new MarkerOptions()
-									.position(new LatLng(0,0))
-									.title("asdasdasd")
-									.anchor(0.5f, 0.5f)
-									.flat(true)
-									.icon(BitmapDescriptorFactory.fromResource(R.drawable.arrow_blue_half_and_half))),
-								busJSON
-							);
-							marker.update();
-							vehicleMarkers.add(marker);
-						}catch(Exception e){
-							e.printStackTrace();
-						}
-					}
-				});
 			}catch(Exception e){
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private void addMarker(final JSONObject busJSON){
+		final Handler mainHandler = new Handler(Looper.getMainLooper());
+		final BusLineMarkerHandler markerHandler = this;
+		mainHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				try {
+
+					BusLineMarker marker = new BusLineMarker(
+						busMap.addMarker(new MarkerOptions()
+							.position(new LatLng(0, 0))
+							.title("asdasdasd")
+							.anchor(0.5f, 0.5f)
+							.flat(true)
+							.icon(BitmapDescriptorFactory.fromResource(R.drawable.arrow_blue_half_and_half))),
+						busJSON,
+						markerHandler
+					);
+					marker.updatePosition();
+					vehicleMarkers.add(marker);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
 
@@ -173,71 +177,6 @@ public class BusLineMarkerHandler {
 			e.printStackTrace();
 		}
 		return json;
-	}
-
-	private void addRouteMarkersToMap(String operator, int lineID){
-		JSONArray buses = getBusPositionsOnLine(operator, lineID);
-
-		for(int i = 0; i < buses.length(); i++){
-			try {
-				final JSONObject json = buses.getJSONObject(i);
-				final JSONObject positionJSON = json.getJSONObject("Position");
-				final LatLng pos = new LatLng(positionJSON.getDouble("Latitude"), positionJSON.getDouble("Longitude"));
-
-				// Forces main thread to add markers to the map, as this can not be done in a separate thread
-				final Handler mainHandler = new Handler(Looper.getMainLooper());
-				mainHandler.post(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							int transportation = json.getInt("Transportation");
-							BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.map_marker_bus);
-							String transName = "Bus";
-
-							if (transportation == 0){ // Walking
-
-							}else if (transportation == 1){
-								transName = "Airport Bus";
-								// icon =
-							}else if (transportation == 2){
-								transName = "Bus";
-								// icon =
-							}else if (transportation == 3){
-								transName = "Dummy";
-								// icon =
-							}else if (transportation == 4){
-								transName = "Airport Train";
-								// icon =
-							}else if (transportation == 5){
-								transName = "Boat";
-								// icon =
-							}else if (transportation == 6){
-								transName = "Train";
-								// icon =
-							}else if (transportation == 7){
-								transName = "Tram";
-								icon = BitmapDescriptorFactory.fromResource(R.drawable.map_marker_tram);
-							}else if(transportation == 8){
-								transName = "Metro";
-								icon = BitmapDescriptorFactory.fromResource(R.drawable.map_marker_sub);
-							}
-
-							busMap.addMarker(new MarkerOptions()
-								.title(transName + " " + json.getString("LineID") + " towards " + json.getString("DestinationName"))
-								.position(pos)
-								.icon(icon)
-								.snippet("Arrives at " + json.getString("NextBusStopName") + " at " + json.getString("NextBusStopArrival").substring(11,19)));
-							busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
-						}catch(Exception e){
-							e.printStackTrace();
-						}
-					}
-				});
-
-			}catch(JSONException e){
-				e.printStackTrace();
-			}
-		}
 	}
 
 	private void addStopMarkersToMap(String operator, int lineID){
@@ -285,23 +224,65 @@ public class BusLineMarkerHandler {
 		}
 
 		return json;
-
 	}
 
-	private JSONArray getBusPositionsOnLine(String operator, int lineID){
-		String URL = "http://api.bausk.no/Bus/getBusPositionsOnLine/" + operator + "/" + lineID;
+	public void updateOneStop(int lineID, int busStopID){
+		String url = "http://api.bausk.no/Bus/getStopVisitsOnStop/Ruter/" + busStopID + "/" + lineID;
 
-		String busJSONs = sendJSONRequest(URL);
-		JSONArray json = new JSONArray();
 		try {
-			json = new JSONArray(busJSONs);
-			Log.i(BusLineMarkerHandler.class.getName(), json.toString());
-		} catch (Exception e) {
+			JSONObject json = new JSONObject(sendJSONRequest(url));
+			JSONArray stopVisits = json.getJSONArray("StopVisits");
+			LatLng position = new LatLng(json.getJSONObject("Position").getDouble("Latitude"),
+				json.getJSONObject("Position").getDouble("Longitude"));
+
+			int transportation = json.getInt("Transportation");
+			for(int i = 0; i < stopVisits.length(); i++){
+				JSONObject stopVisit = stopVisits.getJSONObject(i);
+
+				boolean handled = false;
+				for(int j = 0; j < vehicleMarkers.size() && !handled; j++){
+					if(vehicleMarkers.get(j).vehicleID == stopVisit.getInt("VehicleID")){
+						handled = true;
+						vehicleMarkers.get(j).update(stopVisit, busStopID);
+					}
+				}
+
+				if(!handled){
+					// ADD NEW MAKERER!
+				}
+			}
+
+		}catch(Exception e){
 			e.printStackTrace();
 		}
-
-		return json;
 	}
+
+	public void updateAllStops(int lineID){
+		JSONArray json = getBusArrivalsOnLine("Ruter", lineID);
+		for(int i = 0; i < json.length(); i++){
+			boolean handled = false;
+			for(int j = 0; j < vehicleMarkers.size() && !handled; j++){
+				try {
+					if (json.getJSONObject(i).getInt("VehicleID") == vehicleMarkers.get(j).vehicleID) {
+						int transportation = json.getJSONObject(i).getInt("Transportation");
+						vehicleMarkers.get(j).updateVehicle(json.getJSONObject(i), 0, transportation);
+						handled = true;
+					}
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+			if(!handled){
+				try {
+					addMarker(json.getJSONObject(i));
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+		}
+
+	}
+
 
 	// Downloads JSON from a given URL
 	private String sendJSONRequest(String URL){
