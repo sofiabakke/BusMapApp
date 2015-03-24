@@ -65,10 +65,6 @@ public class MainActivity extends ActionBarActivity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
 
     /*
         Code for the navigation drawer

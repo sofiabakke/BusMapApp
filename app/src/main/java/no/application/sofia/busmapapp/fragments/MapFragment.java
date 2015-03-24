@@ -135,10 +135,10 @@ public class MapFragment extends Fragment {
     public void searchRouteByName(String name){
         Line line = db.getLineByName(name);
         if (line.getName() == null)
-            Toast.makeText(getActivity(), "Line " + name + " does not exist", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Line " + name + " does not exist. Try another line.", Toast.LENGTH_LONG).show();
         else {
             String lineId = line.getLineId() + "";
-            Toast.makeText(getActivity(), "Line " + line.getName() + " does exist", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Line " + line.getName() + " exists", Toast.LENGTH_LONG).show();
             searchForRoute(lineId);
         }
     }
