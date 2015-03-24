@@ -24,7 +24,13 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -146,6 +152,7 @@ public class MapFragment extends Fragment {
         super.onResume();
         setUpMapIfNeeded();
 		busLineHandler.restartUpdateThread();
+        decideIfAddLinesToLocalDb();
     }
 
 	@Override
@@ -175,8 +182,8 @@ public class MapFragment extends Fragment {
 
     private void setUpMap(){
         busMap.setMyLocationEnabled(true);
-
 	    busLineHandler = new BusLineMarkerHandler(busMap);
+
 
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -243,5 +250,6 @@ public class MapFragment extends Fragment {
         Collections.sort(characters);
         Log.d("Characters discovered: ", characters.toString());
     }
+
 
 }
