@@ -8,6 +8,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -26,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by oknak_000 on 18.03.2015.
@@ -34,13 +34,15 @@ import java.util.Date;
 public class BusLineMarkerHandler {
 	private static GoogleMap busMap;
 	private ArrayList<BusLineMarker> vehicleMarkers;
+	private ArrayList<StopMarker> stopMarkers;
 	private Thread updateThread;
 	private boolean running = true;
 	private int lastLineID = 0;
 
 	public BusLineMarkerHandler(GoogleMap busMap){
 		this.busMap = busMap;
-		vehicleMarkers = new ArrayList<BusLineMarker>();
+		vehicleMarkers = new ArrayList<>();
+		stopMarkers = new ArrayList<>();
 		updateThread = new Thread(new Runnable() {
 			@Override
 			public void run()
@@ -81,6 +83,7 @@ public class BusLineMarkerHandler {
 	public void addRouteMarkers(String route){
 		busMap.clear();
 		vehicleMarkers.clear();
+		stopMarkers.clear();
 
 
 		final int lineID = Integer.parseInt(route);
@@ -138,6 +141,7 @@ public class BusLineMarkerHandler {
 
 	private void addVehicleMarkersToMap(String operator, int lineID){
 		JSONArray buses = getBusArrivalsOnLine(operator, lineID);
+		updateStopMarkerSnippets(buses);
 		for(int i = 0; i < buses.length(); i++){
 			try {
 				final JSONObject busJSON = buses.getJSONObject(i);
@@ -203,13 +207,16 @@ public class BusLineMarkerHandler {
 					@Override
 					public void run() {
 						try{
-							busMap.addMarker(new MarkerOptions()
-								.title("Name: " + json.getString("Name"))
-								.position(pos)
-								.icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker_stop_red))
-								.snippet("STOOOOP")
-								.anchor(0.5f, 0.5f)
-								.flat(true));
+
+							stopMarkers.add(new StopMarker(
+								busMap.addMarker(new MarkerOptions()
+									.title(json.getString("Name"))
+									.position(pos)
+									.icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker_stop_red))
+									.snippet("Updating...")
+									.anchor(0.5f, 0.5f)
+									.flat(true)),
+								json.getInt("ID")));
 							busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
 						}catch(Exception e){
 							e.printStackTrace();
@@ -242,6 +249,7 @@ public class BusLineMarkerHandler {
 
 		try {
 			JSONObject json = new JSONObject(sendJSONRequest(url));
+			updateOneStopSnippet(json);
 			JSONArray stopVisits = json.getJSONArray("StopVisits");
 			LatLng position = new LatLng(json.getJSONObject("Position").getDouble("Latitude"),
 				json.getJSONObject("Position").getDouble("Longitude"));
@@ -270,6 +278,8 @@ public class BusLineMarkerHandler {
 
 	public void updateAllStops(int lineID){
 		JSONArray json = getBusArrivalsOnLine("Ruter", lineID);
+		updateStopMarkerSnippets(json);
+
 		for(int i = 0; i < json.length(); i++){
 			boolean handled = false;
 			for(int j = 0; j < vehicleMarkers.size() && !handled; j++){
@@ -335,5 +345,42 @@ public class BusLineMarkerHandler {
 		}
 		return json;
 	}
+	private void updateStopMarkerSnippets(JSONArray buses){
+		for(int i = 0; i < stopMarkers.size(); i++){
+			stopMarkers.get(i).clearSnippet();
+		}
 
+		for(int i = 0; i < buses.length(); i++){
+			try {
+				JSONArray arrivals = buses.getJSONObject(i).getJSONArray("Arrivals");
+				for (int j = 0; j < arrivals.length(); j++){
+					for(int x = 0; x < stopMarkers.size(); x++){
+						JSONObject arrival = arrivals.getJSONObject(j);
+						if(stopMarkers.get(x).id == arrival.getInt("BusStopID")){
+							stopMarkers.get(x).addArrival(arrival);
+							break;
+						}
+					}
+				}
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+
+		for(int i = 0; i < stopMarkers.size(); i++){
+			stopMarkers.get(i).finishSnippet();
+		}
+	}
+	private void updateOneStopSnippet(JSONObject json){
+
+		for(int i = 0; i < stopMarkers.size(); i++){
+			try {
+				if(json.getInt("BusStopID") == stopMarkers.get(i).id) {
+					stopMarkers.get(i).updateSnippet(json.getJSONArray("StopVisits"));
+				}
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+	}
 }
