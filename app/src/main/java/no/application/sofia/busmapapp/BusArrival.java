@@ -104,7 +104,7 @@ public class BusArrival {
 	}
 
 	public String generateTitle(){
-		return type + lineName + " towards " + destName;
+		return type + lineName + " " + destName;
 	}
 
 	public String generateSnippet(){
