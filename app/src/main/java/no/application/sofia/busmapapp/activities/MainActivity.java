@@ -1,7 +1,6 @@
 package no.application.sofia.busmapapp.activities;
 
 
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -11,28 +10,16 @@ import android.text.Editable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
-import android.widget.Toast;
 
 import no.application.sofia.busmapapp.R;
-import no.application.sofia.busmapapp.databasehelpers.Stop;
 import no.application.sofia.busmapapp.fragments.MapFragment;
 import no.application.sofia.busmapapp.fragments.NavigationDrawerFragment;
-import no.application.sofia.busmapapp.fragments.OracleFragment;
-import no.application.sofia.busmapapp.interfaces.OnLatLngClickedListener;
-import no.application.sofia.busmapapp.interfaces.OnStopItemClickedListener;
-import no.application.sofia.busmapapp.subfragments.FavoritesFragment;
-import no.application.sofia.busmapapp.subfragments.StopFragment;
-import no.application.sofia.busmapapp.fragments.StopsFragment;
-import no.application.sofia.busmapapp.temporaryClasses.AddStopDialogFragment;
 
 
-public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnStopItemClickedListener, AddStopDialogFragment.NoticeDialogListener, OnLatLngClickedListener{
+public class MainActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks{
 
     //used to save the fragments when they are created
     private MapFragment mapFragment;
-    private StopsFragment stopsFragment;
-    private OracleFragment oracleFragment;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -82,19 +69,6 @@ public class MainActivity extends ActionBarActivity
                         .replace(R.id.container, mapFragment)
                         .commit();
                 break;
-            case 1:
-                if(stopsFragment == null)
-                    stopsFragment = StopsFragment.newInstance(position+1);
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, stopsFragment)
-                        .commit();
-                break;
-            case 2:
-                if(oracleFragment == null)
-                    oracleFragment = OracleFragment.newInstance(position+1);
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, oracleFragment)
-                        .commit();
         }
     }
 
@@ -144,8 +118,6 @@ public class MainActivity extends ActionBarActivity
         if (id == R.id.action_settings)
             return true;
 
-        if(id == R.id.action_add_stop)
-            showDialog();
 
         if(id == R.id.action_add_lines)
             mapFragment.decideIfAddLinesToLocalDb();
@@ -166,54 +138,6 @@ public class MainActivity extends ActionBarActivity
             super.onBackPressed();
     }
 
-    /*
-        Used for Lists in FavoritesFragment and NearByFragment for stops
-         */
-    @Override
-    public void onStopItemClicked(Stop stop) {
-        onStopItemAttached(stop);
-        restoreActionBar(); //Changing the title in the action bar
-    }
 
-    //Used when an element is selected in a list.
-    public void onStopItemAttached(Stop stop){
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        mTitle = stop.getName();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, StopFragment.newInstance(stop.getId()))
-                .addToBackStack(null)
-                .commit();
-    }
-
-    public void showDialog(){
-        DialogFragment dialogFragment = new AddStopDialogFragment();
-        dialogFragment.show(getSupportFragmentManager(), "addStop");
-    }
-
-    @Override
-    public void onDialogPositiveClick(int entryId, String name, double lat, double lng) {
-        if (FavoritesFragment.db != null && FavoritesFragment.adapter != null) {
-            Stop stop = new Stop(entryId, name, lat, lng);
-            FavoritesFragment.db.addStop(stop);
-            FavoritesFragment.adapter.add(stop);
-            FavoritesFragment.adapter.notifyDataSetChanged();
-
-        }
-        else{
-            Toast.makeText(this, "Need To open Stops view first", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    @Override
-    public void onLatLngClicked(Stop stop) {
-        FragmentManager fm = getSupportFragmentManager();
-
-        if (mapFragment == null)
-            mapFragment = MapFragment.newInstance(stop.getId());
-        mapFragment.setFromNavDrawer(false);
-        mapFragment.setMyLocation(stop.getLat(), stop.getLng());
-        fm.beginTransaction().replace(R.id.container, mapFragment).addToBackStack(null).commit();
-
-    }
 
 }
