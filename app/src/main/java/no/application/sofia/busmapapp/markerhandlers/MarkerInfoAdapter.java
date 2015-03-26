@@ -1,4 +1,4 @@
-package no.application.sofia.busmapapp;
+package no.application.sofia.busmapapp.markerhandlers;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
@@ -7,6 +7,8 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.model.Marker;
+
+import no.application.sofia.busmapapp.R;
 
 /**
  * Created by Sofia on 20.03.15.

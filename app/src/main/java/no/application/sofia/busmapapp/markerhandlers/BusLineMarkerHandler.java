@@ -1,4 +1,4 @@
-package no.application.sofia.busmapapp;
+package no.application.sofia.busmapapp.markerhandlers;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -8,7 +8,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -27,6 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+
+import no.application.sofia.busmapapp.R;
 
 /**
  * Created by oknak_000 on 18.03.2015.

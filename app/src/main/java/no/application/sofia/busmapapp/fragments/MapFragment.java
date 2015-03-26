@@ -1,9 +1,6 @@
 package no.application.sofia.busmapapp.fragments;
 
-import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -12,41 +9,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import no.application.sofia.busmapapp.CustomKeyboard;
-import no.application.sofia.busmapapp.MarkerInfoAdapter;
-import no.application.sofia.busmapapp.BusLineMarkerHandler;
+import no.application.sofia.busmapapp.markerhandlers.MarkerInfoAdapter;
+import no.application.sofia.busmapapp.markerhandlers.BusLineMarkerHandler;
 import no.application.sofia.busmapapp.R;
-import no.application.sofia.busmapapp.activities.MainActivity;
 import no.application.sofia.busmapapp.databasehelpers.Line;
 import no.application.sofia.busmapapp.databasehelpers.LineDbHelper;
 
@@ -161,11 +141,7 @@ public class MapFragment extends Fragment {
 		busLineHandler.stopUpdateThread();
 	}
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER)); //Setting the Action Bar text
-    }
+
 
     private void setUpMapIfNeeded(){
         // Do a null check to confirm that we have not already instantiated the map.
