@@ -198,11 +198,6 @@ public class MapFragment extends Fragment {
         this.fromNavDrawer = fromNavDrawer;
     }
 
-    //This needs to be called before replacing a stops fragment to this one in order to zoom to the stops location
-    public void setMyLocation(double lat, double lng){
-        myLocation = new LatLng(lat, lng);
-    }
-
     //Called when the button to add all lines in the action menu is clicked
     private void addAllLinesToDb(){
         JSONArray busLines = busLineHandler.getBusLinesByOperator("Ruter");
