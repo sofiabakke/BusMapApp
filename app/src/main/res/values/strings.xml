@@ -1,37 +1,11 @@
 <resources>
     <string name="app_name">BusMapApp</string>
 
-    <!--Navigation Drawer Strings-->
-    <string name="title_map">Map</string>
-    <string name="title_stops">Stops</string>
-    <string name="title_oracle">Oracle</string>
-
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
     <!--Action Bar Strings-->
     <string name="action_example">Example action</string>
 
     <string name="action_settings">Settings</string>
 
-    <!--Stops Strings-->
-    <string name="title_section_favorites">Favorites</string>
-    <string name="stops_button_favorites">Favorites</string>
-
-    <string name="title_section_nearby">Near By</string>
-    <string name="stops_button_nearby">Near By</string>
-
-
-    <!--Oracle Strings-->
-    <string name="oracle_submit_button">Submit</string>
-    <string name="oracle_ask_question">Ask a Question</string>
-
-    <!--Dialog Strings-->
-    <string name="title_dialog">Add Stop</string>
-    <string name="button_confirm_dialog">Add</string>
-    <string name="button_cancel_dialog">Cancel</string>
-
-    <string name="hello_blank_fragment">Blank Fragment</string>
 
     <!--Map Strings-->
     <string name="route_search">Positions by line ID:</string>
