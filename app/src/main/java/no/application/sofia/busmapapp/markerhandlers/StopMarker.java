@@ -1,4 +1,4 @@
-package no.application.sofia.busmapapp;
+package no.application.sofia.busmapapp.markerhandlers;
 
 
 import android.os.Handler;

@@ -25,6 +25,9 @@ import no.application.sofia.busmapapp.activities.MainActivity;
 
 /**
  * Created by Sofia on 17.03.15.
+ * This class handles a custom keyboard. The keyboard is used when the user wants to search for stops
+ * It is a reduced keyboard including only necessary buttons to search for every line provided by Ruter.
+ * If another provider is implemented this keyboard might be too big.
  */
 public class CustomKeyboard {
 
