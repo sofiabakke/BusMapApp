@@ -5,6 +5,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -13,6 +16,7 @@ import android.widget.TextView;
 
 import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.activities.MainActivity;
+import no.application.sofia.busmapapp.interfaces.OnMenuItemClickedListener;
 
 
 /**
@@ -25,7 +29,7 @@ import no.application.sofia.busmapapp.activities.MainActivity;
  */
 public class OracleFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private int sectionNumber; //Don't know if this is necessary to save?
+    private OnMenuItemClickedListener mListener;
 
 //    private OnFragmentInteractionListener mListener;
 
@@ -51,9 +55,7 @@ public class OracleFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            sectionNumber = getArguments().getInt(ARG_SECTION_NUMBER);
-        }
+
     }
 
     @Override
@@ -73,7 +75,43 @@ public class OracleFragment extends Fragment {
             }
         });
 
+        setHasOptionsMenu(true);
         return view;
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.menu_oracle, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_map){
+            if (mListener != null)
+                mListener.menuItemSelected(id);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnMenuItemClickedListener) activity;
+        } catch (ClassCastException e){
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnMenuItemClickedListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
