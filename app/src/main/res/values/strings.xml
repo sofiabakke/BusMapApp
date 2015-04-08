@@ -13,4 +13,8 @@
     <string name="title_activity_search_result">SearchResultActivity</string>
 
     <string name="hello_world">Hello world!</string>
+
+    <!--OracleStrings-->
+    <string name="oracle_submit_button">Submit</string>
+    <string name="oracle_ask_question">Ask a Question</string>
 </resources>
