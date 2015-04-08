@@ -1,9 +1,9 @@
 package no.application.sofia.busmapapp.fragments;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,8 +14,26 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import no.application.sofia.busmapapp.R;
-import no.application.sofia.busmapapp.activities.MainActivity;
 import no.application.sofia.busmapapp.interfaces.OnMenuItemClickedListener;
 
 
@@ -30,6 +48,8 @@ import no.application.sofia.busmapapp.interfaces.OnMenuItemClickedListener;
 public class OracleFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
     private OnMenuItemClickedListener mListener;
+    private String submittedString = "";
+    private TextView answerTextView;
 
 //    private OnFragmentInteractionListener mListener;
 
@@ -66,12 +86,15 @@ public class OracleFragment extends Fragment {
 
         final Button submitButton = (Button) view.findViewById(R.id.button_submit);
         final EditText textQuestion = (EditText) view.findViewById(R.id.texfield_question);
-        final TextView answer = (TextView) view.findViewById(R.id.textView_answer);
+        answerTextView = (TextView) view.findViewById(R.id.textView_answer);
 
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                answer.setText(textQuestion.getText());
+                Log.d("Click", "Searching");
+//                answer.setText(textQuestion.getText());
+                submittedString = textQuestion.getText().toString();
+                startThread();
             }
         });
 
@@ -114,11 +137,76 @@ public class OracleFragment extends Fragment {
         mListener = null;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-//        }
-//    }
+    private void startThread(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("Submitted String", submittedString);
+                if (submittedString != "" && submittedString != null)
+                    sendQuery(submittedString);
+            }
+        }).start();
+    }
+
+
+    //need to have this outside of method to work inside new runable
+    String busstuc = "nothing";
+
+    private void sendQuery(final String query){
+        final String url = "http://vm-6114.idi.ntnu.no:9001/search";
+        String answer = sendPostRequest(url, query);
+        try {
+            JSONObject json = new JSONObject(answer);
+            busstuc = json.getString("busstuc");
+            Log.d("BUSSTUC", busstuc);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        //can only change views on ui thread
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                answerTextView.setText(busstuc);
+            }
+        });
+
+    }
+
+    // Downloads JSON from a given URL
+    private String sendPostRequest(String URL, String query){
+        StringBuilder builder = new StringBuilder();
+        int TIMEOUT = 10000;
+        HttpParams httpParams = new BasicHttpParams();
+        HttpConnectionParams.setConnectionTimeout(httpParams, TIMEOUT);
+        HttpConnectionParams.setSoTimeout(httpParams, TIMEOUT);
+        HttpClient client = new DefaultHttpClient(httpParams);
+        HttpPost httpPost = new HttpPost(URL);
+
+        try {
+            httpPost.setEntity(new ByteArrayEntity(("{\"query\":\""+query+"\"}").getBytes("UTF8")));
+            HttpResponse response = client.execute(httpPost);
+            StatusLine statusLine = response.getStatusLine();
+            int statusCode = statusLine.getStatusCode();
+            if (statusCode == 200) {
+                HttpEntity entity = response.getEntity();
+                InputStream content = entity.getContent();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(content));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    builder.append(line);
+                }
+            } else {
+                Log.e(OracleFragment.class.getName(), "Failed to download file. Status code: " + statusCode);
+            }
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Log.d("Builder", builder.toString());
+        return builder.toString();
+    }
+
 
 }
