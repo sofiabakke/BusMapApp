@@ -1,15 +1,21 @@
 package no.application.sofia.busmapapp.fragments;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.method.KeyListener;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -25,7 +31,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 
@@ -85,17 +90,21 @@ public class OracleFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_oracle, container, false);
 
-        final Button submitButton = (Button) view.findViewById(R.id.button_submit);
         final EditText textQuestion = (EditText) view.findViewById(R.id.texfield_question);
         answerTextView = (TextView) view.findViewById(R.id.textView_answer);
 
-        submitButton.setOnClickListener(new View.OnClickListener() {
+        textQuestion.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public void onClick(View v) {
-                Log.d("Click", "Searching");
-//                answer.setText(textQuestion.getText());
-                submittedString = textQuestion.getText().toString();
-                startThread();
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH){
+                    Log.d("Search", "Registered!");
+                    submittedString = textQuestion.getText().toString();
+                    startThread();
+                    InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                    return true;
+                }
+                return false;
             }
         });
 
@@ -143,7 +152,7 @@ public class OracleFragment extends Fragment {
             @Override
             public void run() {
                 Log.d("Submitted String", submittedString);
-                if (submittedString != "" && submittedString != null)
+                if (!submittedString.equals("") && submittedString != null)
                     sendQuery(submittedString);
             }
         }).start();
@@ -154,6 +163,7 @@ public class OracleFragment extends Fragment {
     String busstuc = "nothing";
 
     private void sendQuery(final String query){
+        Log.d("Sending query", "sending query");
         final String url = "http://vm-6114.idi.ntnu.no:9001/search";
         String answer = sendPostRequest(url, query);
         try {
