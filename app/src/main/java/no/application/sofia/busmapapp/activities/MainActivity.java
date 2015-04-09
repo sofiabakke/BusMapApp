@@ -1,20 +1,25 @@
 package no.application.sofia.busmapapp.activities;
 
 
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Editable;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.fragments.MapFragment;
+import no.application.sofia.busmapapp.fragments.OracleFragment;
+import no.application.sofia.busmapapp.interfaces.OnMenuItemClickedListener;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements OnMenuItemClickedListener{
 
     //used to save the fragments when they are created
     private MapFragment mapFragment;
+    private OracleFragment oracleFragment;
 
 
     public void sendQuery(Editable editable){
@@ -27,6 +32,8 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Initial fragment transaction without adding it to the back stack
+        //This is to support exiting the application without removing the fragment first.
         if(mapFragment == null)
             mapFragment = MapFragment.newInstance(1);
         mapFragment.setFromNavDrawer(true);
@@ -65,6 +72,32 @@ public class MainActivity extends ActionBarActivity {
             super.onBackPressed();
     }
 
+    private void inflateOracle(){
+        if (oracleFragment == null)
+            oracleFragment = OracleFragment.newInstance(2);
+        FragmentManager fm = getSupportFragmentManager();
+        fm.beginTransaction()
+                .replace(R.id.container, oracleFragment)
+                .addToBackStack("oracle")
+                .commit();
+    }
 
+    private void inflateMap(){
+        if(mapFragment == null)
+            mapFragment = MapFragment.newInstance(1);
+        mapFragment.setFromNavDrawer(true);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, mapFragment)
+                .addToBackStack("map")
+                .commit();
+    }
 
+    @Override
+    public void menuItemSelected(int id) {
+        Log.d("ItemClicked", id+"");
+        if (id == R.id.action_oracle)
+            inflateOracle();
+        if (id == R.id.action_map)
+            inflateMap();
+    }
 }

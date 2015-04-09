@@ -1,12 +1,17 @@
 package no.application.sofia.busmapapp.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.InflateException;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -24,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import no.application.sofia.busmapapp.CustomKeyboard;
+import no.application.sofia.busmapapp.interfaces.OnMenuItemClickedListener;
 import no.application.sofia.busmapapp.markerhandlers.MarkerInfoAdapter;
 import no.application.sofia.busmapapp.markerhandlers.BusLineMarkerHandler;
 import no.application.sofia.busmapapp.R;
@@ -42,6 +48,8 @@ public class MapFragment extends Fragment {
     private Bundle savedInstanceState; //Need it when using a custom snippet for the map
 
 	private BusLineMarkerHandler busLineHandler;
+    private OnMenuItemClickedListener mListener;
+    private View view;
 
 
     public static MapFragment newInstance(int sectionNumber) {
@@ -69,14 +77,41 @@ public class MapFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_map, container, false);
+        if (view != null){
+            ViewGroup parent = (ViewGroup) view.getParent();
+            if (parent != null)
+                parent.removeView(view);
+        }
+        try {
+            view = inflater.inflate(R.layout.fragment_map, container, false);
+        } catch (InflateException e){
+            //map is already there, just return view as it is
+        }
 
         mKeyboard = new CustomKeyboard(getActivity(), view, R.id.keyboardview, R.xml.line_search_keyboard);
 
         mKeyboard.registerEditText(R.id.edittext_search_lines);
+        setHasOptionsMenu(true);
         return view;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.menu_map, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_oracle){
+            if (mListener != null)
+                mListener.menuItemSelected(id);
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     //Used to decide whether or not all lines should be added to the database
     //If the database already contains any number of records, no stops are added and a toast is shown to the user.
@@ -186,12 +221,34 @@ public class MapFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnMenuItemClickedListener) activity;
+        } catch (ClassCastException e){
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnMenuItemClickedListener");
+        }
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
 	    busLineHandler.stopUpdateThread();
         //When the some other fragment in the navigation drawer is selected, the busMap is set to
         // null again to be able to setup the map when the fragment is reattached.
         busMap = null;
+        mListener = null;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        Fragment fm = getActivity().getSupportFragmentManager().findFragmentById(R.id.busmap);
+        if (fm != null){
+            getActivity().getSupportFragmentManager().beginTransaction().remove(fm).commit();
+        }
     }
 
     public void setFromNavDrawer(boolean fromNavDrawer){
@@ -199,10 +256,10 @@ public class MapFragment extends Fragment {
     }
 
     //Called when the button to add all lines in the action menu is clicked
-    private void addAllLinesToDb(){
+    private void addAllLinesToDb() {
         JSONArray busLines = busLineHandler.getBusLinesByOperator("Ruter");
         int counter = 1;
-        for (int i = 0; i < busLines.length(); i++){
+        for (int i = 0; i < busLines.length(); i++) {
             try {
                 JSONObject currentJson = busLines.getJSONObject(i);
                 int lineID = currentJson.getInt("LineID");
@@ -212,7 +269,7 @@ public class MapFragment extends Fragment {
                 counter++;
                 Line line = new Line(lineID, name, transportation);
                 db.addLine(line);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 break;
             }
@@ -221,6 +278,5 @@ public class MapFragment extends Fragment {
         Collections.sort(characters);
         Log.d("Characters discovered: ", characters.toString());
     }
-
 
 }
