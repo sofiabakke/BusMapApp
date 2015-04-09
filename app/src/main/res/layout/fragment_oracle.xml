@@ -32,6 +32,7 @@
         android:layout_marginRight="30dp"
         android:layout_marginEnd="30dp"
         android:inputType="text"
+        android:hint="Search transit"
         android:imeOptions="actionSearch"
         android:layout_centerHorizontal="true"/>
 
@@ -40,6 +41,10 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text=""
+        android:layout_marginLeft="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginEnd="30dp"
         android:id="@+id/textView_answer"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
