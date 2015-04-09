@@ -27,6 +27,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -164,16 +165,17 @@ public class OracleFragment extends Fragment {
         }
 
         //can only change views on ui thread
+        final String cleanString = html2text(busstuc);
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                answerTextView.setText(busstuc);
+                answerTextView.setText(cleanString);
             }
         });
 
     }
 
-    // Downloads JSON from a given URL
+    // Downloads JSON from a given URL with a query as entity
     private String sendPostRequest(String URL, String query){
         StringBuilder builder = new StringBuilder();
         int TIMEOUT = 10000;
@@ -208,5 +210,13 @@ public class OracleFragment extends Fragment {
         return builder.toString();
     }
 
+    /**
+     * Used to remove html tags in text strings using Jsoup, an external library
+     * @param html the text string containing html tags
+     * @return the same text string without html tags
+     */
+    public String html2text(String html){
+        return Jsoup.parse(html).text();
+    }
 
 }
