@@ -109,10 +109,10 @@ public class OracleFragment extends Fragment {
             }
         });
 
+        //Used to clear the answer TextView when the user wants to ask another question
         textQuestion.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Log.d("Touch", "This was a touch");
                 answerTextView.setText("");
                 return false;
             }
