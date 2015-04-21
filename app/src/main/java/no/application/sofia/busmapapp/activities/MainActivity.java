@@ -24,7 +24,7 @@ public class MainActivity extends ActionBarActivity implements OnMenuItemClicked
 
     public void sendQuery(Editable editable){
         String query = editable.toString();
-        mapFragment.searchRouteByName(query);
+        mapFragment.searchRouteByLineNumber(query);
     }
 
     @Override
@@ -36,7 +36,6 @@ public class MainActivity extends ActionBarActivity implements OnMenuItemClicked
         //This is to support exiting the application without removing the fragment first.
         if(mapFragment == null)
             mapFragment = MapFragment.newInstance(1);
-        mapFragment.setFromNavDrawer(true);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, mapFragment)
                 .commit();
@@ -85,7 +84,6 @@ public class MainActivity extends ActionBarActivity implements OnMenuItemClicked
     private void inflateMap(){
         if(mapFragment == null)
             mapFragment = MapFragment.newInstance(1);
-        mapFragment.setFromNavDrawer(true);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, mapFragment)
                 .addToBackStack("map")

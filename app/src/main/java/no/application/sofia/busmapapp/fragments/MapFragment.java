@@ -41,13 +41,12 @@ public class MapFragment extends Fragment {
     private static GoogleMap busMap;
     private LatLng myLocation;
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private boolean fromNavDrawer = false; //To check where the map was selected
     private LineDbHelper db;
     private ArrayList<String> characters; //Used to find which letters are used in line names
     public CustomKeyboard mKeyboard; //The custom keyboard for doing search
     private Bundle savedInstanceState; //Need it when using a custom snippet for the map
 
-	private BusLineMarkerHandler busLineHandler;
+    private BusLineMarkerHandler busLineHandler;
     private OnMenuItemClickedListener mListener;
     private View view;
 
@@ -147,7 +146,7 @@ public class MapFragment extends Fragment {
         return newName;
     }
 
-    public void searchRouteByName(String name){
+    public void searchRouteByLineNumber(String name){
         Line line = db.getLineByName(name);
         if (line.getName() == null)
             Toast.makeText(getActivity(), "Line " + name + " does not exist. Try another line.", Toast.LENGTH_LONG).show();
@@ -159,22 +158,22 @@ public class MapFragment extends Fragment {
     }
 
     private void searchForRoute(String route){
-	    busLineHandler.addRouteMarkers(route);
+        busLineHandler.addRouteMarkers(route);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         setUpMapIfNeeded();
-		busLineHandler.restartUpdateThread();
+        busLineHandler.restartUpdateThread();
         decideIfAddLinesToLocalDb();
     }
 
-	@Override
-	public void onPause(){
-		super.onPause();
-		busLineHandler.stopUpdateThread();
-	}
+    @Override
+    public void onPause(){
+        super.onPause();
+        busLineHandler.stopUpdateThread();
+    }
 
 
 
@@ -193,28 +192,21 @@ public class MapFragment extends Fragment {
 
     private void setUpMap(){
         busMap.setMyLocationEnabled(true);
-	    busLineHandler = new BusLineMarkerHandler(busMap);
+        busLineHandler = new BusLineMarkerHandler(busMap);
 
 
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        if (fromNavDrawer) {
-            if (lastKnownLocation != null) {
-                //Try to use the last known location to set lat long
-                myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-            } else {
-                //If the app is not able to find the last known location, the map is centered to Oslo
-                myLocation = new LatLng(59.9138688, 10.7522454);
-            }
-            fromNavDrawer = false;
-            busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
+        if (lastKnownLocation != null) {
+            //Try to use the last known location to set lat long
+            myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+        } else {
+            //If the app is not able to find the last known location, the map is centered to Oslo
+            myLocation = new LatLng(59.9138688, 10.7522454);
         }
-        else{
-            //Setting the camera to pin on the location of a stop clicked from the stops fragment
-            busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 13));
-            busMap.addMarker(new MarkerOptions().position(myLocation).title("Chosen Sop Location"));
-        }
+        busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
+
         busMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
         //addRouteMarkersToMap("Ruter", 21);
 
@@ -234,7 +226,7 @@ public class MapFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-	    busLineHandler.stopUpdateThread();
+        busLineHandler.stopUpdateThread();
         //When the some other fragment in the navigation drawer is selected, the busMap is set to
         // null again to be able to setup the map when the fragment is reattached.
         busMap = null;
@@ -251,9 +243,6 @@ public class MapFragment extends Fragment {
         }
     }
 
-    public void setFromNavDrawer(boolean fromNavDrawer){
-        this.fromNavDrawer = fromNavDrawer;
-    }
 
     //Called when the button to add all lines in the action menu is clicked
     private void addAllLinesToDb() {
