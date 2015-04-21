@@ -16,18 +16,18 @@ import java.util.Date;
 /**
  * Created by oknak_000 on 18.03.2015.
  */
-public class BusLineMarker {
+public class VehicleMarker {
 	private Marker vehicleMarker;
 	private JSONObject vehicleInfoJSON;
-	private ArrayList<BusArrival> arrivals;
+	private ArrayList<VehicleArrival> arrivals;
 	public int vehicleID = 0;
 	private int transportation = 0;
-	private BusArrival storedNextStop;
-	private BusLineMarkerHandler markerHandler;
+	private VehicleArrival storedNextStop;
+	private RouteMarkerHandler markerHandler;
 
-	public BusLineMarker(Marker marker, JSONObject vehicleInfoJSON, BusLineMarkerHandler markerHandler) {
+	public VehicleMarker(Marker marker, JSONObject vehicleInfoJSON, RouteMarkerHandler markerHandler) {
 		vehicleMarker = marker;
-		arrivals = new ArrayList<BusArrival>();
+		arrivals = new ArrayList<VehicleArrival>();
 		this.vehicleInfoJSON = vehicleInfoJSON;
 		this.markerHandler = markerHandler;
 		try {
@@ -37,7 +37,7 @@ public class BusLineMarker {
 
 			JSONArray arrivalsJSON = vehicleInfoJSON.getJSONArray("Arrivals");
 			for (int i = 0; i < arrivalsJSON.length(); i++) {
-				arrivals.add(new BusArrival(arrivalsJSON.getJSONObject(i), transportation, markerHandler));
+				arrivals.add(new VehicleArrival(arrivalsJSON.getJSONObject(i), transportation, markerHandler));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -65,7 +65,7 @@ public class BusLineMarker {
 				}
 
 				if (!handled) {
-					arrivals.add(new BusArrival(arrivalJSON, transportation, markerHandler));
+					arrivals.add(new VehicleArrival(arrivalJSON, transportation, markerHandler));
 				}
 			}
 		}catch(Exception e){
@@ -78,11 +78,11 @@ public class BusLineMarker {
 	public void updatePosition() {
 		Date currentTime = new Date();
 
-		BusArrival prevStop = null;
-		BusArrival nextStop = null;
-		BusArrival afterNextStop = null;
+		VehicleArrival prevStop = null;
+		VehicleArrival nextStop = null;
+		VehicleArrival afterNextStop = null;
 		for (int i = 0; i < arrivals.size(); i++) {
-			BusArrival currentArrival = arrivals.get(i);
+			VehicleArrival currentArrival = arrivals.get(i);
 			if (currentTime.getTime() > currentArrival.getTime()) {
 				if (prevStop == null || prevStop.getTime() < currentArrival.getTime())
 					prevStop = currentArrival;
@@ -136,7 +136,7 @@ public class BusLineMarker {
 		afterNextStop.updateFromAPIIfNeeded();
 	}
 
-	private LatLng calculatePosition(BusArrival prev, BusArrival next, Date currentTime) {
+	private LatLng calculatePosition(VehicleArrival prev, VehicleArrival next, Date currentTime) {
 		if (next == null) {
 			return null;
 		}
@@ -156,7 +156,7 @@ public class BusLineMarker {
 		return new LatLng(lat, lng);
 	}
 
-	private float caluclateBearing(BusArrival prev, BusArrival next) {
+	private float caluclateBearing(VehicleArrival prev, VehicleArrival next) {
 		if (next == null || prev == null)
 			return 0;
 

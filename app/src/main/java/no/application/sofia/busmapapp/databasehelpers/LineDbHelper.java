@@ -86,9 +86,9 @@ public class LineDbHelper extends SQLiteOpenHelper {
         return length;
     }
 
-    public Line getLineByName(String name){
+    public Line getLineByLineNumber(String lineNumber){
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(TABLE_LINES, null, COLUMN_NAME + "=?", new String[]{name}, null, null, null);
+        Cursor cursor = db.query(TABLE_LINES, null, COLUMN_NAME + "=?", new String[]{lineNumber}, null, null, null);
         Log.d("Cursor length", "Columns: "+ cursor.getColumnCount() + " Rows: " + cursor.getCount());
         Line line = new Line();
         if (cursor.moveToFirst()) {

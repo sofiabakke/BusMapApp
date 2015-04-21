@@ -32,15 +32,15 @@ import no.application.sofia.busmapapp.R;
 /**
  * Created by oknak_000 on 18.03.2015.
  */
-public class BusLineMarkerHandler {
+public class RouteMarkerHandler {
 	private static GoogleMap busMap;
-	private ArrayList<BusLineMarker> vehicleMarkers;
+	private ArrayList<VehicleMarker> vehicleMarkers;
 	private ArrayList<StopMarker> stopMarkers;
 	private Thread updateThread;
 	private boolean running = true;
 	private int lastLineID = 0;
 
-	public BusLineMarkerHandler(GoogleMap busMap){
+	public RouteMarkerHandler(GoogleMap busMap){
 		this.busMap = busMap;
 		vehicleMarkers = new ArrayList<>();
 		stopMarkers = new ArrayList<>();
@@ -156,13 +156,13 @@ public class BusLineMarkerHandler {
 
 	private void addMarker(final JSONObject busJSON){
 		final Handler mainHandler = new Handler(Looper.getMainLooper());
-		final BusLineMarkerHandler markerHandler = this;
+		final RouteMarkerHandler markerHandler = this;
 		mainHandler.post(new Runnable() {
 			@Override
 			public void run() {
 				try {
 
-					BusLineMarker marker = new BusLineMarker(
+					VehicleMarker marker = new VehicleMarker(
 						busMap.addMarker(new MarkerOptions()
 							.position(new LatLng(0, 0))
 							.title("asdasdasd")
@@ -237,7 +237,7 @@ public class BusLineMarkerHandler {
 		JSONArray json = new JSONArray();
 		try {
 			json = new JSONArray(busStopJSONs);
-			Log.i(BusLineMarkerHandler.class.getName(), json.toString());
+			Log.i(RouteMarkerHandler.class.getName(), json.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -325,7 +325,7 @@ public class BusLineMarkerHandler {
 					builder.append(line);
 				}
 			} else {
-				Log.e(BusLineMarkerHandler.class.getName(), "Failed to download file");
+				Log.e(RouteMarkerHandler.class.getName(), "Failed to download file");
 			}
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();

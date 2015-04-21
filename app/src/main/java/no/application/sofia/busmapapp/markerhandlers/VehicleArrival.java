@@ -13,7 +13,7 @@ import java.util.TimeZone;
 /**
  * Created by oknak_000 on 20.03.2015.
  */
-public class BusArrival {
+public class VehicleArrival {
 	private Date arrivalTime;
 	private LatLng position;
 	private String vehicleID;
@@ -23,7 +23,7 @@ public class BusArrival {
 	private String destName = "";
 	private String lineName = "";
 	private String lineID = "";
-	private BusLineMarkerHandler markerHandler;
+	private RouteMarkerHandler markerHandler;
 
 
 	private String[] transportationTypes= {
@@ -39,7 +39,7 @@ public class BusArrival {
 
 	private Date lastUpdate;
 
-	public BusArrival(JSONObject arrival, int typeID, BusLineMarkerHandler markerHandler){
+	public VehicleArrival(JSONObject arrival, int typeID, RouteMarkerHandler markerHandler){
 		try {
 			lineName = arrival.getString("LineName");
 			lineID = arrival.getString("LineID");

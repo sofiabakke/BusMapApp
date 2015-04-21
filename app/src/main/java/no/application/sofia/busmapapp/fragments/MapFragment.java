@@ -20,7 +20,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -31,7 +30,7 @@ import java.util.Collections;
 import no.application.sofia.busmapapp.CustomKeyboard;
 import no.application.sofia.busmapapp.interfaces.OnMenuItemClickedListener;
 import no.application.sofia.busmapapp.markerhandlers.MarkerInfoAdapter;
-import no.application.sofia.busmapapp.markerhandlers.BusLineMarkerHandler;
+import no.application.sofia.busmapapp.markerhandlers.RouteMarkerHandler;
 import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.databasehelpers.Line;
 import no.application.sofia.busmapapp.databasehelpers.LineDbHelper;
@@ -46,7 +45,7 @@ public class MapFragment extends Fragment {
     public CustomKeyboard mKeyboard; //The custom keyboard for doing search
     private Bundle savedInstanceState; //Need it when using a custom snippet for the map
 
-    private BusLineMarkerHandler busLineHandler;
+    private RouteMarkerHandler busLineHandler;
     private OnMenuItemClickedListener mListener;
     private View view;
 
@@ -147,7 +146,7 @@ public class MapFragment extends Fragment {
     }
 
     public void searchRouteByLineNumber(String name){
-        Line line = db.getLineByName(name);
+        Line line = db.getLineByLineNumber(name);
         if (line.getName() == null)
             Toast.makeText(getActivity(), "Line " + name + " does not exist. Try another line.", Toast.LENGTH_LONG).show();
         else {
@@ -192,7 +191,7 @@ public class MapFragment extends Fragment {
 
     private void setUpMap(){
         busMap.setMyLocationEnabled(true);
-        busLineHandler = new BusLineMarkerHandler(busMap);
+        busLineHandler = new RouteMarkerHandler(busMap);
 
 
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
