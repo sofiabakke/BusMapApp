@@ -34,6 +34,9 @@ import no.application.sofia.busmapapp.markerhandlers.RouteMarkerHandler;
 import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.databasehelpers.Line;
 import no.application.sofia.busmapapp.databasehelpers.LineDbHelper;
+import no.application.sofia.busmapapp.markerhandlers.RuterHandler;
+import no.application.sofia.busmapapp.markers.MarkerHandlerVM;
+import no.application.sofia.busmapapp.markers.VehicleMarkerHandler;
 
 
 public class MapFragment extends Fragment {
@@ -45,7 +48,8 @@ public class MapFragment extends Fragment {
     public CustomKeyboard mKeyboard; //The custom keyboard for doing search
     private Bundle savedInstanceState; //Need it when using a custom snippet for the map
 
-    private RouteMarkerHandler busLineHandler;
+    //private RouteMarkerHandler busLineHandler;
+    private VehicleMarkerHandler markerHandler;
     private OnMenuItemClickedListener mListener;
     private View view;
 
@@ -157,21 +161,23 @@ public class MapFragment extends Fragment {
     }
 
     private void searchForRoute(String route){
-        busLineHandler.addRouteMarkers(route);
+        //busLineHandler.addRouteMarkers(route);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         setUpMapIfNeeded();
-        busLineHandler.restartUpdateThread();
+        //busLineHandler.restartUpdateThread();
+        markerHandler.restartUpdateThread();
         decideIfAddLinesToLocalDb();
     }
 
     @Override
     public void onPause(){
         super.onPause();
-        busLineHandler.stopUpdateThread();
+        //busLineHandler.stopUpdateThread();
+        markerHandler.stopUpdateThread();
     }
 
 
@@ -191,7 +197,8 @@ public class MapFragment extends Fragment {
 
     private void setUpMap(){
         busMap.setMyLocationEnabled(true);
-        busLineHandler = new RouteMarkerHandler(busMap);
+        //busLineHandler = new RouteMarkerHandler(busMap);
+        markerHandler = new MarkerHandlerVM(busMap);
 
 
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -225,7 +232,9 @@ public class MapFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        busLineHandler.stopUpdateThread();
+        //busLineHandler.stopUpdateThread();
+        markerHandler.stopUpdateThread();
+
         //When the some other fragment in the navigation drawer is selected, the busMap is set to
         // null again to be able to setup the map when the fragment is reattached.
         busMap = null;
@@ -245,7 +254,7 @@ public class MapFragment extends Fragment {
 
     //Called when the button to add all lines in the action menu is clicked
     private void addAllLinesToDb() {
-        JSONArray busLines = busLineHandler.getBusLinesByOperator("Ruter");
+        /*JSONArray busLines = busLineHandler.getBusLinesByOperator("Ruter");
         int counter = 1;
         for (int i = 0; i < busLines.length(); i++) {
             try {
@@ -265,6 +274,7 @@ public class MapFragment extends Fragment {
         Log.i("DataBase Length", db.dbLength() + "");
         Collections.sort(characters);
         Log.d("Characters discovered: ", characters.toString());
+        */
     }
 
 }
