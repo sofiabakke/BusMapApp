@@ -12,20 +12,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 import no.application.sofia.busmapapp.R;
 
 /**
  * Created by oknak_000 on 08.05.2015.
  */
-public class MarkerHandlerVM extends VehicleMarkerHandler {
+public class MarkerHandlerVM extends MarkerHandler {
 
     public MarkerHandlerVM(GoogleMap busMap){
         super(busMap);
         initThread();
-
-        //updateAll();
     }
 
     @Override
@@ -34,16 +30,16 @@ public class MarkerHandlerVM extends VehicleMarkerHandler {
             @Override
             public void run()
             {
-                //while (!updateThread.isInterrupted()) {
+                while (!updateThread.isInterrupted()) {
                     try {
                         if(running) {
                             updateAll();
                         }
-                        //Thread.sleep(5000);
-                    } catch (Exception e) {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
 
                     }
-                //}
+                }
             }
         });
         updateThread.start();
@@ -53,7 +49,11 @@ public class MarkerHandlerVM extends VehicleMarkerHandler {
     protected void updateAll(){
         JSONObject json = getVehiclePositions();
         try {
-            JSONArray vehicles = json.getJSONObject("Siri").getJSONObject("ServiceDelivery").getJSONArray("VehicleMonitoringDelivery").getJSONObject(0).getJSONArray("VehicleActivity");
+            JSONArray vehicles = json.getJSONObject("Siri")
+                                .getJSONObject("ServiceDelivery")
+                                .getJSONArray("VehicleMonitoringDelivery")
+                                .getJSONObject(0)
+                                .getJSONArray("VehicleActivity");
 
             addMarkers(vehicles);
 
@@ -77,29 +77,44 @@ public class MarkerHandlerVM extends VehicleMarkerHandler {
     private void addMarkers(final JSONArray vehicles){
         final Handler mainHandler = new Handler(Looper.getMainLooper());
 
-        Log.d("MarkerHandlerVM", "Vehciles: " + vehicles.length());
         mainHandler.post(new Runnable() {
             @Override
             public void run() {
                 try {
                     for (int i = 0; i < vehicles.length(); i++) {
-                        VehicleMarkerVM marker = new VehicleMarkerVM(
-                                busMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(0, 0))
-                                .title("asdasdasd")
-                                .anchor(0.5f, 0.5f)
-                                .flat(true)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.arrow_blue_half_and_half))
-                                ),vehicles.getJSONObject(i)
-                        );
-                        // marker.updatePosition();
-                        vehicleMarkers.add(marker);
+                        String vehicleRef = vehicles.getJSONObject(i).getJSONObject("MonitoredVehicleJourney").getJSONObject("VehicleRef").getString("value");
+                        Boolean handled = false;
+                        for(int j = 0; j < vehicleMarkers.size(); j++){
+                            if(vehicleRef.equals(vehicleMarkers.get(j).getVehicleRef())){
+                                vehicleMarkers.get(j).update(vehicles.getJSONObject(i));
+                                handled = true;
+                                break;
+                            }
+                        }
+
+                        if(!handled) {
+                            addGoogleMapsMarker(vehicles.getJSONObject(i));
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
+    }
+
+    private void addGoogleMapsMarker(JSONObject vehicle) {
+        VehicleMarkerVM marker = new VehicleMarkerVM(
+                busMap.addMarker(new MarkerOptions()
+                                .position(new LatLng(0, 0))
+                                .title("asdasdasd")
+                                .anchor(0.5f, 0.5f)
+                                .flat(true)
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.arrow_blue_half_and_half))
+                ),vehicle
+        );
+        // marker.updatePosition();
+        vehicleMarkers.add(marker);
     }
 
 }

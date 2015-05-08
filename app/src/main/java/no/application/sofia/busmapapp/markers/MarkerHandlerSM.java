@@ -5,7 +5,7 @@ import com.google.android.gms.maps.GoogleMap;
 /**
  * Created by oknak_000 on 08.05.2015.
  */
-public class MarkerHandlerSM extends VehicleMarkerHandler {
+public class MarkerHandlerSM extends MarkerHandler {
 
     public MarkerHandlerSM(GoogleMap busMap){
         super(busMap);

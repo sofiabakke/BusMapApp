@@ -19,12 +19,30 @@ public class VehicleMarkerVM extends VehicleMarker{
             LatLng position = new LatLng(locationJSON.getDouble("Latitude"), locationJSON.getDouble("Longitude"));
 
             float bearing = (float)vehicleInfoJSON.getJSONObject("MonitoredVehicleJourney").getDouble("Bearing");
+            vehicleRef = vehicleInfoJSON.getJSONObject("MonitoredVehicleJourney").getJSONObject("VehicleRef").getString("value");
 
-            marker.setPosition(position);
-            marker.setRotation(bearing);
-            marker.setTitle(generateTitle());
-            marker.setSnippet(generateSnippet());
+            vehicleMarker.setPosition(position);
+            vehicleMarker.setRotation(bearing);
+            vehicleMarker.setTitle(generateTitle());
+            vehicleMarker.setSnippet(generateSnippet());
 
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void update(JSONObject vehicleInfoJSON){
+        try {
+            JSONObject locationJSON = vehicleInfoJSON.getJSONObject("MonitoredVehicleJourney").getJSONObject("VehicleLocation");
+            LatLng position = new LatLng(locationJSON.getDouble("Latitude"), locationJSON.getDouble("Longitude"));
+
+            float bearing = (float) vehicleInfoJSON.getJSONObject("MonitoredVehicleJourney").getDouble("Bearing");
+
+            vehicleMarker.setPosition(position);
+            vehicleMarker.setRotation(bearing);
+            vehicleMarker.setTitle(generateTitle());
+            vehicleMarker.setSnippet(generateSnippet());
         }catch(Exception e){
             e.printStackTrace();
         }

@@ -6,7 +6,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,22 +20,16 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.Collections;
 
 import no.application.sofia.busmapapp.CustomKeyboard;
 import no.application.sofia.busmapapp.interfaces.OnMenuItemClickedListener;
 import no.application.sofia.busmapapp.markerhandlers.MarkerInfoAdapter;
-import no.application.sofia.busmapapp.markerhandlers.RouteMarkerHandler;
 import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.databasehelpers.Line;
 import no.application.sofia.busmapapp.databasehelpers.LineDbHelper;
-import no.application.sofia.busmapapp.markerhandlers.RuterHandler;
 import no.application.sofia.busmapapp.markers.MarkerHandlerVM;
-import no.application.sofia.busmapapp.markers.VehicleMarkerHandler;
+import no.application.sofia.busmapapp.markers.MarkerHandler;
 
 
 public class MapFragment extends Fragment {
@@ -49,7 +42,7 @@ public class MapFragment extends Fragment {
     private Bundle savedInstanceState; //Need it when using a custom snippet for the map
 
     //private RouteMarkerHandler busLineHandler;
-    private VehicleMarkerHandler markerHandler;
+    private MarkerHandler markerHandler;
     private OnMenuItemClickedListener mListener;
     private View view;
 

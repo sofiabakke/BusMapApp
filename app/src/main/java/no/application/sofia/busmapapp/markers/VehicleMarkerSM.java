@@ -34,4 +34,9 @@ public class VehicleMarkerSM extends VehicleMarker {
     protected String generateSnippet(){
         return "";
     }
+
+    @Override
+    public void update(JSONObject newJSON){
+
+    }
 }
