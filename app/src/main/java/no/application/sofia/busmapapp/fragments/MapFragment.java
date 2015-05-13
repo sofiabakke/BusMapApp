@@ -35,7 +35,9 @@ import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.databasehelpers.Line;
 import no.application.sofia.busmapapp.databasehelpers.LineDbHelper;
 
-
+/**
+ * The map fragment containing the Google map and the search field with a custom keyboard.
+ */
 public class MapFragment extends Fragment {
     private static GoogleMap busMap;
     private LatLng myLocation;
@@ -50,6 +52,11 @@ public class MapFragment extends Fragment {
     private View view;
 
 
+    /**
+     * The convention when creating a fragment is to use this type of method to create it.
+     * @param sectionNumber Number of the fragment
+     * @return The fragment created
+     */
     public static MapFragment newInstance(int sectionNumber) {
         MapFragment fragment = new MapFragment();
         Bundle args = new Bundle();
@@ -59,11 +66,10 @@ public class MapFragment extends Fragment {
     }
 
 
-
     public MapFragment() {
         // Required empty public constructor
     }
-
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
