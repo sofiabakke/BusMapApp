@@ -1,6 +1,9 @@
 package no.application.sofia.busmapapp.activities;
 
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -8,6 +11,7 @@ import android.text.Editable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import no.application.sofia.busmapapp.R;
 import no.application.sofia.busmapapp.fragments.MapFragment;
@@ -22,9 +26,26 @@ public class MainActivity extends ActionBarActivity implements OnMenuItemClicked
     private OracleFragment oracleFragment;
 
 
+    /**
+     * sendQuery is used to send the text in the search field
+     * above the map to the mapFragment. This method is needed
+     * because the custom keyboard is not connected directly to the
+     * mapFragment. It communicates with the activity.
+     * @param editable The text input from the search field
+     */
     public void sendQuery(Editable editable){
         String query = editable.toString();
-        mapFragment.searchRouteByLineNumber(query);
+        if (isNetworkAvailable())
+            mapFragment.searchRouteByLineNumber(query);
+        else
+            Toast.makeText(this, "There is no internet connection", Toast.LENGTH_LONG).show();
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @Override
