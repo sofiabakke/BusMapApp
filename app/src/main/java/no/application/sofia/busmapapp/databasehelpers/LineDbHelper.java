@@ -15,6 +15,7 @@ import java.util.List;
 
 /**
  * Created by Sofia on 05.03.15.
+ * The database helper controlling saving of lines to the database.
  */
 public class LineDbHelper extends SQLiteOpenHelper {
 
@@ -48,7 +49,10 @@ public class LineDbHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    //Adding lines to the database
+    /**
+     * Adding lines to the database one by one
+     * @param line the current line to add
+     */
     public void addLine(Line line){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -59,26 +63,11 @@ public class LineDbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public List<Line> getAllLines(){
-        List<Line> lineList = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_LINES;
-        SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()){
-            do {
-                Line line = new Line();
-                line.setId(cursor.getInt(0));
-                line.setLineId(cursor.getInt(1));
-                line.setName(cursor.getString(2));
-                line.setTransportation(cursor.getInt(3));
-                lineList.add(line);
-            }
-            while (cursor.moveToNext());
-        }
-        cursor.close();
-        return lineList;
-    }
-
+    /**
+     * Used to see how lon the database is.
+     * If there is no elements in the database, all lines from the server is added.
+     * @return the database length
+     */
     public long dbLength(){
         SQLiteDatabase db = getWritableDatabase();
         long length = DatabaseUtils.queryNumEntries(db, TABLE_LINES);
@@ -86,6 +75,12 @@ public class LineDbHelper extends SQLiteOpenHelper {
         return length;
     }
 
+    /**
+     * Each line has a unique number which needs to be found from the name the user searches for.
+     * For instance, no line has a letter in it. For instance bus line 80E, has the ID 2080
+     * @param lineNumber the line input from the user
+     * @return the line from the database with all its attributes.
+     */
     public Line getLineByLineNumber(String lineNumber){
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(TABLE_LINES, null, COLUMN_NAME + "=?", new String[]{lineNumber}, null, null, null);
