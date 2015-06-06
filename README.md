@@ -1,4 +1,4 @@
-# BusMapApp
+# TransitVision
 ### Master Thesis Android Application
 
 
@@ -11,3 +11,5 @@ Some links to easily find the source code:
   - [MapFragment](app/src/main/java/no/application/sofia/busmapapp/fragments/MapFragment.java)
   - [StopsFragment](app/src/main/java/no/application/sofia/busmapapp/fragments/StopsFragment.java)
   - [OracleFragment](app/src/main/java/no/application/sofia/busmapapp/fragments/OracleFragment.java)
+
+Need a guide to using the code.
