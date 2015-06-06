@@ -16,7 +16,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Only bus routs are included"
+        android:text="Only bus routes are available"
         android:id="@+id/textView"
         android:layout_below="@+id/textView_oracle_question"
         android:layout_centerHorizontal="true" />
