@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BusMapApp</string>
+    <string name="app_name">TransitVision</string>
 
     <!--Action Bar Strings-->
     <string name="action_example">Example action</string>

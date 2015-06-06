@@ -2,6 +2,8 @@ package no.application.sofia.busmapapp.databasehelpers;
 
 /**
  * Created by Sofia on 05.03.15.
+ * The class describes the lines added to the database with attributes needed when saving it.
+ * This class is only used in the LineDbHelper.
  */
 public class Line {
 
