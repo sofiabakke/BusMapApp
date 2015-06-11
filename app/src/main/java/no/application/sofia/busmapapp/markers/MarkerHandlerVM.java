@@ -117,4 +117,9 @@ public class MarkerHandlerVM extends MarkerHandler {
         vehicleMarkers.add(marker);
     }
 
+    @Override
+    private void addRouteMarkers(String route){
+
+    }
+
 }

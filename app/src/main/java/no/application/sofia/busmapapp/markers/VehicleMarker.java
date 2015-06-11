@@ -21,6 +21,9 @@ public abstract class VehicleMarker {
     protected abstract String generateTitle();
 
     protected abstract String generateSnippet();
+
+    protected abstract void updatePosition();
+
     public abstract void update(JSONObject newJSON);
 
     public String getVehicleRef(){

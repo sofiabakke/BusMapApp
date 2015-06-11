@@ -2,7 +2,7 @@ package no.application.sofia.busmapapp.markers;
 
 import android.util.Log;
 
-import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.Marker;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -16,31 +16,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 
 import no.application.sofia.busmapapp.markerhandlers.RouteMarkerHandler;
 
 /**
  * Created by oknak_000 on 08.05.2015.
  */
-public abstract class MarkerHandler {
-    protected static GoogleMap busMap;
-    ArrayList<VehicleMarker> vehicleMarkers;
-    protected Thread updateThread;
-    protected boolean running = true;
+public abstract class StopMarker {
+    protected Marker marker;
 
-
-    public MarkerHandler(GoogleMap busMap){
-        this.busMap = busMap;
-        vehicleMarkers = new ArrayList<VehicleMarker>();
+    public StopMarker(Marker marker){
+        this.marker = marker;
     }
 
-    protected abstract void initThread();
-    protected abstract void updateAll();
-    protected abstract void addRouteMarkers(String route);
-
-    public void stopUpdateThread(){ running = false; }
-    public void restartUpdateThread(){ running = true; }
 
     // Downloads JSON from a given URL
     protected String sendJSONRequest(String URL){
@@ -69,5 +57,4 @@ public abstract class MarkerHandler {
         }
         return builder.toString();
     }
-
 }

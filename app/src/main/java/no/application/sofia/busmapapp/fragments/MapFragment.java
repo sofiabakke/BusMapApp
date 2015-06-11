@@ -6,6 +6,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,7 +21,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import no.application.sofia.busmapapp.CustomKeyboard;
 import no.application.sofia.busmapapp.interfaces.OnMenuItemClickedListener;
@@ -155,6 +159,7 @@ public class MapFragment extends Fragment {
 
     private void searchForRoute(String route){
         //busLineHandler.addRouteMarkers(route);
+        markerHandler.addRouteMarkers(route);
     }
 
     @Override

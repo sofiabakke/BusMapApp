@@ -57,7 +57,14 @@ public class VehicleMarkerVM extends VehicleMarker{
         return title;
     }
 
+
+
     protected String generateSnippet(){
         return "";
+    }
+
+    @Override
+    public void updatePosition(){
+
     }
 }
