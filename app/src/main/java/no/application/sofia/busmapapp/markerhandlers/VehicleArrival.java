@@ -126,22 +126,6 @@ public class VehicleArrival {
 		new Thread(new Runnable() {
 			public void run() {
 				markerHandler.updateOneStop(Integer.parseInt(lineID), busStopID);
-				/*String url = "http://api.bausk.no/Bus/getStopVisitsOnStop/Ruter/" + busStopID + "/" + lineID;
-				try {
-					JSONObject json = new JSONObject(sendJSONRequest(url));
-					JSONArray stopVisits = json.getJSONArray("StopVisits");
-
-					for(int i = 0; i < stopVisits.length(); i++){
-						JSONObject stopVisit = stopVisits.getJSONObject(i);
-
-						if(stopVisit.getString("VehicleID").equals(vehicleID)){
-							arrivalTime = new Date(stopVisit.getJSONObject("Arrival").getLong("ExpectedArrivalTimeMS"));
-						}
-					}
-
-				}catch(Exception e){
-					e.printStackTrace();
-				}*/
 			}
 		}).start();
 	}
