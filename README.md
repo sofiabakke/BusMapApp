@@ -1,5 +1,4 @@
-# TransitVision
-## Approximating Vehicle Locations Using SIRI-SM Real-Time Data
+# TransitVision - Approximating Vehicle Locations Using SIRI-SM Real-Time Data
 ### Master Thesis Android Application
 
 
