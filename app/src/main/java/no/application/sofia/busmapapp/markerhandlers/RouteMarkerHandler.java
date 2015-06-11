@@ -39,7 +39,7 @@ public class RouteMarkerHandler {
 	private Thread updateThread;
 	private boolean running = true;
 	private int lastLineID = 0;
-	private final String IP = "http://api.bausk.no/";
+	private final String IP = "http://api.bausk.no/"; //Change IP address of server here
 
 	public RouteMarkerHandler(GoogleMap busMap){
 		this.busMap = busMap;
