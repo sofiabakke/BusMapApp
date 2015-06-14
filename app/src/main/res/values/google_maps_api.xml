@@ -11,11 +11,14 @@ https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend
     You can also add your credentials to an existing key, using this line:
     4E:C4:A3:2E:A6:43:71:11:40:C5:98:89:40:8C:EE:BB:42:9C:4F:5C;no.application.sofia.busmapapp
 
+    New 94:B3:D0:D6:0D:03:38:4B:EF:75:CD:BD:65:D2:F9:59:64:F4:94:18;no.application.sofia.busmapapp
+    new AIzaSyAleXTvu_f1XIV_C7nFK0LFU4TY38Xh19Y
+
     Once you have your key (it starts with "AIza"), replace the "google_maps_key"
     string in this file.
     --></string>
 
-    <string name="google_maps_key" templateMergeStrategy="preserve">AIzaSyDrzhBYFZPTIUIxDnrTm0XzRdPVD9cO8mA</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve">AIzaSyAleXTvu_f1XIV_C7nFK0LFU4TY38Xh19Y</string>
     <!--string name="google_maps_key" templateMergeStrategy="preserve">AIzaSyBfJ_Bw3-jf6a7k-bzmhXXWCQKpT6uL000</string-->
 
 </resources>
