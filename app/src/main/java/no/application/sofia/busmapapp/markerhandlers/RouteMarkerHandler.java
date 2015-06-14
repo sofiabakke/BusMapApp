@@ -39,6 +39,7 @@ public class RouteMarkerHandler {
 	private Thread updateThread;
 	private boolean running = true;
 	private int lastLineID = 0;
+	private final String IP = "http://api.bausk.no/"; //Change IP address of server here
 
 	public RouteMarkerHandler(GoogleMap busMap){
 		this.busMap = busMap;
@@ -184,7 +185,7 @@ public class RouteMarkerHandler {
 
 
 	private JSONArray getBusArrivalsOnLine(String operator, int lineID){
-		String url = "http://api.bausk.no/Bus/getBusArrivalsOnLine/" + operator + "/" + lineID;
+		String url = IP +"Bus/getBusArrivalsOnLine/" + operator + "/" + lineID;
 		String busArrivals = sendJSONRequest(url);
 		JSONArray json = new JSONArray();
 		try{
@@ -231,7 +232,7 @@ public class RouteMarkerHandler {
 	}
 
 	private JSONArray getBusStopsOnLine(String operator, int lineID){
-		String URL = "http://api.bausk.no/Stops/getBusStopsOnLine/" + operator + "/" + lineID;
+		String URL = IP +"Stops/getBusStopsOnLine/" + operator + "/" + lineID;
 
 		String busStopJSONs = sendJSONRequest(URL);
 		JSONArray json = new JSONArray();
@@ -246,7 +247,7 @@ public class RouteMarkerHandler {
 	}
 
 	public void updateOneStop(int lineID, int busStopID){
-		String url = "http://api.bausk.no/Bus/getStopVisitsOnStop/Ruter/" + busStopID + "/" + lineID;
+		String url = IP +"Bus/getStopVisitsOnStop/Ruter/" + busStopID + "/" + lineID;
 
 		try {
 			JSONObject json = new JSONObject(sendJSONRequest(url));
@@ -336,7 +337,7 @@ public class RouteMarkerHandler {
 	}
 
 	public JSONArray getBusLinesByOperator(String operator){
-		String url = "http://api.bausk.no/Bus/getBusLinesByOperator/" + operator;
+		String url = IP +"Bus/getBusLinesByOperator/" + operator;
 		String busInfoJsons = sendJSONRequest(url);
 		JSONArray json = new JSONArray();
 		try {
